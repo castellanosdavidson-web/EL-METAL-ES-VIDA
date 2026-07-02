@@ -6,6 +6,7 @@ export default function ArticulosPage() {
   const [loadingArticles, setLoadingArticles] = useState(true);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editArticle, setEditArticle] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,6 +26,18 @@ export default function ArticulosPage() {
       .finally(() => setLoadingArticles(false));
   };
 
+  const handleOpenEdit = (article: any) => {
+    setEditArticle(article);
+    setMessage('');
+    setIsModalOpen(true);
+  };
+
+  const handleOpenNew = () => {
+    setEditArticle(null);
+    setMessage('');
+    setIsModalOpen(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUploading(true);
@@ -33,20 +46,24 @@ export default function ArticulosPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    if (editArticle) {
+      formData.append('id', editArticle.id);
+    }
+
     try {
       const response = await fetch('/api/articles', {
-        method: 'POST',
+        method: editArticle ? 'PUT' : 'POST',
         body: formData,
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('¡Artículo subido con éxito!');
-        form.reset();
+        setMessage(editArticle ? '¡Artículo actualizado con éxito!' : '¡Artículo subido con éxito!');
         fetchArticles(); // Refrescar lista
         setTimeout(() => {
           setIsModalOpen(false);
+          setEditArticle(null);
           setMessage('');
         }, 2000);
       } else {
@@ -74,7 +91,7 @@ export default function ArticulosPage() {
             <p className="font-mono-technical text-mono-technical text-on-surface-variant">DIRECTORIO: /SISTEMA/CONTENIDO/ARTICULOS</p>
           </div>
           <button 
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenNew}
             className="bg-primary-container text-on-surface font-label-sm text-label-sm uppercase tracking-widest px-8 py-4 border border-primary-container hover:bg-transparent hover:text-primary transition-all duration-200 active:scale-95 flex items-center gap-2"
           >
             <span className="material-symbols-outlined text-sm">add</span>
@@ -147,8 +164,8 @@ export default function ArticulosPage() {
                             )}
                           </div>
                           <div>
-                            <p className="font-body-lg text-on-surface font-bold group-hover:text-primary transition-colors cursor-pointer">{article.title}</p>
-                            <p className="font-mono-technical text-[10px] text-on-surface-variant uppercase">ID: ART-{article.id.slice(-4)}-X</p>
+                            <p onClick={() => handleOpenEdit(article)} className="font-body-lg text-on-surface font-bold group-hover:text-primary transition-colors cursor-pointer">{article.title}</p>
+                            <p className="font-mono-technical text-[10px] text-on-surface-variant uppercase">ID: ART-{article.id.toString().slice(-4)}-X</p>
                           </div>
                         </div>
                       </td>
@@ -167,7 +184,7 @@ export default function ArticulosPage() {
                       </td>
                       <td className="px-6 py-5 text-right space-x-2">
                         <button className="p-2 hover:text-primary transition-colors" title="Ver"><span className="material-symbols-outlined text-sm">visibility</span></button>
-                        <button className="p-2 hover:text-primary transition-colors" title="Editar"><span className="material-symbols-outlined text-sm">edit</span></button>
+                        <button onClick={() => handleOpenEdit(article)} className="p-2 hover:text-primary transition-colors" title="Editar"><span className="material-symbols-outlined text-sm">edit</span></button>
                         <button className="p-2 hover:text-error transition-colors" title="Eliminar"><span className="material-symbols-outlined text-sm">delete</span></button>
                       </td>
                     </tr>
@@ -191,14 +208,6 @@ export default function ArticulosPage() {
             </div>
           </div>
         </div>
-
-        {/* Terminal Output Simulation (Brutalist aesthetic) */}
-        <div className="bg-surface-container-lowest border-l-4 border-primary-container p-4 font-mono-technical text-[12px] text-on-surface-variant opacity-70">
-          <p>&gt; [SISTEMA]: RECUPERANDO REGISTROS DE AUDITORÍA...</p>
-          <p>&gt; [OK]: CONEXIÓN A BASE DE DATOS SUPABASE ESTABLECIDA</p>
-          <p>&gt; [INFO]: {articles.length} ARTÍCULOS ENCONTRADOS EN EL DIRECTORIO</p>
-          <p>&gt; [SISTEMA]: FLUJO DE DATOS ESTABLE. LISTADO COMPLETADO.</p>
-        </div>
       </div>
 
       {/* Modal / Formulario */}
@@ -210,8 +219,12 @@ export default function ArticulosPage() {
               <span className="material-symbols-outlined">close</span>
             </button>
             
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase mb-2">INYECTAR ARTÍCULO</h2>
-            <p className="font-mono-technical text-mono-technical text-on-surface-variant mb-6">PROTOCOLO DE SUBIDA A SUPABASE</p>
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase mb-2">
+              {editArticle ? 'EDITAR ARTÍCULO' : 'INYECTAR ARTÍCULO'}
+            </h2>
+            <p className="font-mono-technical text-mono-technical text-on-surface-variant mb-6">
+              PROTOCOLO DE {editArticle ? 'ACTUALIZACIÓN' : 'SUBIDA'} A SUPABASE
+            </p>
             
             {message && (
               <div className={`p-4 mb-6 border ${message.includes('Error') ? 'border-error text-error' : 'border-primary text-primary'} font-label-sm uppercase`}>
@@ -227,32 +240,40 @@ export default function ArticulosPage() {
 
               <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Título del Artículo</label>
-                <input type="text" name="title" required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-headline-md" placeholder="Ej: Mecánica del Blast Beat" />
+                <input type="text" name="title" defaultValue={editArticle?.title || ''} required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-headline-md" placeholder="Ej: Mecánica del Blast Beat" />
+              </div>
+              
+              <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Descripción / Contenido</label>
+                <textarea name="desc" defaultValue={editArticle?.desc || ''} required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-body-md min-h-[100px]" placeholder="Extracto o contenido del artículo..."></textarea>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
                   <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Categoría</label>
-                  <select name="category" className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical">
+                  <select name="category" defaultValue={editArticle?.category || 'Documental Histórico'} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical">
+                    <option value="Ciencia del Sonido">Ciencia del Sonido</option>
+                    <option value="Historia">Historia</option>
+                    <option value="Anatomía">Anatomía</option>
+                    <option value="Equipamiento">Equipamiento</option>
+                    <option value="Símbolos">Símbolos</option>
                     <option value="Documental Histórico">Documental Histórico</option>
                     <option value="Análisis Técnico">Análisis Técnico</option>
-                    <option value="Ciencia Sonora">Ciencia Sonora</option>
-                    <option value="Equipamiento">Equipamiento</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Tiempo de Lectura</label>
-                  <input type="text" name="readTime" required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" placeholder="Ej: 12 Minutos" />
+                  <input type="text" name="readTime" defaultValue={editArticle?.readTime || ''} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" placeholder="Ej: 12 Minutos" />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Imagen de Portada</label>
-                <input type="file" name="image" accept="image/*" required className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Imagen de Portada {editArticle && '(Opcional)'}</label>
+                <input type="file" name="image" accept="image/*" required={!editArticle} className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
               </div>
 
               <button type="submit" disabled={uploading} className="mt-4 bg-primary-container text-on-surface py-4 uppercase font-label-sm font-bold tracking-widest hover:bg-inverse-primary transition-colors disabled:opacity-50">
-                {uploading ? 'SUBIENDO DATOS...' : 'EJECUTAR INYECCIÓN'}
+                {uploading ? 'PROCESANDO...' : (editArticle ? 'GUARDAR CAMBIOS' : 'EJECUTAR INYECCIÓN')}
               </button>
             </form>
           </div>
