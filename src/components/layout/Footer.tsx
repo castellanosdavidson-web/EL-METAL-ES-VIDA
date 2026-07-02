@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="bg-surface-container-lowest dark:bg-surface-container-lowest w-full py-stack-loose px-margin-mobile border-t border-outline-variant/20 grid grid-cols-1 md:grid-cols-2 gap-gutter max-w-7xl mx-auto">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
-          <Image src="/logo.jpg" alt="El Metal Es Vida Logo" width={32} height={32} className="rounded-full grayscale opacity-80" />
+          <Image src="/LOGO 2.png" alt="El Metal Es Vida Logo" width={32} height={32} className="rounded-full grayscale opacity-80" />
           <div className="font-headline-md-mobile text-headline-md-mobile font-bold text-on-surface">EL METAL ES VIDA</div>
         </div>
         <p className="font-body-md text-body-md text-on-surface-variant">© 2024 EL METAL ES VIDA. REGISTRO TÉCNICO NO. 666.</p>
