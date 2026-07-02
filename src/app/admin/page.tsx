@@ -59,164 +59,101 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="bg-background min-h-screen text-on-surface font-body-md overflow-x-hidden flex">
-      {/* SideNavBar */}
-      <aside className="fixed left-0 top-0 h-screen flex flex-col border-r border-outline-variant/20 bg-surface-dim w-64 z-50">
-        <div className="p-gutter flex flex-col gap-base">
-          <h1 className="font-headline-md text-headline-md text-primary tracking-tighter uppercase font-bold mt-4">METAL_ARCHIVE</h1>
-          <div className="flex items-center gap-stack-tight mt-stack-loose">
-            <div className="w-10 h-10 bg-primary-container rounded-sm flex items-center justify-center overflow-hidden">
-              <span className="material-symbols-outlined text-white">person</span>
-            </div>
-            <div>
-              <p className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface">OPERATOR_01</p>
-              <p className="text-[10px] uppercase tracking-tighter text-on-surface-variant opacity-60">System Administrator</p>
-            </div>
+    <main className="p-8 flex-1">
+      {/* Quick Stats Bento Grid */}
+      <section className="grid grid-cols-1 md:grid-cols-4 gap-masonry-gap mb-stack-loose">
+        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Artículos</span>
+          <div className="flex items-baseline justify-between mt-base">
+            <span className="font-display-lg text-display-lg text-primary">{articles.length}</span>
+            <span className="text-primary-container material-symbols-outlined">article</span>
           </div>
         </div>
-        <nav className="flex-1 mt-stack-loose flex flex-col">
-          <a className="flex items-center gap-stack-tight bg-primary text-on-primary font-bold px-4 py-3 border-l-4 border-on-primary-fixed-variant" href="#">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
-            <span className="font-label-sm text-label-sm uppercase tracking-widest">Dashboard</span>
-          </a>
-          <a className="flex items-center gap-stack-tight text-on-surface-variant hover:bg-surface-variant/30 px-4 py-3 border-l-4 border-transparent hover:text-primary transition-all" href="#">
-            <span className="material-symbols-outlined">article</span>
-            <span className="font-label-sm text-label-sm uppercase tracking-widest">Artículos</span>
-          </a>
-          <a className="flex items-center gap-stack-tight text-on-surface-variant hover:bg-surface-variant/30 px-4 py-3 border-l-4 border-transparent hover:text-primary transition-all" href="#">
-            <span className="material-symbols-outlined">inventory_2</span>
-            <span className="font-label-sm text-label-sm uppercase tracking-widest">Productos</span>
-          </a>
-          <a className="flex items-center gap-stack-tight text-on-surface-variant hover:bg-surface-variant/30 px-4 py-3 border-l-4 border-transparent hover:text-primary transition-all" href="#">
-            <span className="material-symbols-outlined">settings</span>
-            <span className="font-label-sm text-label-sm uppercase tracking-widest">Ajustes</span>
-          </a>
-        </nav>
-        <div className="mt-auto border-t border-outline-variant/10 p-gutter flex flex-col gap-base">
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="bg-primary-container hover:bg-inverse-primary text-white font-bold py-3 px-4 flex items-center justify-center gap-2 uppercase font-label-sm text-label-sm tracking-widest mb-gutter transition-colors"
-          >
-            <span className="material-symbols-outlined text-[18px]">add_circle</span>
-            NEW_ENTRY
-          </button>
-          <a className="flex items-center gap-stack-tight text-on-surface-variant hover:text-error px-2 py-1 font-label-sm text-label-sm uppercase transition-all mb-4" href="/">
-            <span className="material-symbols-outlined">logout</span>
-            Exit to Home
-          </a>
+        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Productos</span>
+          <div className="flex items-baseline justify-between mt-base">
+            <span className="font-display-lg text-display-lg text-primary">0</span>
+            <span className="text-primary-container material-symbols-outlined">inventory_2</span>
+          </div>
         </div>
-      </aside>
-
-      {/* Main Canvas */}
-      <div className="ml-64 w-full flex-1 flex flex-col max-w-[calc(100vw-16rem)] min-h-screen">
-        {/* TopNavBar */}
-        <header className="sticky top-0 z-40 flex justify-between items-center w-full px-gutter bg-background border-b border-outline-variant/20 h-16">
-          <div className="flex items-center gap-gutter">
-            <span className="material-symbols-outlined text-primary ml-4">search</span>
-            <input className="bg-transparent border-none focus:ring-0 text-on-surface-variant font-mono-technical text-mono-technical w-64 uppercase tracking-widest outline-none" placeholder="SEARCH_ARCHIVE..." type="text"/>
+        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Ventas del Mes</span>
+          <div className="flex items-baseline justify-between mt-base">
+            <span className="font-display-lg text-display-lg text-primary">$0</span>
+            <span className="text-primary-container material-symbols-outlined">payments</span>
           </div>
-          <div className="flex items-center gap-gutter pr-gutter">
-            <span className="font-mono-technical text-mono-technical text-primary">v2.4.0_CORE</span>
+        </div>
+        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Nuevos Miembros</span>
+          <div className="flex items-baseline justify-between mt-base">
+            <span className="font-display-lg text-display-lg text-primary">0</span>
+            <span className="text-primary-container material-symbols-outlined">person_add</span>
           </div>
-        </header>
+        </div>
+      </section>
 
-        <main className="p-8 flex-1">
-          {/* Quick Stats Bento Grid */}
-          <section className="grid grid-cols-1 md:grid-cols-4 gap-masonry-gap mb-stack-loose">
-            <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-              <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Artículos</span>
-              <div className="flex items-baseline justify-between mt-base">
-                <span className="font-display-lg text-display-lg text-primary">{articles.length}</span>
-                <span className="text-primary-container material-symbols-outlined">article</span>
-              </div>
-            </div>
-            <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-              <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Productos</span>
-              <div className="flex items-baseline justify-between mt-base">
-                <span className="font-display-lg text-display-lg text-primary">0</span>
-                <span className="text-primary-container material-symbols-outlined">inventory_2</span>
-              </div>
-            </div>
-            <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-              <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Ventas del Mes</span>
-              <div className="flex items-baseline justify-between mt-base">
-                <span className="font-display-lg text-display-lg text-primary">$0</span>
-                <span className="text-primary-container material-symbols-outlined">payments</span>
-              </div>
-            </div>
-            <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-              <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Nuevos Miembros</span>
-              <div className="flex items-baseline justify-between mt-base">
-                <span className="font-display-lg text-display-lg text-primary">0</span>
-                <span className="text-primary-container material-symbols-outlined">person_add</span>
-              </div>
-            </div>
-          </section>
-
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-masonry-gap items-start">
-            {/* Recents Articles Table */}
-            <div className="xl:col-span-2 technical-border overflow-hidden bg-surface-container-lowest">
-              <div className="bg-surface-variant/20 p-4 border-b border-outline-variant/20 flex justify-between items-center">
-                <h2 className="font-headline-md text-headline-md text-on-surface">ARTÍCULOS RECIENTES</h2>
-                <button onClick={() => setIsModalOpen(true)} className="bg-primary-container hover:bg-inverse-primary transition-colors px-4 py-2 text-white font-bold uppercase font-label-sm text-label-sm tracking-widest flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[16px]">edit_note</span>
-                  NUEVO_ARTICULO
-                </button>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-surface-dim/50 border-b border-outline-variant/10 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">
-                      <th className="p-4">Título</th>
-                      <th className="p-4">Autor</th>
-                      <th className="p-4">Categoría</th>
-                      <th className="p-4">Estado</th>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-masonry-gap items-start">
+        {/* Recents Articles Table */}
+        <div className="xl:col-span-2 technical-border overflow-hidden bg-surface-container-lowest">
+          <div className="bg-surface-variant/20 p-4 border-b border-outline-variant/20 flex justify-between items-center">
+            <h2 className="font-headline-md text-headline-md text-on-surface">ARTÍCULOS RECIENTES</h2>
+            <button onClick={() => setIsModalOpen(true)} className="bg-primary-container hover:bg-inverse-primary transition-colors px-4 py-2 text-white font-bold uppercase font-label-sm text-label-sm tracking-widest flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">edit_note</span>
+              NUEVO_ARTICULO
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-surface-dim/50 border-b border-outline-variant/10 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">
+                  <th className="p-4">Título</th>
+                  <th className="p-4">Autor</th>
+                  <th className="p-4">Categoría</th>
+                  <th className="p-4">Estado</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant/20 font-body-md text-body-md">
+                {loadingArticles ? (
+                  <tr><td colSpan={4} className="p-4 text-center text-primary animate-pulse">CARGANDO ARCHIVOS...</td></tr>
+                ) : articles.length === 0 ? (
+                  <tr><td colSpan={4} className="p-4 text-center text-on-surface-variant">NO HAY ARTÍCULOS EN LA BASE DE DATOS</td></tr>
+                ) : (
+                  articles.slice(0, 5).map((article) => (
+                    <tr key={article.id} className="hover:bg-surface-variant/10 transition-colors">
+                      <td className="p-4 font-semibold text-primary">{article.title}</td>
+                      <td className="p-4 text-on-surface-variant">OPERATOR_01</td>
+                      <td className="p-4"><span className="technical-border px-2 py-0.5 text-[10px] uppercase font-bold text-on-surface-variant bg-surface">{article.category}</span></td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                          <span className="text-[12px] uppercase">Publicado</span>
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-outline-variant/20 font-body-md text-body-md">
-                    {loadingArticles ? (
-                      <tr><td colSpan={4} className="p-4 text-center text-primary animate-pulse">CARGANDO ARCHIVOS...</td></tr>
-                    ) : articles.length === 0 ? (
-                      <tr><td colSpan={4} className="p-4 text-center text-on-surface-variant">NO HAY ARTÍCULOS EN LA BASE DE DATOS</td></tr>
-                    ) : (
-                      articles.map((article) => (
-                        <tr key={article.id} className="hover:bg-surface-variant/10 transition-colors">
-                          <td className="p-4 font-semibold text-primary">{article.title}</td>
-                          <td className="p-4 text-on-surface-variant">OPERATOR_01</td>
-                          <td className="p-4"><span className="technical-border px-2 py-0.5 text-[10px] uppercase font-bold text-on-surface-variant bg-surface">{article.category}</span></td>
-                          <td className="p-4">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                              <span className="text-[12px] uppercase">Publicado</span>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Featured Products Placeholder */}
-            <div className="technical-border flex flex-col h-full bg-surface-container-lowest">
-              <div className="bg-surface-variant/20 p-4 border-b border-outline-variant/20 flex justify-between items-center">
-                <h2 className="font-headline-md text-headline-md text-on-surface">PRODUCTOS TOP</h2>
-              </div>
-              <div className="p-4 flex flex-col gap-4">
-                <p className="text-on-surface-variant text-sm text-center py-8">Conecta la tienda para ver estadísticas reales.</p>
-              </div>
-            </div>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
+        </div>
 
-          {/* System Health */}
-          <section className="mt-8 technical-border p-4 bg-surface-container-lowest/50 relative overflow-hidden h-32 flex items-center justify-center">
-            <div className="relative z-10 text-center">
-              <p className="font-mono-technical text-mono-technical text-primary-container animate-pulse">SYSTEM_STATUS: NOMINAL // ARCHIVE_INTEGRITY: 100%</p>
-            </div>
-          </section>
-        </main>
+        {/* Featured Products Placeholder */}
+        <div className="technical-border flex flex-col h-full bg-surface-container-lowest">
+          <div className="bg-surface-variant/20 p-4 border-b border-outline-variant/20 flex justify-between items-center">
+            <h2 className="font-headline-md text-headline-md text-on-surface">PRODUCTOS TOP</h2>
+          </div>
+          <div className="p-4 flex flex-col gap-4">
+            <p className="text-on-surface-variant text-sm text-center py-8">Conecta la tienda para ver estadísticas reales.</p>
+          </div>
+        </div>
       </div>
+
+      {/* System Health */}
+      <section className="mt-8 technical-border p-4 bg-surface-container-lowest/50 relative overflow-hidden h-32 flex items-center justify-center">
+        <div className="relative z-10 text-center">
+          <p className="font-mono-technical text-mono-technical text-primary-container animate-pulse">SYSTEM_STATUS: NOMINAL // ARCHIVE_INTEGRITY: 100%</p>
+        </div>
+      </section>
 
       {/* Modal / Formulario */}
       {isModalOpen && (
@@ -275,6 +212,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }
