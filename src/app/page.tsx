@@ -1,8 +1,24 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
+  const [recentArticles, setRecentArticles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/articles')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.error) {
+          // Tomamos solo los últimos 3 para el home
+          setRecentArticles(data.slice(0, 3));
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <main className="pt-16 pb-32">
       {/* Hero Section */}
@@ -65,58 +81,36 @@ export default function Home() {
               VER TODOS <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-masonry-gap">
-            {/* Card 1 */}
-            <article className="technical-border rounded-none flex flex-col group cursor-pointer hover:border-primary-container transition-colors bg-transparent relative overflow-hidden">
-              <div className="h-48 w-full bg-surface-container relative overflow-hidden">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAWe6AXP1P2IgfBq-8Br-6jXpX05S5j8B7WviRYVPTK_ix6dxYwm3b7A5B8JCsnqArvV3U3GS95sPvBFBXOhw9-lBPBciw79sEezwNwveSjTyYrhyWZ6LQXoGE17TBvWEG4z5X7jj57IkDmDhGCwvCKgeY3eAX3NJ0Fofvvx_pGPhCw_L5KA4v6fO_zgh4zQmDDpoSrcMLLgYtfhx2MSSdZ6NQeUo9qD8qHMJkpBjHHJlI-m6f2WOo9cafLL5vucw99o5efH1k8iQ')" }}></div>
-                <div className="absolute top-2 left-2 bg-surface px-2 py-1 technical-border text-on-surface font-label-sm text-label-sm uppercase flex items-center gap-1 backdrop-blur-md bg-opacity-80">
-                  <span className="material-symbols-outlined text-[14px]">timer</span> 12 Minutos
-                </div>
-              </div>
-              <div className="p-4 flex flex-col flex-grow bg-surface-container-low">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 bg-primary-container rounded-full"></span>
-                  <span className="font-mono-technical text-mono-technical text-on-surface-variant uppercase text-[10px]">Documental Histórico</span>
-                </div>
-                <h3 className="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors leading-tight">Historia de la escena de Bogotá</h3>
-              </div>
-            </article>
-
-            {/* Card 2 */}
-            <article className="technical-border rounded-none flex flex-col group cursor-pointer hover:border-primary-container transition-colors bg-transparent relative overflow-hidden">
-              <div className="h-48 w-full bg-surface-container relative overflow-hidden">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBY6-qvfrPsizvbRFCBQNMZ2MJD_DlMOAbI0AiSD1cFl8-tDULvIpxqrjxhmFGAHTvkf2o1iwPASNa9DALN_tRLxj5v6uTfPP7LGtrbLoy-3NFEhSTi-G4P-MNTlQvOX24tN2e18lN5vvvPe-GXIDuLetYcBs_qGOUVWyeyDmAaQF1UkPCjJ0VaLys3K9ItVpL5zOcZ-Stf1NfQFcvf_FbeOUBHSpOTlhE4MZgq8rcvK-SABiIS9FhvPa15I2sKHi1ra8bG0GcsZA')" }}></div>
-                <div className="absolute top-2 left-2 bg-surface px-2 py-1 technical-border text-on-surface font-label-sm text-label-sm uppercase flex items-center gap-1 backdrop-blur-md bg-opacity-80">
-                  <span className="material-symbols-outlined text-[14px]">timer</span> 18 Minutos
-                </div>
-              </div>
-              <div className="p-4 flex flex-col flex-grow bg-surface-container-low">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                  <span className="font-mono-technical text-mono-technical text-on-surface-variant uppercase text-[10px]">Análisis Técnico</span>
-                </div>
-                <h3 className="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors leading-tight">¿Por qué el Thrash colapsó?</h3>
-              </div>
-            </article>
-
-            {/* Card 3 */}
-            <article className="technical-border rounded-none flex flex-col group cursor-pointer hover:border-primary-container transition-colors bg-transparent relative overflow-hidden md:col-span-2 lg:col-span-1">
-              <div className="h-48 w-full bg-surface-container relative overflow-hidden">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAVdylAW3CLC3NCxUNmGMkNpVtDlLpm5RXwRc0Bitdzi1ePq9JbnOhRvIvKF_jkdI3w0pFykFD-iyaGOEKSChjMm6awb2QAMW97Yn04Hi1iD1XbHj63LOGk4fq7GckWnLgEqyLc4eVnnvEyYulKzD9WSb6wUt1UtCZzZfkNX2PkXW_Czp__RiyerM3ewjejn6Cn_g1jZ592bo2RJOlKlisK1TsO85vGyUztZNwjubRZV03drMVAnE1XHcdp5Hztl7wZ_o_-FZkuSA')" }}></div>
-                <div className="absolute top-2 left-2 bg-surface px-2 py-1 technical-border text-on-surface font-label-sm text-label-sm uppercase flex items-center gap-1 backdrop-blur-md bg-opacity-80">
-                  <span className="material-symbols-outlined text-[14px]">timer</span> 8 Minutos
-                </div>
-              </div>
-              <div className="p-4 flex flex-col flex-grow bg-surface-container-low">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 bg-primary-container rounded-full"></span>
-                  <span className="font-mono-technical text-mono-technical text-on-surface-variant uppercase text-[10px]">Ciencia Sonora</span>
-                </div>
-                <h3 className="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors leading-tight">Mecánica del Blast Beat Moderno</h3>
-              </div>
-            </article>
-          </div>
+          
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <span className="font-mono-technical text-primary animate-pulse uppercase">Cargando base de datos...</span>
+            </div>
+          ) : recentArticles.length === 0 ? (
+            <div className="flex justify-center py-20 text-on-surface-variant font-mono-technical uppercase">
+              No hay archivos subidos todavía. Usa /admin.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-masonry-gap">
+              {recentArticles.map((article: any, index: number) => (
+                <article key={article.id} className={`technical-border rounded-none flex flex-col group cursor-pointer hover:border-primary-container transition-colors bg-transparent relative overflow-hidden ${index === 2 ? 'md:col-span-2 lg:col-span-1' : ''}`}>
+                  <div className="h-48 w-full bg-surface-container relative overflow-hidden">
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${article.imageUrl}')` }}></div>
+                    <div className="absolute top-2 left-2 bg-surface px-2 py-1 technical-border text-on-surface font-label-sm text-label-sm uppercase flex items-center gap-1 backdrop-blur-md bg-opacity-80">
+                      <span className="material-symbols-outlined text-[14px]">timer</span> {article.readTime}
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-grow bg-surface-container-low">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-2 h-2 bg-primary-container rounded-full"></span>
+                      <span className="font-mono-technical text-mono-technical text-on-surface-variant uppercase text-[10px]">{article.category}</span>
+                    </div>
+                    <h3 className="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors leading-tight">{article.title}</h3>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
