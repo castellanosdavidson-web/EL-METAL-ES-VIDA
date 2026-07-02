@@ -85,7 +85,7 @@ export default function AdminDashboard() {
           </a>
           <a className="flex items-center gap-stack-tight text-on-surface-variant hover:bg-surface-variant/30 px-4 py-3 border-l-4 border-transparent hover:text-primary transition-all" href="#">
             <span className="material-symbols-outlined">inventory_2</span>
-            <span class="font-label-sm text-label-sm uppercase tracking-widest">Productos</span>
+            <span className="font-label-sm text-label-sm uppercase tracking-widest">Productos</span>
           </a>
           <a className="flex items-center gap-stack-tight text-on-surface-variant hover:bg-surface-variant/30 px-4 py-3 border-l-4 border-transparent hover:text-primary transition-all" href="#">
             <span className="material-symbols-outlined">settings</span>
