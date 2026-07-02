@@ -1,22 +1,21 @@
+"use client";
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function Footer() {
   return (
-    <footer className="bg-surface-container-lowest dark:bg-surface-container-lowest w-full py-stack-loose px-margin-mobile border-t border-outline-variant/20 grid grid-cols-1 md:grid-cols-2 gap-gutter max-w-7xl mx-auto">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <Image src="/LOGO 2.png" alt="El Metal Es Vida Logo" width={32} height={32} className="rounded-full grayscale opacity-80" />
-          <div className="font-headline-md-mobile text-headline-md-mobile font-bold text-on-surface">EL METAL ES VIDA</div>
+    <footer className="bg-surface-container-low border-t-2 border-outline-variant w-full">
+      <div className="w-full px-margin-mobile md:px-margin-desktop py-8 flex flex-col md:flex-row justify-between items-center max-w-container-max mx-auto gap-6">
+        <div className="flex items-center gap-2">
+          <span className="font-label-technical text-label-technical text-primary">EL METAL ES VIDA</span>
+          <span className="font-label-technical text-label-technical text-on-surface-variant hidden md:inline">|</span>
+          <span className="font-label-technical text-label-technical text-on-surface-variant">© 2024 ARCHIVO TÉCNICO V.1.0</span>
         </div>
-        <p className="font-body-md text-body-md text-on-surface-variant">© 2024 EL METAL ES VIDA. REGISTRO TÉCNICO NO. 666.</p>
-      </div>
-      <div className="flex flex-wrap gap-4 md:justify-end items-end">
-        <Link className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors focus:ring-1 focus:ring-primary focus:outline-none" href="#">BOLETÍN</Link>
-        <Link className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors focus:ring-1 focus:ring-primary focus:outline-none" href="#">AVISO LEGAL</Link>
-        <Link className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors focus:ring-1 focus:ring-primary focus:outline-none" href="#">TERMINOLOGÍA</Link>
-        <Link className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors focus:ring-1 focus:ring-primary focus:outline-none" href="#">CONTACTO</Link>
+        <nav className="flex gap-6">
+          <Link href="#" className="font-label-technical text-label-technical text-on-surface-variant hover:text-primary hover:underline transition-colors opacity-70 hover:opacity-100">Privacidad</Link>
+          <Link href="#" className="font-label-technical text-label-technical text-on-surface-variant hover:text-primary hover:underline transition-colors opacity-70 hover:opacity-100">Protocolos</Link>
+          <Link href="#" className="font-label-technical text-label-technical text-on-surface-variant hover:text-primary hover:underline transition-colors opacity-70 hover:opacity-100">Contacto</Link>
+        </nav>
       </div>
     </footer>
   );

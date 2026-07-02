@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, JetBrains_Mono, Metal_Mania } from "next/font/google";
+import { Syne, JetBrains_Mono, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
-const inter = Inter({
+const syne = Syne({
   subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-syne",
   display: "swap",
 });
 
@@ -23,10 +17,9 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-const metalMania = Metal_Mania({
-  weight: "400",
+const hanken = Hanken_Grotesk({
   subsets: ["latin"],
-  variable: "--font-metal",
+  variable: "--font-hanken",
   display: "swap",
 });
 
@@ -43,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${inter.variable} ${playfair.variable} ${jetbrains.variable} ${metalMania.variable} dark`}
+      className={`${syne.variable} ${jetbrains.variable} ${hanken.variable} dark`}
     >
       <head>
         <link

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [recentArticles, setRecentArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -11,8 +11,7 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
-          // Tomamos solo los últimos 3 para el home
-          setRecentArticles(data.slice(0, 3));
+          setArticles(data.slice(0, 3));
         }
       })
       .catch(console.error)
@@ -20,138 +19,195 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="pt-16 pb-32">
+    <main className="pt-[88px] min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[751px] w-full flex items-center justify-center px-margin-mobile technical-border border-x-0 border-t-0 border-b">
-        {/* Background Image Placeholder */}
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDzzXYbLNfUwFe0rnCghdCmLKKjtva8Fq3rdZBp22AfU4qYkhh5Pdi0sxfeIBZf_AN_1mmSa1JpXkxJEmslKWjfe7BHmIOXeCBWBgikSkWH4UsTXbI_BMBu5vXZZ2qwdodehSzWzRP_pkr7--jpJg889qdXk8ewhLsJsRxeVhs0VsIysGYJeM3uJKV39zQUadu1dZ70bI_96ennxOBuSZoGhebj8-xVpSL2sV5HixBuDA355w16wHbmJZRijivOc8MmFmCkStEliA')",
-            opacity: 0.3
-          }}
-        ></div>
-        <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center text-center gap-stack-loose">
-          <div className="glass-panel p-stack-loose rounded w-full border border-outline-variant/50">
-            <h1 className="font-logo text-display-lg text-on-surface uppercase mb-stack-tight">
-              <span className="fire-text font-bold text-5xl md:text-6xl">No es ruido.</span>
-              <span className="text-primary-container block mt-4 font-headline-lg font-bold">Es historia, ciencia y hermandad.</span>
-            </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mt-6">
-              El medio definitivo de cultura extrema. Archivos técnicos, análisis clínicos y documentales para la legión.
-            </p>
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden border-b-2 border-outline-variant bg-surface-dim">
+        <div className="absolute inset-0 opacity-40 z-0">
+          <div className="w-full h-full bg-cover bg-center mix-blend-overlay" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCLFAmwPfd1JptEwRrFyPW45HazQyL3Lytz87oUxEMPHcnNj5KSC_eWlmGPGlbyMfQspNmmCmmQ3tDHbPPb-uG7oizSxvLlprfT6KYbsCWdfTxm_SG82GBAacMw4UgKO_WHSfyH7CvjdBA3oWwXdY7f_slUfnk38CWHv6d34xHjlBhTRl5Yc5xpxDV9yRgdsBnFy1jNHw1k1rffvXJCXAdsF4LZcpMF92aR1iqK0noMlh2QWIQyYOgSfAkc2Sf5zKpHYPaLDtTt4g')" }}></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50"></div>
+          <div className="absolute inset-0 opacity-20 mix-blend-soft-light" style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgc3Ryb2tlPSIjMjIyIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiPjxwb2x5Z29uIHBvaW50cz0iMCwwIDQwLDAgNDAsNDAgMCw0MCIvPjwvZz48L3N2Zz4=')" }}></div>
+        </div>
+        <div className="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center">
+          <div className="inline-block border border-outline-variant bg-surface-container/50 px-4 py-1 mb-6">
+            <span className="font-label-technical text-label-technical text-primary tracking-[0.2em] uppercase">Inicializando Sistema. v2.4</span>
           </div>
-        </div>
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-stack-loose left-1/2 transform -translate-x-1/2 text-on-surface-variant flex flex-col items-center gap-2">
-          <span className="font-mono-technical text-mono-technical uppercase tracking-widest text-[10px]">DESCENDER</span>
-          <span className="material-symbols-outlined animate-bounce">arrow_downward</span>
-        </div>
-      </section>
-
-      {/* Latest Documentals */}
-      <section className="py-margin-desktop px-margin-mobile bg-surface relative overflow-hidden">
-        {/* Background glow for articles section */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-container/5 via-surface to-surface pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="flex justify-between items-end mb-stack-loose border-b border-outline-variant/20 pb-4">
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary text-3xl animate-pulse">local_fire_department</span>
-              Archivos Recientes
-            </h2>
-            <Link className="font-label-sm text-label-sm text-primary hover:text-on-surface transition-colors flex items-center gap-1 group" href="/enciclopedia">
-              VER TODOS <span className="material-symbols-outlined text-sm transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          <h1 className="text-headline-xl md:text-display-lg font-display-lg uppercase text-on-surface leading-tight mb-8 drop-shadow-2xl max-w-5xl mx-auto glitch-target">
+            NO ES RUIDO.<br/>
+            <span className="text-primary-container inline-block transform hover:scale-105 transition-transform duration-300">ES HISTORIA,</span><br/>
+            CIENCIA Y HERMANDAD.
+          </h1>
+          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10 border-l-2 border-primary-container pl-6 text-left">
+            El archivo técnico definitivo para la legión. Desglosamos la agresión sonora, documentamos el equipo y forjamos acero. 
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="#expedientes" className="bg-primary-container text-white border-2 border-primary-container hover:bg-background hover:text-primary transition-all duration-300 px-8 py-4 font-headline-lg text-headline-lg text-[18px] uppercase flex items-center gap-3 group relative overflow-hidden">
+              <span className="relative z-10">Ingresar al Archivo</span>
+              <span className="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity"></div>
             </Link>
-          </div>
-          
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <span className="font-mono-technical text-primary animate-pulse uppercase">Cargando base de datos...</span>
-            </div>
-          ) : recentArticles.length === 0 ? (
-            <div className="flex justify-center py-20 text-on-surface-variant font-mono-technical uppercase">
-              No hay archivos subidos todavía. Usa /admin.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {recentArticles.map((article: any, index: number) => (
-                <article 
-                  key={article.id} 
-                  className={`technical-border rounded-lg flex flex-col group cursor-pointer hover:border-primary transition-all duration-500 bg-surface-container-low relative overflow-hidden shadow-lg hover:shadow-primary/20 transform hover:-translate-y-2 ${index === 2 ? 'md:col-span-2 lg:col-span-1' : ''}`}
-                >
-                  <div className="h-56 w-full bg-surface-container relative overflow-hidden">
-                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1 mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal" style={{ backgroundImage: `url('${article.imageUrl}')` }}></div>
-                    {/* Glowing overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-100"></div>
-                    
-                    <div className="absolute top-3 left-3 bg-primary/90 px-3 py-1 text-on-primary font-label-sm text-[10px] uppercase flex items-center gap-1 backdrop-blur-md rounded shadow-md transform -translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
-                      <span className="material-symbols-outlined text-[14px]">visibility</span> EXPLORAR
-                    </div>
-                  </div>
-                  <div className="p-6 flex flex-col flex-grow bg-surface-container-low border-t border-outline-variant/30 relative z-10">
-                    <div className="flex justify-between items-center mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                        <span className="font-mono-technical text-primary uppercase text-[11px] tracking-widest">{article.category}</span>
-                      </div>
-                      <div className="text-on-surface-variant font-label-sm text-[10px] flex items-center gap-1 opacity-70">
-                        <span className="material-symbols-outlined text-[12px]">timer</span> {article.readTime || '5 MIN'}
-                      </div>
-                    </div>
-                    <h3 className="font-headline-md text-2xl text-on-surface group-hover:text-primary transition-colors leading-tight">{article.title}</h3>
-                    <p className="font-body-md text-on-surface-variant mt-3 text-sm line-clamp-3 opacity-80 group-hover:opacity-100 transition-opacity">
-                      {article.desc}
-                    </p>
-                  </div>
-                  {/* Bottom animated border line */}
-                  <div className="h-1 w-0 bg-primary absolute bottom-0 left-0 group-hover:w-full transition-all duration-500 ease-out"></div>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Lead Magnet Section */}
-      <section className="py-margin-desktop px-margin-mobile bg-surface-container-low border-b border-outline-variant/20 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div className="max-w-xl mx-auto flex flex-col gap-stack-loose relative z-10">
-          <div className="flex items-start gap-4">
-            <span className="material-symbols-outlined text-primary-container text-4xl">book_5</span>
-            <div>
-              <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Desbloquea el Archivo</h2>
-              <p className="font-body-md text-body-md text-on-surface-variant">Descarga la guía: 'La Anatomía del Riff'. Un análisis forense de la composición extrema.</p>
-            </div>
-          </div>
-          <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-            <div className="relative">
-              <input className="w-full bg-surface-container border-b-2 border-outline-variant focus:border-primary-container focus:ring-0 text-on-surface font-mono-technical text-mono-technical py-4 px-4 transition-colors placeholder-on-surface-variant/50" placeholder="TU CORREO ELECTRÓNICO" required type="email" />
-            </div>
-            <button className="w-full bg-primary-container text-[#F5F5F5] font-mono-technical text-mono-technical uppercase py-4 px-6 hover:bg-[#A00000] transition-colors cta-double-border text-center flex items-center justify-center gap-2 group" type="submit">
-              DESCARGAR AHORA
-              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">download</span>
+            <button className="bg-transparent text-on-surface border-2 border-secondary-container hover:border-primary-container hover:text-primary-container transition-all duration-300 px-8 py-4 font-label-technical text-label-technical uppercase flex items-center gap-3">
+              <span className="material-symbols-outlined text-[20px]">equalizer</span>
+              Calibrar Tono
             </button>
-            <p className="font-label-sm text-label-sm text-on-surface-variant text-center opacity-70">Acceso inmediato. Sin spam comercial.</p>
-          </form>
+          </div>
+        </div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+          <span className="font-label-technical text-label-technical text-on-surface-variant text-[10px]">SCROLL</span>
+          <span className="material-symbols-outlined text-primary text-xl">arrow_downward</span>
         </div>
       </section>
 
-      {/* Social Proof Section */}
-      <section className="py-margin-desktop px-margin-mobile bg-surface-container border-y border-outline-variant/20">
-        <div className="max-w-3xl mx-auto text-center flex flex-col items-center gap-stack-tight">
-          <span className="material-symbols-outlined text-4xl text-primary-container mb-2">groups</span>
-          <h3 className="font-headline-md text-headline-md text-on-surface uppercase">Una legión de +10.000 cabezas</h3>
-          <p className="font-mono-technical text-mono-technical text-on-surface-variant uppercase tracking-widest mb-stack-loose">Operando en toda Latinoamérica</p>
-          <div className="flex gap-4">
-            <Link className="w-12 h-12 flex items-center justify-center technical-border rounded-none text-on-surface-variant hover:text-primary hover:border-primary transition-all" href="#">
-              <span className="font-label-sm text-label-sm font-bold">IG</span>
-            </Link>
-            <Link className="w-12 h-12 flex items-center justify-center technical-border rounded-none text-on-surface-variant hover:text-primary hover:border-primary transition-all" href="#">
-              <span className="font-label-sm text-label-sm font-bold">YT</span>
-            </Link>
-            <Link className="w-12 h-12 flex items-center justify-center technical-border rounded-none text-on-surface-variant hover:text-primary hover:border-primary transition-all" href="#">
-              <span className="font-label-sm text-label-sm font-bold">DC</span>
-            </Link>
+      {/* Expedientes Destacados (Blog) - Bento Grid */}
+      <section id="expedientes" className="py-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto border-b-2 border-outline-variant">
+        <div className="flex justify-between items-end mb-12 border-b-2 border-surface-container-highest pb-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="material-symbols-outlined text-primary">folder_special</span>
+              <span className="font-label-technical text-label-technical text-on-surface-variant">SECCIÓN 01</span>
+            </div>
+            <h2 className="text-headline-lg font-headline-lg uppercase text-on-surface">Expedientes Destacados</h2>
+          </div>
+          <Link href="/enciclopedia" className="font-label-technical text-label-technical text-primary hover:underline flex items-center gap-1">
+            VER TODOS <span className="material-symbols-outlined text-sm">arrow_outward</span>
+          </Link>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <span className="font-label-technical text-primary animate-pulse tracking-widest">Sincronizando Base de Datos...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-1 bg-surface-container-high border-2 border-outline-variant p-1">
+            {/* Main Feature */}
+            {articles[0] && (
+              <article className="md:col-span-8 bg-surface-dim relative group overflow-hidden border-t-4 border-primary-container hover:border-primary transition-colors duration-300 flex flex-col h-[500px]">
+                <div className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-500 mix-blend-luminosity" style={{ backgroundImage: `url('${articles[0].imageUrl}')` }}></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+                <div className="relative z-10 mt-auto p-8 border-t border-surface-container-highest/50 bg-background/80 backdrop-blur-sm">
+                  <div className="flex gap-2 mb-4">
+                    <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary">HISTORIA</span>
+                    <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-on-surface-variant">DOC-094</span>
+                  </div>
+                  <h3 className="text-headline-lg font-headline-lg uppercase text-on-surface mb-3 group-hover:text-primary transition-colors">{articles[0].title}</h3>
+                  <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl line-clamp-2">{articles[0].desc}</p>
+                </div>
+              </article>
+            )}
+
+            {/* Secondary Features */}
+            {articles[1] && (
+              <article className="md:col-span-4 bg-surface relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto">
+                <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-50 transition-opacity duration-500 mix-blend-luminosity" style={{ backgroundImage: `url('${articles[1].imageUrl}')` }}></div>
+                <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-background to-background/20 h-full flex flex-col justify-end">
+                  <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3">CIENCIA</span>
+                  <h3 className="text-headline-lg-mobile font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors">{articles[1].title}</h3>
+                </div>
+              </article>
+            )}
+
+            {articles[2] && (
+              <article className="md:col-span-4 bg-surface p-6 border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col justify-between group">
+                <div>
+                  <span className="font-label-technical text-label-technical text-on-surface-variant mb-4 block">RESEÑA TÉCNICA</span>
+                  <h3 className="font-headline-lg text-headline-lg-mobile text-on-surface mb-3 uppercase group-hover:text-primary transition-colors">{articles[2].title}</h3>
+                  <p className="font-body-md text-on-surface-variant line-clamp-3">{articles[2].desc}</p>
+                </div>
+                <div className="mt-6 border-t border-outline-variant pt-4 flex justify-between items-center">
+                  <span className="font-label-technical text-label-technical text-on-surface-variant">LECTURA: {articles[2].readTime || '8 MIN'}</span>
+                  <span className="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </div>
+              </article>
+            )}
+
+            {/* Default bottom span if we don't have enough articles or just as a static banner */}
+            <article className="md:col-span-8 bg-surface-dim p-8 border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col md:flex-row gap-8 items-center group">
+              <div className="w-full md:w-1/3 aspect-square relative border border-outline-variant">
+                <div className="absolute inset-0 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDiChJ3mMBD4wJmL7K2REU5uWXax2AN6U8ddF7VK4O8AIHqoIMxmkUN-wLOqH_9xeQv49ybYPTUEVdn-FHFujKXIoiZG71o6SfJF2jlmc64qzHWB61kxMs_qoy-J9ARmXft9sCWZTM-BoZwpAhUarkOS3MSZNUSR3EF-I_DWzD_ishN7kqLpKhvj6YYUekZkgpY9rMBv_IwMXYuZ38T1T3pmyj9DolRDIwyGhSVJ5Onjc9DYRsCtsuU3GBdwrGDgZIEgPYWiVKJNQ')" }}></div>
+              </div>
+              <div className="w-full md:w-2/3">
+                <span className="bg-primary-container text-white px-2 py-1 font-label-technical text-label-technical mb-4 inline-block">HERMANDAD</span>
+                <h3 className="font-headline-lg text-headline-lg uppercase text-on-surface mb-3 group-hover:text-primary transition-colors">Entrevista: Arquitectos del Caos</h3>
+                <p className="font-body-md text-body-md text-on-surface-variant mb-6">Diálogo sin censura sobre las técnicas vocales extremas y la prevención de daño en las cuerdas vocales con pioneros del género.</p>
+                <button className="text-primary font-label-technical text-label-technical uppercase flex items-center gap-2 hover:text-white transition-colors">
+                  Acceder al Registro <span className="material-symbols-outlined text-sm">terminal</span>
+                </button>
+              </div>
+            </article>
+
+          </div>
+        )}
+      </section>
+
+      {/* Taller de Distorsión */}
+      <section className="py-24 bg-surface-dim relative overflow-hidden">
+        <div className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+          <div className="border-l-4 border-primary-container pl-6 mb-12">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="material-symbols-outlined text-primary">build</span>
+              <span className="font-label-technical text-label-technical text-on-surface-variant">SECCIÓN 02</span>
+            </div>
+            <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface">Taller de Distorsión</h2>
+            <p className="font-body-md text-on-surface-variant mt-4 max-w-xl">Herramientas analíticas y calibración de equipo. Sólo para ingenieros del sonido pesado.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group">
+              <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors">
+                <span className="material-symbols-outlined text-on-surface">graphic_eq</span>
+              </div>
+              <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2">Simulador de Gabinete</h3>
+              <p className="font-body-md text-on-surface-variant text-sm mb-6">Aplica respuestas a impulsos (IR) de pantallas 4x12 capturadas en estudios legendarios.</p>
+              <button className="w-full border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface">
+                Cargar Módulo
+              </button>
+            </div>
+            <div className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+              <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors">
+                <span className="material-symbols-outlined text-on-surface">speed</span>
+              </div>
+              <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2">BPM & Metrónomo</h3>
+              <p className="font-body-md text-on-surface-variant text-sm mb-6">Calculadora de subdivisiones rítmicas para blast beats y compases compuestos.</p>
+              <button className="w-full bg-primary-container border border-primary-container text-white py-3 font-label-technical text-label-technical uppercase hover:bg-background hover:text-primary transition-colors">
+                Iniciar Secuencia
+              </button>
+            </div>
+            <div className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group">
+              <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors">
+                <span className="material-symbols-outlined text-on-surface">cable</span>
+              </div>
+              <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2">Ruteo de Señal</h3>
+              <p className="font-body-md text-on-surface-variant text-sm mb-6">Diagramas interactivos para configuración de pedaleras y loops de efectos estéreo.</p>
+              <button className="w-full border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface">
+                Ver Esquemas
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-background">
+        <div className="max-w-4xl mx-auto bg-surface-container-low border-2 border-outline-variant p-8 md:p-12 relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 w-32 h-32 bg-primary-container rotate-45 flex flex-col justify-center gap-1 p-2">
+            <div className="h-1 w-full bg-background"></div>
+            <div className="h-1 w-full bg-background"></div>
+            <div className="h-1 w-full bg-background"></div>
+          </div>
+          <div className="text-center relative z-10">
+            <span className="material-symbols-outlined text-5xl text-primary mb-4 block">swords</span>
+            <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface mb-4">Únete a la Hermandad</h2>
+            <p className="font-body-lg text-on-surface-variant mb-8 max-w-xl mx-auto">
+              Recibe transmisiones directas con análisis de equipo, técnicas de composición y acceso anticipado al material clasificado del archivo. No enviamos spam, solo ruido puro.
+            </p>
+            <form className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" onSubmit={e => e.preventDefault()}>
+              <div className="flex-grow relative">
+                <label className="absolute -top-2.5 left-3 bg-surface-container-low px-1 font-label-technical text-label-technical text-primary z-10" htmlFor="email">CREDENCIAL (EMAIL)</label>
+                <input className="w-full bg-background border border-outline-variant text-on-surface font-body-md p-4 focus:ring-0 focus:border-primary-container outline-none transition-colors" id="email" placeholder="ingresa@tu-correo.com" required type="email" />
+              </div>
+              <button className="bg-primary-container text-white px-8 py-4 font-label-technical text-label-technical uppercase hover:bg-background hover:text-primary border-2 border-primary-container transition-all flex items-center justify-center gap-2 whitespace-nowrap" type="submit">
+                Establecer Conexión <span className="material-symbols-outlined text-sm">send</span>
+              </button>
+            </form>
           </div>
         </div>
       </section>

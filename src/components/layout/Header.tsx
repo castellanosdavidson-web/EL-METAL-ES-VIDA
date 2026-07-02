@@ -1,33 +1,52 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import NavigationDrawer from './NavigationDrawer';
 
-export default function Header() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+interface HeaderProps {
+  onOpenMenu?: () => void;
+}
+
+export default function Header({ onOpenMenu }: HeaderProps) {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > 100) {
+        if (currentScrollY > lastScrollY) {
+          setIsVisible(false); // Scrolling down
+        } else {
+          setIsVisible(true);  // Scrolling up
+        }
+      } else {
+        setIsVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   return (
-    <>
-      <header className="bg-surface dark:bg-surface fixed top-0 z-50 border-b border-outline-variant/20 flex justify-between items-center px-margin-mobile h-16 w-full">
-        <button 
-          onClick={() => setIsDrawerOpen(true)}
-          className="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 focus:opacity-80 focus:scale-95"
-        >
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>menu</span>
-        </button>
+    <header className={`fixed w-full z-40 bg-background/95 backdrop-blur-sm border-b-2 border-outline-variant transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+      <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
         <Link href="/" className="flex items-center gap-4 group">
-          <Image src="/LOGO 2.png" alt="El Metal Es Vida Logo" width={56} height={56} className="rounded-full border-2 border-outline-variant/30 group-hover:border-primary transition-colors" />
-          <span className="font-logo text-3xl md:text-4xl uppercase tracking-widest text-on-surface dark:text-on-surface font-normal hidden sm:inline-block">
-            EL METAL ES VIDA
-          </span>
+          <Image src="/LOGO 2.png" alt="EL METAL ES VIDA Logo" width={40} height={40} className="w-10 h-auto" />
+          <span className="text-headline-lg-mobile md:text-headline-lg font-headline-lg uppercase tracking-tighter text-primary">EL METAL ES VIDA</span>
         </Link>
-        <button className="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 focus:opacity-80 focus:scale-95 font-label-sm text-label-sm uppercase">
-          ÚNETE
-        </button>
-      </header>
-
-      <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
-    </>
+        <div className="flex items-center gap-6">
+          <button className="text-on-surface-variant hover:text-primary transition-colors duration-200 hidden md:block">
+            <span className="material-symbols-outlined text-3xl">account_circle</span>
+          </button>
+          <button onClick={onOpenMenu} className="text-on-surface-variant hover:text-primary transition-colors duration-200 flex items-center gap-2 group">
+            <span className="font-label-technical text-label-technical uppercase hidden md:inline-block group-hover:text-primary">Archivo</span>
+            <span className="material-symbols-outlined text-3xl">menu</span>
+          </button>
+        </div>
+      </div>
+    </header>
   );
 }
