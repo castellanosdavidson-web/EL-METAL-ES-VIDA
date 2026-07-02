@@ -56,10 +56,15 @@ export default function EnciclopediaPage() {
             <div className="p-4 flex flex-col gap-2 border-t border-outline-variant/30 bg-surface-container-lowest relative z-20">
               <h2 className="font-headline-md text-headline-md text-on-surface leading-tight group-hover:text-primary transition-colors">{post.title}</h2>
               <p className="font-body-md text-body-md text-on-surface-variant text-sm">{post.desc}</p>
-              <div className="mt-2 flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase opacity-80 group-hover:opacity-100">
+              <a 
+                href={`/posts/${post.img}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="mt-2 flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase opacity-80 group-hover:opacity-100 cursor-pointer"
+              >
                 <span>Ver Registro</span>
                 <span className="material-symbols-outlined text-[16px] transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </div>
+              </a>
             </div>
           </article>
         ))}
