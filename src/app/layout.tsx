@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, JetBrains_Mono } from "next/font/google";
+import { Inter, Playfair_Display, JetBrains_Mono, Metal_Mania } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -23,6 +23,13 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
+const metalMania = Metal_Mania({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-metal",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "EL METAL ES VIDA - Cultura Extrema",
   description: "El medio definitivo de cultura extrema.",
@@ -36,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${inter.variable} ${playfair.variable} ${jetbrains.variable} dark`}
+      className={`${inter.variable} ${playfair.variable} ${jetbrains.variable} ${metalMania.variable} dark`}
     >
       <head>
         <link

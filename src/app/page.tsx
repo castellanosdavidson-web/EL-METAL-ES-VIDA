@@ -33,10 +33,11 @@ export default function Home() {
         ></div>
         <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center text-center gap-stack-loose">
           <div className="glass-panel p-stack-loose rounded w-full border border-outline-variant/50">
-            <h1 className="font-display-lg text-display-lg text-on-surface uppercase mb-stack-tight">
-              No es ruido. <span className="text-primary-container block mt-2">Es historia, ciencia y hermandad.</span>
+            <h1 className="font-logo text-display-lg text-on-surface uppercase mb-stack-tight">
+              <span className="fire-text font-bold text-5xl md:text-6xl">No es ruido.</span>
+              <span className="text-primary-container block mt-4 font-headline-lg font-bold">Es historia, ciencia y hermandad.</span>
             </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mt-6">
               El medio definitivo de cultura extrema. Archivos técnicos, análisis clínicos y documentales para la legión.
             </p>
           </div>
@@ -45,6 +46,69 @@ export default function Home() {
         <div className="absolute bottom-stack-loose left-1/2 transform -translate-x-1/2 text-on-surface-variant flex flex-col items-center gap-2">
           <span className="font-mono-technical text-mono-technical uppercase tracking-widest text-[10px]">DESCENDER</span>
           <span className="material-symbols-outlined animate-bounce">arrow_downward</span>
+        </div>
+      </section>
+
+      {/* Latest Documentals */}
+      <section className="py-margin-desktop px-margin-mobile bg-surface relative overflow-hidden">
+        {/* Background glow for articles section */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-container/5 via-surface to-surface pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex justify-between items-end mb-stack-loose border-b border-outline-variant/20 pb-4">
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary text-3xl animate-pulse">local_fire_department</span>
+              Archivos Recientes
+            </h2>
+            <Link className="font-label-sm text-label-sm text-primary hover:text-on-surface transition-colors flex items-center gap-1 group" href="/enciclopedia">
+              VER TODOS <span className="material-symbols-outlined text-sm transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </Link>
+          </div>
+          
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <span className="font-mono-technical text-primary animate-pulse uppercase">Cargando base de datos...</span>
+            </div>
+          ) : recentArticles.length === 0 ? (
+            <div className="flex justify-center py-20 text-on-surface-variant font-mono-technical uppercase">
+              No hay archivos subidos todavía. Usa /admin.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {recentArticles.map((article: any, index: number) => (
+                <article 
+                  key={article.id} 
+                  className={`technical-border rounded-lg flex flex-col group cursor-pointer hover:border-primary transition-all duration-500 bg-surface-container-low relative overflow-hidden shadow-lg hover:shadow-primary/20 transform hover:-translate-y-2 ${index === 2 ? 'md:col-span-2 lg:col-span-1' : ''}`}
+                >
+                  <div className="h-56 w-full bg-surface-container relative overflow-hidden">
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1 mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal" style={{ backgroundImage: `url('${article.imageUrl}')` }}></div>
+                    {/* Glowing overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-100"></div>
+                    
+                    <div className="absolute top-3 left-3 bg-primary/90 px-3 py-1 text-on-primary font-label-sm text-[10px] uppercase flex items-center gap-1 backdrop-blur-md rounded shadow-md transform -translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                      <span className="material-symbols-outlined text-[14px]">visibility</span> EXPLORAR
+                    </div>
+                  </div>
+                  <div className="p-6 flex flex-col flex-grow bg-surface-container-low border-t border-outline-variant/30 relative z-10">
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                        <span className="font-mono-technical text-primary uppercase text-[11px] tracking-widest">{article.category}</span>
+                      </div>
+                      <div className="text-on-surface-variant font-label-sm text-[10px] flex items-center gap-1 opacity-70">
+                        <span className="material-symbols-outlined text-[12px]">timer</span> {article.readTime || '5 MIN'}
+                      </div>
+                    </div>
+                    <h3 className="font-headline-md text-2xl text-on-surface group-hover:text-primary transition-colors leading-tight">{article.title}</h3>
+                    <p className="font-body-md text-on-surface-variant mt-3 text-sm line-clamp-3 opacity-80 group-hover:opacity-100 transition-opacity">
+                      {article.desc}
+                    </p>
+                  </div>
+                  {/* Bottom animated border line */}
+                  <div className="h-1 w-0 bg-primary absolute bottom-0 left-0 group-hover:w-full transition-all duration-500 ease-out"></div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -69,48 +133,6 @@ export default function Home() {
             </button>
             <p className="font-label-sm text-label-sm text-on-surface-variant text-center opacity-70">Acceso inmediato. Sin spam comercial.</p>
           </form>
-        </div>
-      </section>
-
-      {/* Latest Documentals */}
-      <section className="py-margin-desktop px-margin-mobile bg-surface">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-stack-loose border-b border-outline-variant/20 pb-4">
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase">Archivos Recientes</h2>
-            <Link className="font-label-sm text-label-sm text-primary hover:text-on-surface transition-colors flex items-center gap-1" href="/enciclopedia">
-              VER TODOS <span className="material-symbols-outlined text-sm">arrow_forward</span>
-            </Link>
-          </div>
-          
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <span className="font-mono-technical text-primary animate-pulse uppercase">Cargando base de datos...</span>
-            </div>
-          ) : recentArticles.length === 0 ? (
-            <div className="flex justify-center py-20 text-on-surface-variant font-mono-technical uppercase">
-              No hay archivos subidos todavía. Usa /admin.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-masonry-gap">
-              {recentArticles.map((article: any, index: number) => (
-                <article key={article.id} className={`technical-border rounded-none flex flex-col group cursor-pointer hover:border-primary-container transition-colors bg-transparent relative overflow-hidden ${index === 2 ? 'md:col-span-2 lg:col-span-1' : ''}`}>
-                  <div className="h-48 w-full bg-surface-container relative overflow-hidden">
-                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${article.imageUrl}')` }}></div>
-                    <div className="absolute top-2 left-2 bg-surface px-2 py-1 technical-border text-on-surface font-label-sm text-label-sm uppercase flex items-center gap-1 backdrop-blur-md bg-opacity-80">
-                      <span className="material-symbols-outlined text-[14px]">timer</span> {article.readTime}
-                    </div>
-                  </div>
-                  <div className="p-4 flex flex-col flex-grow bg-surface-container-low">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="w-2 h-2 bg-primary-container rounded-full"></span>
-                      <span className="font-mono-technical text-mono-technical text-on-surface-variant uppercase text-[10px]">{article.category}</span>
-                    </div>
-                    <h3 className="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors leading-tight">{article.title}</h3>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 

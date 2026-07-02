@@ -16,9 +16,9 @@ export default function Header() {
         >
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>menu</span>
         </button>
-        <Link href="/" className="flex items-center gap-3 group">
-          <Image src="/LOGO 2.png" alt="El Metal Es Vida Logo" width={44} height={44} className="rounded-full border-2 border-outline-variant/30 group-hover:border-primary transition-colors" />
-          <span className="font-headline-md-mobile text-headline-md-mobile uppercase tracking-widest text-on-surface dark:text-on-surface font-bold hidden sm:inline-block">
+        <Link href="/" className="flex items-center gap-4 group">
+          <Image src="/LOGO 2.png" alt="El Metal Es Vida Logo" width={56} height={56} className="rounded-full border-2 border-outline-variant/30 group-hover:border-primary transition-colors" />
+          <span className="font-logo text-3xl md:text-4xl uppercase tracking-widest text-on-surface dark:text-on-surface font-normal hidden sm:inline-block">
             EL METAL ES VIDA
           </span>
         </Link>
