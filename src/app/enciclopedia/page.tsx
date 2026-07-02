@@ -2,6 +2,8 @@ import React from 'react';
 import Image from 'next/image';
 import { getServiceSupabase } from '@/utils/supabase';
 
+export const dynamic = 'force-dynamic';
+
 // Removemos los POSTS hardcodeados
 
 export default async function EnciclopediaPage() {
