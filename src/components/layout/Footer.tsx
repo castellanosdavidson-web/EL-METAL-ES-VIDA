@@ -1,22 +1,33 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function Footer() {
   return (
-    <footer className="bg-surface-container-lowest dark:bg-surface-container-lowest w-full py-stack-loose px-margin-mobile border-t border-outline-variant/20 grid grid-cols-1 md:grid-cols-2 gap-gutter max-w-7xl mx-auto">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <Image src="/LOGO 2.png" alt="El Metal Es Vida Logo" width={32} height={32} className="rounded-full grayscale opacity-80" />
-          <div className="font-headline-md-mobile text-headline-md-mobile font-bold text-on-surface">EL METAL ES VIDA</div>
+    <footer className="border-t border-outline-variant/30 py-8 mt-10">
+      <div className="max-w-6xl mx-auto px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="flex flex-col gap-2">
+          <h2 className="font-logo text-2xl uppercase text-on-surface">EL METAL ES VIDA</h2>
+          <p className="font-mono-technical text-[10px] text-on-surface-variant uppercase tracking-widest">
+            © 2024 EL METAL ES VIDA - ARCHIVAL DIVISION
+          </p>
         </div>
-        <p className="font-body-md text-body-md text-on-surface-variant">© 2024 EL METAL ES VIDA. REGISTRO TÉCNICO NO. 666.</p>
-      </div>
-      <div className="flex flex-wrap gap-4 md:justify-end items-end">
-        <Link className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors focus:ring-1 focus:ring-primary focus:outline-none" href="#">BOLETÍN</Link>
-        <Link className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors focus:ring-1 focus:ring-primary focus:outline-none" href="#">AVISO LEGAL</Link>
-        <Link className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors focus:ring-1 focus:ring-primary focus:outline-none" href="#">TERMINOLOGÍA</Link>
-        <Link className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors focus:ring-1 focus:ring-primary focus:outline-none" href="#">CONTACTO</Link>
+        
+        <div className="flex items-center gap-8">
+          <nav className="flex gap-6 font-mono-technical text-[10px] uppercase tracking-widest text-on-surface">
+            <Link href="#" className="hover:text-primary transition-colors">Manifesto</Link>
+            <Link href="#" className="hover:text-primary transition-colors">Terms of Service</Link>
+            <Link href="#" className="hover:text-primary transition-colors">Death Protocol</Link>
+          </nav>
+          
+          <div className="flex gap-3">
+            <button className="w-8 h-8 border border-outline-variant/50 flex items-center justify-center text-on-surface hover:text-primary hover:border-primary transition-colors">
+              <span className="material-symbols-outlined text-sm">share</span>
+            </button>
+            <button className="w-8 h-8 border border-outline-variant/50 flex items-center justify-center text-on-surface hover:text-primary hover:border-primary transition-colors">
+              <span className="material-symbols-outlined text-sm">rss_feed</span>
+            </button>
+          </div>
+        </div>
       </div>
     </footer>
   );
