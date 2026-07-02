@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [featuredArticles, setFeaturedArticles] = useState<any[]>([]);
-  const [recentLogs, setRecentLogs] = useState<any[]>([]);
+  const [recentArticles, setRecentArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -12,10 +11,8 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
-          // Top 3 as featured
-          setFeaturedArticles(data.slice(0, 3));
-          // Next 3 as recent logs
-          setRecentLogs(data.slice(3, 6));
+          // Tomamos solo los últimos 3 para el home
+          setRecentArticles(data.slice(0, 3));
         }
       })
       .catch(console.error)
@@ -23,146 +20,139 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="pt-20 pb-32 max-w-6xl mx-auto px-8">
+    <main className="pt-16 pb-32">
       {/* Hero Section */}
-      <section className="relative w-full flex flex-col items-center justify-center py-20 border-b border-outline-variant/30 mb-16">
-        <div className="relative z-10 w-full flex flex-col items-center text-center gap-8">
-          <h1 className="font-logo text-5xl md:text-7xl lg:text-[80px] text-on-surface uppercase leading-none tracking-tight">
-            NO ES RUIDO.<br />
-            ES HISTORIA,<br />
-            CIENCIA Y<br />
-            HERMANDAD.
-          </h1>
-          <div className="flex flex-col items-center gap-2 mt-8 text-on-surface-variant">
-            <span className="font-mono-technical text-xs tracking-[0.3em] uppercase">DESCENDER</span>
-            <span className="material-symbols-outlined text-primary animate-bounce">expand_more</span>
+      <section className="relative h-[751px] w-full flex items-center justify-center px-margin-mobile technical-border border-x-0 border-t-0 border-b">
+        {/* Background Image Placeholder */}
+        <div
+          className="absolute inset-0 z-0 bg-cover bg-center"
+          style={{
+            backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDzzXYbLNfUwFe0rnCghdCmLKKjtva8Fq3rdZBp22AfU4qYkhh5Pdi0sxfeIBZf_AN_1mmSa1JpXkxJEmslKWjfe7BHmIOXeCBWBgikSkWH4UsTXbI_BMBu5vXZZ2qwdodehSzWzRP_pkr7--jpJg889qdXk8ewhLsJsRxeVhs0VsIysGYJeM3uJKV39zQUadu1dZ70bI_96ennxOBuSZoGhebj8-xVpSL2sV5HixBuDA355w16wHbmJZRijivOc8MmFmCkStEliA')",
+            opacity: 0.3
+          }}
+        ></div>
+        <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center text-center gap-stack-loose">
+          <div className="glass-panel p-stack-loose rounded w-full border border-outline-variant/50">
+            <h1 className="font-logo text-display-lg text-on-surface uppercase mb-stack-tight">
+              <span className="fire-text font-bold text-5xl md:text-6xl">No es ruido.</span>
+              <span className="text-primary-container block mt-4 font-headline-lg font-bold">Es historia, ciencia y hermandad.</span>
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mt-6">
+              El medio definitivo de cultura extrema. Archivos técnicos, análisis clínicos y documentales para la legión.
+            </p>
           </div>
+        </div>
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-stack-loose left-1/2 transform -translate-x-1/2 text-on-surface-variant flex flex-col items-center gap-2">
+          <span className="font-mono-technical text-mono-technical uppercase tracking-widest text-[10px]">DESCENDER</span>
+          <span className="material-symbols-outlined animate-bounce">arrow_downward</span>
         </div>
       </section>
 
-      {/* Featured Expedientes */}
-      <section className="mb-20">
-        <div className="flex items-center gap-4 mb-8">
-          <h2 className="font-logo text-3xl text-primary-container uppercase tracking-widest">EXPEDIENTES DESTACADOS</h2>
-          <div className="flex-1 h-[1px] bg-outline-variant/30 relative">
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1">
-              <div className="w-4 h-1.5 bg-primary"></div>
-              <div className="w-1.5 h-1.5 bg-outline-variant"></div>
+      {/* Latest Documentals */}
+      <section className="py-margin-desktop px-margin-mobile bg-surface relative overflow-hidden">
+        {/* Background glow for articles section */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-container/5 via-surface to-surface pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex justify-between items-end mb-stack-loose border-b border-outline-variant/20 pb-4">
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary text-3xl animate-pulse">local_fire_department</span>
+              Archivos Recientes
+            </h2>
+            <Link className="font-label-sm text-label-sm text-primary hover:text-on-surface transition-colors flex items-center gap-1 group" href="/enciclopedia">
+              VER TODOS <span className="material-symbols-outlined text-sm transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </Link>
+          </div>
+          
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <span className="font-mono-technical text-primary animate-pulse uppercase">Cargando base de datos...</span>
+            </div>
+          ) : recentArticles.length === 0 ? (
+            <div className="flex justify-center py-20 text-on-surface-variant font-mono-technical uppercase">
+              No hay archivos subidos todavía. Usa /admin.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {recentArticles.map((article: any, index: number) => (
+                <article 
+                  key={article.id} 
+                  className={`technical-border rounded-lg flex flex-col group cursor-pointer hover:border-primary transition-all duration-500 bg-surface-container-low relative overflow-hidden shadow-lg hover:shadow-primary/20 transform hover:-translate-y-2 ${index === 2 ? 'md:col-span-2 lg:col-span-1' : ''}`}
+                >
+                  <div className="h-56 w-full bg-surface-container relative overflow-hidden">
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1 mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal" style={{ backgroundImage: `url('${article.imageUrl}')` }}></div>
+                    {/* Glowing overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-100"></div>
+                    
+                    <div className="absolute top-3 left-3 bg-primary/90 px-3 py-1 text-on-primary font-label-sm text-[10px] uppercase flex items-center gap-1 backdrop-blur-md rounded shadow-md transform -translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                      <span className="material-symbols-outlined text-[14px]">visibility</span> EXPLORAR
+                    </div>
+                  </div>
+                  <div className="p-6 flex flex-col flex-grow bg-surface-container-low border-t border-outline-variant/30 relative z-10">
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                        <span className="font-mono-technical text-primary uppercase text-[11px] tracking-widest">{article.category}</span>
+                      </div>
+                      <div className="text-on-surface-variant font-label-sm text-[10px] flex items-center gap-1 opacity-70">
+                        <span className="material-symbols-outlined text-[12px]">timer</span> {article.readTime || '5 MIN'}
+                      </div>
+                    </div>
+                    <h3 className="font-headline-md text-2xl text-on-surface group-hover:text-primary transition-colors leading-tight">{article.title}</h3>
+                    <p className="font-body-md text-on-surface-variant mt-3 text-sm line-clamp-3 opacity-80 group-hover:opacity-100 transition-opacity">
+                      {article.desc}
+                    </p>
+                  </div>
+                  {/* Bottom animated border line */}
+                  <div className="h-1 w-0 bg-primary absolute bottom-0 left-0 group-hover:w-full transition-all duration-500 ease-out"></div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Lead Magnet Section */}
+      <section className="py-margin-desktop px-margin-mobile bg-surface-container-low border-b border-outline-variant/20 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="max-w-xl mx-auto flex flex-col gap-stack-loose relative z-10">
+          <div className="flex items-start gap-4">
+            <span className="material-symbols-outlined text-primary-container text-4xl">book_5</span>
+            <div>
+              <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Desbloquea el Archivo</h2>
+              <p className="font-body-md text-body-md text-on-surface-variant">Descarga la guía: 'La Anatomía del Riff'. Un análisis forense de la composición extrema.</p>
             </div>
           </div>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center py-10">
-            <span className="font-mono-technical text-primary animate-pulse">CARGANDO ARCHIVOS...</span>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredArticles.map((article: any) => (
-              <div key={article.id} className="group cursor-pointer flex flex-col gap-4 border border-outline-variant/20 bg-surface-container-low p-4 relative overflow-hidden hover:border-primary/50 transition-colors">
-                <div className="h-48 w-full relative overflow-hidden bg-background">
-                  <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" style={{ backgroundImage: `url('${article.imageUrl}')` }}></div>
-                  <div className="absolute top-2 left-2 bg-primary px-2 py-0.5 text-on-primary font-mono-technical text-[10px] uppercase tracking-widest">
-                    {article.category || 'ARCHIVO'}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-headline-md text-xl text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors uppercase">{article.title}</h3>
-                  <p className="font-body-md text-sm text-on-surface-variant line-clamp-2 mb-4">{article.desc}</p>
-                  <div className="flex justify-between items-center font-mono-technical text-[10px] uppercase tracking-widest text-on-surface-variant border-t border-outline-variant/20 pt-3">
-                    <div className="flex flex-col">
-                      <span>RANK:</span>
-                      <span className="text-primary-container">GOLD</span>
-                    </div>
-                    <div className="flex flex-col text-right">
-                      <span>12 MIN</span>
-                      <span>READ</span>
-                    </div>
-                  </div>
-                </div>
-                {/* Bottom line */}
-                <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-primary group-hover:w-full transition-all duration-500"></div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Recent Logs */}
-      <section className="mb-20">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-12 h-[1px] bg-primary"></div>
-          <h2 className="font-logo text-3xl text-on-surface uppercase tracking-widest">LOGS RECIENTES</h2>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center py-10">
-            <span className="font-mono-technical text-primary animate-pulse">CARGANDO LOGS...</span>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {recentLogs.map((log: any, i: number) => {
-              const ranks = ['COMMON', 'ELITE', 'RARE'];
-              const rank = ranks[i % ranks.length];
-              return (
-                <div key={log.id} className="flex items-center justify-between p-6 bg-surface-container-low border border-outline-variant/20 hover:border-primary/30 transition-colors group">
-                  <div className="flex flex-col gap-1">
-                    <span className="font-mono-technical text-[10px] text-on-surface-variant uppercase tracking-widest">LOG #2024.08.{12 - i}</span>
-                    <h3 className="font-headline-md text-lg text-on-surface uppercase group-hover:text-primary transition-colors">{log.title}</h3>
-                  </div>
-                  <div className="flex items-center gap-8">
-                    <div className="flex flex-col text-right font-mono-technical text-[10px] uppercase tracking-widest">
-                      <span className="text-on-surface-variant">TIME</span>
-                      <span className="text-on-surface">{log.readTime || '03:45'}</span>
-                    </div>
-                    <div className="flex flex-col text-right font-mono-technical text-[10px] uppercase tracking-widest">
-                      <span className="text-on-surface-variant">RANK</span>
-                      <span className={`${rank === 'ELITE' ? 'text-primary' : 'text-primary-container'}`}>{rank}</span>
-                    </div>
-                    <button className="w-10 h-10 bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors border border-outline-variant/30">
-                      <span className="material-symbols-outlined text-sm">chevron_right</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        <div className="flex justify-center mt-8">
-          <button className="font-mono-technical text-[10px] uppercase tracking-widest text-on-surface-variant border border-outline-variant/50 px-6 py-3 hover:bg-surface-container-low hover:text-on-surface transition-colors">
-            CARGAR ARCHIVOS ANTIGUOS
-          </button>
+          <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+            <div className="relative">
+              <input className="w-full bg-surface-container border-b-2 border-outline-variant focus:border-primary-container focus:ring-0 text-on-surface font-mono-technical text-mono-technical py-4 px-4 transition-colors placeholder-on-surface-variant/50" placeholder="TU CORREO ELECTRÓNICO" required type="email" />
+            </div>
+            <button className="w-full bg-primary-container text-[#F5F5F5] font-mono-technical text-mono-technical uppercase py-4 px-6 hover:bg-[#A00000] transition-colors cta-double-border text-center flex items-center justify-center gap-2 group" type="submit">
+              DESCARGAR AHORA
+              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">download</span>
+            </button>
+            <p className="font-label-sm text-label-sm text-on-surface-variant text-center opacity-70">Acceso inmediato. Sin spam comercial.</p>
+          </form>
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="py-16 border-t border-b border-outline-variant/20 flex flex-col items-center text-center mt-20 relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-[1px] bg-primary"></div>
-        <h2 className="font-logo text-5xl text-on-surface uppercase mb-6">ÚNETE A LA<br/>HERMANDAD</h2>
-        <p className="font-body-md text-sm text-on-surface-variant max-w-md mb-8">
-          Recibe manifiestos técnicos, diagramas de circuitos y protocolos de combate directamente en tu terminal. Sin spam, solo acero.
-        </p>
-        
-        <form className="flex flex-col sm:flex-row w-full max-w-lg gap-4" onSubmit={e => e.preventDefault()}>
-          <div className="relative flex-1">
-            <span className="absolute -top-2 left-4 bg-background px-1 font-mono-technical text-[8px] text-on-surface-variant tracking-widest uppercase">
-              IDENTIFICADOR EMAIL
-            </span>
-            <input 
-              type="email" 
-              placeholder="user@system.com" 
-              className="w-full bg-surface-container-low border border-outline-variant/50 focus:border-primary px-4 py-3 font-mono-technical text-sm text-on-surface outline-none transition-colors"
-            />
+      {/* Social Proof Section */}
+      <section className="py-margin-desktop px-margin-mobile bg-surface-container border-y border-outline-variant/20">
+        <div className="max-w-3xl mx-auto text-center flex flex-col items-center gap-stack-tight">
+          <span className="material-symbols-outlined text-4xl text-primary-container mb-2">groups</span>
+          <h3 className="font-headline-md text-headline-md text-on-surface uppercase">Una legión de +10.000 cabezas</h3>
+          <p className="font-mono-technical text-mono-technical text-on-surface-variant uppercase tracking-widest mb-stack-loose">Operando en toda Latinoamérica</p>
+          <div className="flex gap-4">
+            <Link className="w-12 h-12 flex items-center justify-center technical-border rounded-none text-on-surface-variant hover:text-primary hover:border-primary transition-all" href="#">
+              <span className="font-label-sm text-label-sm font-bold">IG</span>
+            </Link>
+            <Link className="w-12 h-12 flex items-center justify-center technical-border rounded-none text-on-surface-variant hover:text-primary hover:border-primary transition-all" href="#">
+              <span className="font-label-sm text-label-sm font-bold">YT</span>
+            </Link>
+            <Link className="w-12 h-12 flex items-center justify-center technical-border rounded-none text-on-surface-variant hover:text-primary hover:border-primary transition-all" href="#">
+              <span className="font-label-sm text-label-sm font-bold">DC</span>
+            </Link>
           </div>
-          <button type="submit" className="bg-primary hover:bg-[#800000] text-on-primary font-mono-technical text-xs uppercase tracking-widest px-8 py-3 transition-colors border border-[#ff0000]/30 shadow-[0_0_15px_rgba(138,3,3,0.4)]">
-            ENLISTARSE
-          </button>
-        </form>
-        
-        <div className="flex items-center gap-2 mt-8 text-on-surface-variant/50 font-mono-technical text-[9px] uppercase tracking-widest">
-          <span className="material-symbols-outlined text-[12px]">security</span>
-          TRANSMISIÓN ENCRIPTADA BAJO PROTOCOLO ALPHA-9
         </div>
       </section>
     </main>
