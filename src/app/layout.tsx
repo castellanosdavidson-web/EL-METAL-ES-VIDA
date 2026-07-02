@@ -3,6 +3,7 @@ import { Inter, Playfair_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,9 +45,9 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-background text-on-background antialiased selection:bg-primary-container selection:text-on-primary-container">
-        <Header />
-        {children}
-        <Footer />
+        <LayoutWrapper>
+          {children}
+        </LayoutWrapper>
       </body>
     </html>
   );
