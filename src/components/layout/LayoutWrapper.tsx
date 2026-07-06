@@ -4,7 +4,9 @@ import { usePathname } from 'next/navigation';
 import Header from './Header';
 import Footer from './Footer';
 import NavigationDrawer from './NavigationDrawer';
-import GlobalRadio from './GlobalRadio';
+import dynamic from 'next/dynamic';
+
+const GlobalRadio = dynamic(() => import('./GlobalRadio'), { ssr: false });
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

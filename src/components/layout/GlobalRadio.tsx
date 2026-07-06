@@ -1,39 +1,152 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
+import IcecastMetadataPlayer from 'icecast-metadata-player';
+
+const STATIONS = [
+  { id: 'rockantenne', name: 'Rock Antenne Heavy (General)', url: 'https://stream.rockantenne.de/heavy-metal/stream/mp3' },
+  { id: 'fluxfm', name: 'FluxFM Metal (Alternativo)', url: 'http://channels.fluxfm.de/metal-fm/stream.mp3' },
+  { id: 'metalmeyhem', name: 'Metal Meyhem Radio', url: 'https://s3.radio.co/s23fcff1bd/listen' },
+  { id: 'chronix', name: 'ChroniX Radio (Aggression)', url: 'http://chronix.streamerr.co:8040/stream' }
+];
 
 export default function GlobalRadio() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
+  const [currentStationIdx, setCurrentStationIdx] = useState(0);
+  const [nowPlaying, setNowPlaying] = useState<string>('CONECTANDO AL SATÉLITE...');
   const [hasInteracted, setHasInteracted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const playerRef = useRef<IcecastMetadataPlayer | null>(null);
+  const audioFallbackRef = useRef<HTMLAudioElement | null>(null);
+  const [isCORSBlocked, setIsCORSBlocked] = useState(false);
 
-  // You can change this URL to any other valid icecast/shoutcast metal stream
-  const STREAM_URL = "https://stream.rockantenne.de/heavy-metal/stream/mp3";
-
+  // Initialize the player
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
+    // Stop previous if exists
+    if (playerRef.current) {
+      playerRef.current.stop();
+      playerRef.current = null;
+    }
+    
+    setIsCORSBlocked(false);
+    setNowPlaying('CONECTANDO...');
+
+    try {
+      const player = new IcecastMetadataPlayer(STATIONS[currentStationIdx].url, {
+        onMetadata: (metadata: any) => {
+          if (metadata && metadata.StreamTitle) {
+            setNowPlaying(metadata.StreamTitle);
+          } else {
+            setNowPlaying('TRANSMITIENDO SEÑAL');
+          }
+        },
+        onPlay: () => {
+          setIsPlaying(true);
+        },
+        onStop: () => {
+          setIsPlaying(false);
+          setNowPlaying('RADIO DESCONECTADA');
+        },
+        onError: (message: string, err?: Error) => {
+          console.error("Icecast Error (posible bloqueo CORS):", err);
+          setIsCORSBlocked(true);
+          setNowPlaying('INFORMACIÓN OCULTA (CORS)');
+          
+          // Fallback a HTML5 Audio
+          if (audioFallbackRef.current) {
+             if (isPlaying) {
+               audioFallbackRef.current.play().catch(console.error);
+             }
+          }
+        }
+      });
+      
+      player.audioElement.volume = volume;
+      playerRef.current = player;
+      
+      // If we were already playing, play the new station
+      if (isPlaying) {
+        player.play();
+      }
+
+    } catch (error) {
+      console.error("Error creating player:", error);
+    }
+
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.stop();
+      }
+    };
+  }, [currentStationIdx]); // Re-run when station changes
+
+  // Update volume
+  useEffect(() => {
+    if (playerRef.current) {
+      playerRef.current.audioElement.volume = volume;
+    }
+    if (audioFallbackRef.current) {
+      audioFallbackRef.current.volume = volume;
     }
   }, [volume]);
 
+  // Global Interaction Autoplay
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (!hasInteracted && !isPlaying) {
+        setHasInteracted(true);
+        if (!isCORSBlocked && playerRef.current) {
+          playerRef.current.play();
+        } else if (isCORSBlocked && audioFallbackRef.current) {
+          audioFallbackRef.current.play().catch(console.error);
+        }
+      }
+      // Clean up after first interaction
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('keydown', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+
+    return () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, [hasInteracted, isPlaying, isCORSBlocked]);
+
   const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-          setHasInteracted(true);
-        }).catch((e) => {
-          console.error("Autoplay prevented or stream error:", e);
-        });
+    setHasInteracted(true);
+    
+    if (isPlaying) {
+      if (!isCORSBlocked && playerRef.current) playerRef.current.stop();
+      if (isCORSBlocked && audioFallbackRef.current) audioFallbackRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      if (!isCORSBlocked && playerRef.current) {
+        playerRef.current.play();
+      } else if (isCORSBlocked && audioFallbackRef.current) {
+        audioFallbackRef.current.play().catch(console.error);
+        setIsPlaying(true);
       }
     }
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 group">
+      
+      {/* HTML5 Fallback Player in case CORS blocks the JS fetch */}
+      <audio 
+        ref={audioFallbackRef} 
+        src={STATIONS[currentStationIdx].url} 
+        preload="none" 
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
+
       {/* Visualizer effect when playing */}
       {isPlaying && (
         <div className="flex items-end gap-1 px-2 h-6 opacity-80">
@@ -44,27 +157,40 @@ export default function GlobalRadio() {
         </div>
       )}
       
-      <div className="bg-surface-container-high border border-outline-variant p-3 shadow-lg shadow-black/50 backdrop-blur-md flex flex-col gap-3 min-w-[220px] transform transition-transform group-hover:scale-105">
-        <audio ref={audioRef} src={STREAM_URL} preload="none" />
+      <div className="bg-surface-container-high border border-outline-variant p-3 shadow-lg shadow-black/50 backdrop-blur-md flex flex-col gap-3 min-w-[280px] max-w-[320px] transform transition-transform group-hover:scale-105">
         
         <div className="flex justify-between items-center border-b border-outline-variant pb-2">
           <span className="font-label-technical text-[10px] text-primary tracking-widest uppercase">
-            {isPlaying ? 'TRANSMITIENDO...' : 'RADIO DESCONECTADA'}
+            {isPlaying ? 'TRANSMISIÓN ACTIVA' : 'RADIO DESCONECTADA'}
           </span>
-          <span className="material-symbols-outlined text-sm text-on-surface-variant animate-pulse">
+          <span className={`material-symbols-outlined text-sm ${isPlaying ? 'text-primary animate-pulse' : 'text-on-surface-variant'}`}>
             radio
           </span>
         </div>
         
-        <div className="flex flex-col gap-1">
-          <span className="font-headline-lg text-sm uppercase text-on-surface">Rock Antenne Heavy</span>
-          <span className="font-label-technical text-[9px] text-on-surface-variant uppercase">Señal Pública 192kbps</span>
+        {/* Station Selector */}
+        <select 
+          className="w-full bg-surface border border-outline-variant text-on-surface font-label-technical text-[11px] uppercase p-2 outline-none focus:border-primary cursor-pointer"
+          value={currentStationIdx}
+          onChange={(e) => setCurrentStationIdx(Number(e.target.value))}
+        >
+          {STATIONS.map((station, idx) => (
+            <option key={station.id} value={idx}>{station.name}</option>
+          ))}
+        </select>
+        
+        {/* Now Playing Metadata */}
+        <div className="flex flex-col gap-1 bg-surface-container-lowest p-2 border-l-2 border-primary">
+          <span className="font-label-technical text-[8px] text-on-surface-variant tracking-widest uppercase">SONANDO AHORA:</span>
+          <span className="font-body-md text-sm text-on-surface leading-tight glitch-hover truncate" title={nowPlaying}>
+            {nowPlaying}
+          </span>
         </div>
 
         <div className="flex items-center gap-4 mt-1">
           <button 
             onClick={togglePlay}
-            className="w-10 h-10 bg-primary-container text-white flex items-center justify-center hover:bg-background hover:text-primary transition-colors border border-primary-container"
+            className="w-12 h-10 bg-primary-container text-white flex items-center justify-center hover:bg-background hover:text-primary transition-colors border border-primary-container"
           >
             <span className="material-symbols-outlined">
               {isPlaying ? 'stop' : 'play_arrow'}
