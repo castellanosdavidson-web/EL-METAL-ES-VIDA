@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabase';
 
 export default function AdminDashboard() {
   const [articles, setArticles] = useState<any[]>([]);
@@ -33,8 +34,13 @@ export default function AdminDashboard() {
     const formData = new FormData(form);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+
       const response = await fetch('/api/articles', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session?.access_token}`
+        },
         body: formData,
       });
 
@@ -174,11 +180,6 @@ export default function AdminDashboard() {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Clave de Acceso</label>
-                <input type="password" name="password" required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" placeholder="Contraseña de admin" />
-              </div>
-
               <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Título del Artículo</label>
                 <input type="text" name="title" required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-headline-md" placeholder="Ej: Mecánica del Blast Beat" />

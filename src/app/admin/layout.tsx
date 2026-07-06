@@ -1,10 +1,41 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { supabase } from '@/utils/supabase';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [sessionUser, setSessionUser] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session && pathname !== '/admin/login') {
+        router.push('/admin/login');
+      } else {
+        setSessionUser(session?.user);
+        setLoading(false);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session && pathname !== '/admin/login') {
+        router.push('/admin/login');
+      } else {
+        setSessionUser(session?.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [pathname, router]);
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    router.push('/');
+  };
 
   const getLinkClass = (path: string) => {
     const isActive = pathname === path;
@@ -13,6 +44,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     return "flex items-center gap-stack-tight text-on-surface-variant hover:bg-surface-variant/30 px-4 py-3 border-l-4 border-transparent hover:text-primary transition-all";
   };
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
+  if (loading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center text-primary font-mono-technical animate-pulse">VERIFICANDO_ACCESO...</div>;
+  }
 
   return (
     <div className="bg-background min-h-screen text-on-surface font-body-md overflow-x-hidden flex">
@@ -57,10 +96,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         </nav>
         <div className="mt-auto border-t border-outline-variant/10 p-gutter flex flex-col gap-base">
-          <a className="flex items-center gap-stack-tight text-on-surface-variant hover:text-error px-2 py-1 font-label-sm text-label-sm uppercase transition-all mb-4" href="/">
+          <button onClick={handleLogout} className="flex items-center gap-stack-tight text-on-surface-variant hover:text-error px-2 py-1 font-label-sm text-label-sm uppercase transition-all mb-4">
             <span className="material-symbols-outlined">logout</span>
             Salir al Inicio
-          </a>
+          </button>
         </div>
       </aside>
 

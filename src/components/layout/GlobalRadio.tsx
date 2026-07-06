@@ -14,6 +14,7 @@ export default function GlobalRadio() {
   const [currentStationIdx, setCurrentStationIdx] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -71,7 +72,8 @@ export default function GlobalRadio() {
     };
   }, [hasInteracted, isPlaying]);
 
-  const togglePlay = () => {
+  const togglePlay = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setHasInteracted(true);
     if (!audioRef.current) return;
     
@@ -91,7 +93,7 @@ export default function GlobalRadio() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 group">
+    <div className={`fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 transition-all duration-300 ${isMinimized ? '' : 'group'}`}>
       
       {/* HTML5 Audio Core */}
       <audio 
@@ -104,8 +106,8 @@ export default function GlobalRadio() {
         onError={() => { setIsPlaying(false); setIsBuffering(false); }}
       />
 
-      {/* Visualizer effect when playing */}
-      {isPlaying && !isBuffering && (
+      {/* Visualizer effect when playing and not minimized (minimized has its own) */}
+      {isPlaying && !isBuffering && !isMinimized && (
         <div className="flex items-end gap-1 px-2 h-6 opacity-80">
           <div className="w-1 bg-primary animate-[bounce_1s_infinite] h-full"></div>
           <div className="w-1 bg-primary animate-[bounce_1.2s_infinite] h-3/4"></div>
@@ -113,69 +115,115 @@ export default function GlobalRadio() {
           <div className="w-1 bg-primary animate-[bounce_1.5s_infinite] h-1/2"></div>
         </div>
       )}
-      
-      <div className="bg-surface-container-high border border-outline-variant p-3 shadow-lg shadow-black/50 backdrop-blur-md flex flex-col gap-3 min-w-[280px] max-w-[320px] transform transition-transform group-hover:scale-105">
-        
-        <div className="flex justify-between items-center border-b border-outline-variant pb-2">
-          <span className="font-label-technical text-[10px] text-primary tracking-widest uppercase">
-            {isBuffering ? 'CONECTANDO...' : isPlaying ? 'TRANSMISIÓN ACTIVA' : 'RADIO DESCONECTADA'}
-          </span>
-          <span className={`material-symbols-outlined text-sm ${isPlaying ? 'text-primary animate-pulse' : 'text-on-surface-variant'}`}>
-            radio
-          </span>
-        </div>
-        
-        {/* Station Selector */}
-        <select 
-          className="w-full bg-surface border border-outline-variant text-on-surface font-label-technical text-[11px] uppercase p-2 outline-none focus:border-primary cursor-pointer"
-          value={currentStationIdx}
-          onChange={(e) => setCurrentStationIdx(Number(e.target.value))}
-        >
-          {STATIONS.map((station, idx) => (
-            <option key={station.id} value={idx}>{station.name}</option>
-          ))}
-        </select>
-        
-        {/* Fallback Metadata */}
-        <div className="flex flex-col gap-1 bg-surface-container-lowest p-2 border-l-2 border-primary">
-          <span className="font-label-technical text-[8px] text-on-surface-variant tracking-widest uppercase">INFO:</span>
-          <span className="font-body-md text-sm text-on-surface leading-tight glitch-hover truncate" title={STATIONS[currentStationIdx].tagline}>
-            {STATIONS[currentStationIdx].tagline}
-          </span>
-        </div>
 
-        <div className="flex items-center gap-4 mt-1">
+      {isMinimized ? (
+        <div 
+          onClick={() => setIsMinimized(false)}
+          className="bg-surface-container-high border-2 border-outline-variant p-3 shadow-lg backdrop-blur-md flex items-center gap-3 cursor-pointer hover:border-primary transition-colors hover:scale-105"
+        >
           <button 
             onClick={togglePlay}
             disabled={isBuffering}
-            className={`w-12 h-10 ${isBuffering ? 'bg-surface-container-highest text-on-surface-variant cursor-wait' : 'bg-primary-container text-white hover:bg-background hover:text-primary'} flex items-center justify-center transition-colors border border-primary-container`}
+            className={`w-10 h-10 ${isBuffering ? 'text-on-surface-variant cursor-wait' : 'text-primary hover:text-on-surface'} flex items-center justify-center transition-colors`}
           >
             {isBuffering ? (
-              <span className="material-symbols-outlined animate-spin text-sm">sync</span>
+              <span className="material-symbols-outlined animate-spin">sync</span>
             ) : (
-              <span className="material-symbols-outlined">
-                {isPlaying ? 'stop' : 'play_arrow'}
+              <span className="material-symbols-outlined text-[24px]">
+                {isPlaying ? 'pause_circle' : 'play_circle'}
               </span>
             )}
           </button>
           
-          <div className="flex-1 flex flex-col gap-1">
-            <div className="flex justify-between items-center">
-              <span className="font-label-technical text-[8px] text-on-surface-variant uppercase">VOLUMEN</span>
-              <span className="font-label-technical text-[8px] text-primary">{Math.round(volume * 100)}%</span>
+          <div className="flex flex-col">
+            <span className="font-label-technical text-[10px] text-primary tracking-widest uppercase">
+              {isPlaying ? 'EN VIVO' : 'RADIO'}
+            </span>
+            <span className="font-label-technical text-[8px] text-on-surface-variant truncate max-w-[100px]">
+              {STATIONS[currentStationIdx].name}
+            </span>
+          </div>
+
+          {isPlaying && !isBuffering && (
+            <div className="flex items-end gap-0.5 h-4 ml-1 opacity-80">
+              <div className="w-1 bg-primary animate-[bounce_1s_infinite] h-full"></div>
+              <div className="w-1 bg-primary animate-[bounce_1.2s_infinite] h-3/4"></div>
+              <div className="w-1 bg-primary animate-[bounce_0.8s_infinite] h-full"></div>
             </div>
-            <input 
-              type="range" 
-              min="0" 
-              max="1" 
-              step="0.05"
-              value={volume}
-              onChange={(e) => setVolume(parseFloat(e.target.value))}
-              className="w-full h-1 bg-background appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-primary"
-            />
+          )}
+        </div>
+      ) : (
+        <div className="bg-surface-container-high border border-outline-variant p-3 shadow-lg shadow-black/50 backdrop-blur-md flex flex-col gap-3 min-w-[280px] max-w-[320px] transform transition-transform group-hover:scale-105 relative">
+          
+          <button 
+            onClick={() => setIsMinimized(true)}
+            className="absolute -top-3 -left-3 w-6 h-6 bg-surface border border-outline-variant text-on-surface-variant hover:text-primary flex items-center justify-center rounded-full z-10 transition-colors shadow-md"
+            title="Minimizar Radio"
+          >
+            <span className="material-symbols-outlined text-[14px]">remove</span>
+          </button>
+          
+          <div className="flex justify-between items-center border-b border-outline-variant pb-2 pl-2">
+            <span className="font-label-technical text-[10px] text-primary tracking-widest uppercase">
+              {isBuffering ? 'CONECTANDO...' : isPlaying ? 'TRANSMISIÓN ACTIVA' : 'RADIO DESCONECTADA'}
+            </span>
+            <span className={`material-symbols-outlined text-sm ${isPlaying ? 'text-primary animate-pulse' : 'text-on-surface-variant'}`}>
+              radio
+            </span>
+          </div>
+          
+          {/* Station Selector */}
+          <select 
+            className="w-full bg-surface border border-outline-variant text-on-surface font-label-technical text-[11px] uppercase p-2 outline-none focus:border-primary cursor-pointer"
+            value={currentStationIdx}
+            onChange={(e) => setCurrentStationIdx(Number(e.target.value))}
+          >
+            {STATIONS.map((station, idx) => (
+              <option key={station.id} value={idx}>{station.name}</option>
+            ))}
+          </select>
+          
+          {/* Fallback Metadata */}
+          <div className="flex flex-col gap-1 bg-surface-container-lowest p-2 border-l-2 border-primary">
+            <span className="font-label-technical text-[8px] text-on-surface-variant tracking-widest uppercase">INFO:</span>
+            <span className="font-body-md text-sm text-on-surface leading-tight glitch-hover truncate" title={STATIONS[currentStationIdx].tagline}>
+              {STATIONS[currentStationIdx].tagline}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4 mt-1">
+            <button 
+              onClick={(e) => togglePlay(e)}
+              disabled={isBuffering}
+              className={`w-12 h-10 ${isBuffering ? 'bg-surface-container-highest text-on-surface-variant cursor-wait' : 'bg-primary-container text-white hover:bg-background hover:text-primary'} flex items-center justify-center transition-colors border border-primary-container`}
+            >
+              {isBuffering ? (
+                <span className="material-symbols-outlined animate-spin text-sm">sync</span>
+              ) : (
+                <span className="material-symbols-outlined">
+                  {isPlaying ? 'stop' : 'play_arrow'}
+                </span>
+              )}
+            </button>
+            
+            <div className="flex-1 flex flex-col gap-1">
+              <div className="flex justify-between items-center">
+                <span className="font-label-technical text-[8px] text-on-surface-variant uppercase">VOLUMEN</span>
+                <span className="font-label-technical text-[8px] text-primary">{Math.round(volume * 100)}%</span>
+              </div>
+              <input 
+                type="range" 
+                min="0" 
+                max="1" 
+                step="0.05"
+                value={volume}
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                className="w-full h-1 bg-background appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-primary"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

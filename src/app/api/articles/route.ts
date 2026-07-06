@@ -21,17 +21,25 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Falta token de autenticación' }, { status: 401 });
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Acceso Denegado (Token inválido)' }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const title = formData.get('title') as string;
     const desc = formData.get('desc') as string;
     const category = formData.get('category') as string;
     const readTime = formData.get('readTime') as string;
     const image = formData.get('image') as File;
-    const password = formData.get('password') as string;
-
-    if (password !== 'metaladmin') {
-      return NextResponse.json({ error: 'Acceso Denegado' }, { status: 401 });
-    }
 
     const serviceSupabase = getServiceSupabase();
 
@@ -97,6 +105,19 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Falta token de autenticación' }, { status: 401 });
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Acceso Denegado (Token inválido)' }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const id = formData.get('id') as string;
     const title = formData.get('title') as string;
@@ -104,11 +125,6 @@ export async function PUT(request: Request) {
     const category = formData.get('category') as string;
     const readTime = formData.get('readTime') as string;
     const image = formData.get('image') as File | null;
-    const password = formData.get('password') as string;
-
-    if (password !== 'metaladmin') {
-      return NextResponse.json({ error: 'Acceso Denegado' }, { status: 401 });
-    }
 
     const serviceSupabase = getServiceSupabase();
 

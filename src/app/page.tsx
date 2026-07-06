@@ -80,7 +80,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-1 bg-surface-container-high border-2 border-outline-variant p-1">
             {/* Main Feature */}
             {articles[0] && (
-              <article className="md:col-span-8 bg-surface-dim relative group overflow-hidden border-t-4 border-primary-container hover:border-primary transition-colors duration-300 flex flex-col h-[500px]">
+              <a href={articles[0].imageUrl || '#'} target="_blank" rel="noopener noreferrer" className="md:col-span-8 bg-surface-dim relative group overflow-hidden border-t-4 border-primary-container hover:border-primary transition-colors duration-300 flex flex-col h-[500px] cursor-pointer block">
                 <div className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-500 mix-blend-luminosity" style={{ backgroundImage: `url('${articles[0].imageUrl}')` }}></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
                 <div className="relative z-10 mt-auto p-8 border-t border-surface-container-highest/50 bg-background/80 backdrop-blur-sm">
@@ -91,22 +91,22 @@ export default function Home() {
                   <h3 className="text-headline-lg font-headline-lg uppercase text-on-surface mb-3 group-hover:text-primary transition-colors">{articles[0].title}</h3>
                   <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl line-clamp-2">{articles[0].desc}</p>
                 </div>
-              </article>
+              </a>
             )}
 
             {/* Secondary Features */}
             {articles[1] && (
-              <article className="md:col-span-4 bg-surface relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto">
+              <a href={articles[1].imageUrl || '#'} target="_blank" rel="noopener noreferrer" className="md:col-span-4 bg-surface relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto cursor-pointer block">
                 <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-50 transition-opacity duration-500 mix-blend-luminosity" style={{ backgroundImage: `url('${articles[1].imageUrl}')` }}></div>
                 <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-background to-background/20 h-full flex flex-col justify-end">
                   <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3">CIENCIA</span>
                   <h3 className="text-headline-lg-mobile font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors">{articles[1].title}</h3>
                 </div>
-              </article>
+              </a>
             )}
 
             {articles[2] && (
-              <article className="md:col-span-4 bg-surface p-6 border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col justify-between group">
+              <a href={articles[2].imageUrl || '#'} target="_blank" rel="noopener noreferrer" className="md:col-span-4 bg-surface p-6 border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col justify-between group cursor-pointer block">
                 <div>
                   <span className="font-label-technical text-label-technical text-on-surface-variant mb-4 block">RESEÑA TÉCNICA</span>
                   <h3 className="font-headline-lg text-headline-lg-mobile text-on-surface mb-3 uppercase group-hover:text-primary transition-colors">{articles[2].title}</h3>
@@ -116,7 +116,7 @@ export default function Home() {
                   <span className="font-label-technical text-label-technical text-on-surface-variant">LECTURA: {articles[2].readTime || '8 MIN'}</span>
                   <span className="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </div>
-              </article>
+              </a>
             )}
 
             {/* Default bottom span if we don't have enough articles or just as a static banner */}
