@@ -192,35 +192,47 @@ export default function GlobalRadio() {
             </span>
           </div>
 
-          <div className="flex items-center gap-4 mt-1">
-            <button 
-              onClick={(e) => togglePlay(e)}
-              disabled={isBuffering}
-              className={`w-12 h-10 ${isBuffering ? 'bg-surface-container-highest text-on-surface-variant cursor-wait' : 'bg-primary-container text-white hover:bg-background hover:text-primary'} flex items-center justify-center transition-colors border border-primary-container`}
-            >
-              {isBuffering ? (
-                <span className="material-symbols-outlined animate-spin text-sm">sync</span>
-              ) : (
-                <span className="material-symbols-outlined">
-                  {isPlaying ? 'stop' : 'play_arrow'}
-                </span>
+          <div className="flex flex-col gap-3 mt-2">
+            {!isPlaying && !isBuffering && (
+              <button
+                onClick={(e) => togglePlay(e)}
+                className="w-full bg-primary text-on-primary py-3 px-4 font-label-technical font-bold text-lg uppercase tracking-[0.2em] flex justify-center items-center gap-3 animate-pulse shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform border border-on-primary/30"
+              >
+                <span className="material-symbols-outlined text-[24px]">play_circle</span>
+                INICIAR TRANSMISIÓN
+              </button>
+            )}
+
+            <div className="flex items-center gap-4">
+              {(isPlaying || isBuffering) && (
+                <button 
+                  onClick={(e) => togglePlay(e)}
+                  disabled={isBuffering}
+                  className={`w-12 h-10 ${isBuffering ? 'bg-surface-container-highest text-on-surface-variant cursor-wait' : 'bg-primary-container text-white hover:bg-background hover:text-primary'} flex items-center justify-center transition-colors border border-primary-container`}
+                >
+                  {isBuffering ? (
+                    <span className="material-symbols-outlined animate-spin text-sm">sync</span>
+                  ) : (
+                    <span className="material-symbols-outlined">stop</span>
+                  )}
+                </button>
               )}
-            </button>
-            
-            <div className="flex-1 flex flex-col gap-1">
-              <div className="flex justify-between items-center">
-                <span className="font-label-technical text-[8px] text-on-surface-variant uppercase">VOLUMEN</span>
-                <span className="font-label-technical text-[8px] text-primary">{Math.round(volume * 100)}%</span>
+              
+              <div className="flex-1 flex flex-col gap-1">
+                <div className="flex justify-between items-center">
+                  <span className="font-label-technical text-[8px] text-on-surface-variant uppercase">VOLUMEN</span>
+                  <span className="font-label-technical text-[8px] text-primary">{Math.round(volume * 100)}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.05"
+                  value={volume}
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  className="w-full h-1 bg-background appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-primary"
+                />
               </div>
-              <input 
-                type="range" 
-                min="0" 
-                max="1" 
-                step="0.05"
-                value={volume}
-                onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="w-full h-1 bg-background appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-primary"
-              />
             </div>
           </div>
         </div>
