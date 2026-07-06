@@ -15,25 +15,40 @@ export default function LoginPage() {
   }, [router]);
 
   const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState('');
+  const [isRegistering, setIsRegistering] = React.useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
     
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/admin`,
-      },
-    });
-
-    if (error) {
-      setMessage(`Error: ${error.message}`);
+    if (isRegistering) {
+      // Registrar usuario
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      if (error) {
+        setMessage(`Error al registrar: ${error.message}`);
+      } else {
+        setMessage('Usuario registrado. Revisa tu correo para confirmar o inicia sesión si ya está confirmado.');
+        setIsRegistering(false); // Volver a modo login
+      }
     } else {
-      setMessage('¡Enlace enviado! Revisa tu bandeja de entrada (y la carpeta de spam).');
+      // Iniciar sesión
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        setMessage(`Error al ingresar: ${error.message}`);
+      } else {
+        // Redirigir al panel si es exitoso
+        router.push('/admin');
+      }
     }
     setLoading(false);
   };
@@ -44,7 +59,9 @@ export default function LoginPage() {
         <div className="flex flex-col items-center text-center gap-2 mb-4">
           <span className="material-symbols-outlined text-primary text-4xl mb-2">admin_panel_settings</span>
           <h1 className="font-headline-lg uppercase text-on-surface">Panel Central</h1>
-          <p className="font-body-md text-on-surface-variant">Acceso exclusivo para administradores. Ingresa tu correo para recibir un enlace de acceso seguro.</p>
+          <p className="font-body-md text-on-surface-variant">
+            {isRegistering ? 'Crea tu cuenta de administrador.' : 'Ingresa con tu correo y contraseña.'}
+          </p>
         </div>
         
         {message && (
@@ -53,7 +70,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="w-full flex flex-col gap-4">
+        <form onSubmit={handleAuth} className="w-full flex flex-col gap-4">
           <input 
             type="email" 
             placeholder="elmetalesvidalml@gmail.com" 
@@ -62,15 +79,33 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full bg-background border border-outline-variant p-4 text-on-surface outline-none focus:border-primary transition-colors"
           />
+          <input 
+            type="password" 
+            placeholder="Contraseña" 
+            required 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full bg-background border border-outline-variant p-4 text-on-surface outline-none focus:border-primary transition-colors"
+          />
           <button 
             type="submit"
             disabled={loading}
             className="w-full bg-primary text-on-primary px-6 py-4 uppercase font-label-technical font-bold flex items-center justify-center gap-3 hover:scale-105 transition-all disabled:opacity-50"
           >
-            <span className="material-symbols-outlined">mail</span>
-            {loading ? 'ENVIANDO...' : 'ENVIAR ENLACE MÁGICO'}
+            <span className="material-symbols-outlined">{isRegistering ? 'person_add' : 'login'}</span>
+            {loading ? 'PROCESANDO...' : (isRegistering ? 'CREAR CUENTA' : 'INICIAR SESIÓN')}
           </button>
         </form>
+
+        <button 
+          onClick={() => {
+            setIsRegistering(!isRegistering);
+            setMessage('');
+          }}
+          className="text-primary font-label-sm uppercase hover:underline mt-2"
+        >
+          {isRegistering ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí'}
+        </button>
       </div>
     </main>
   );
