@@ -19,6 +19,7 @@ export default function LoginPage() {
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [isRegistering, setIsRegistering] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,14 +80,25 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full bg-background border border-outline-variant p-4 text-on-surface outline-none focus:border-primary transition-colors"
           />
-          <input 
-            type="password" 
-            placeholder="Contraseña" 
-            required 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-background border border-outline-variant p-4 text-on-surface outline-none focus:border-primary transition-colors"
-          />
+          <div className="relative w-full">
+            <input 
+              type={showPassword ? "text" : "password"} 
+              placeholder="Contraseña" 
+              required 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-background border border-outline-variant p-4 pr-12 text-on-surface outline-none focus:border-primary transition-colors"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <span className="material-symbols-outlined">
+                {showPassword ? 'visibility_off' : 'visibility'}
+              </span>
+            </button>
+          </div>
           <button 
             type="submit"
             disabled={loading}
