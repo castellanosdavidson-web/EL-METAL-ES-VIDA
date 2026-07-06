@@ -3,9 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 
 const STATIONS = [
   { id: 'rockantenne', name: 'Rock Antenne Heavy (General)', url: 'https://stream.rockantenne.de/heavy-metal/stream/mp3', tagline: 'Clásicos y Heavy Metal 24/7' },
-  { id: 'metalmeyhem', name: 'Metal Meyhem Radio (Extremo)', url: 'https://s3.radio.co/s23fcff1bd/listen', tagline: 'Metal Extremo, Death y Black' },
-  { id: '1fm_highvoltage', name: '1.FM High Voltage (Hard/Heavy)', url: 'https://strm112.1.fm/highvoltage_mobile_mp3', tagline: 'Hard Rock & Heavy Clásico' },
-  { id: '1fm_atr', name: '1.FM Aggressive Telepathy', url: 'https://strm112.1.fm/atr_mobile_mp3', tagline: 'Alternativo y Metal Moderno' }
+  { id: 'maximusrock', name: 'Maximus Rock FM (Español)', url: 'https://stream.laut.fm/maximusrockfm', tagline: 'Rock & Metal en Castellano' },
+  { id: 'distorsion', name: 'Distorsión FM (Chile)', url: 'https://tunein.radiomaniacos.cl/distorsion.mp3', tagline: 'Metal Latinoamericano y Clásico' },
+  { id: 'nevermore', name: 'Nevermore Radio', url: 'https://panel.nevermorenetwork.com/listen/nevermorenetwork.com/radio.mp3', tagline: 'Programación Extrema y Entrevistas' }
 ];
 
 export default function GlobalRadio() {
