@@ -197,17 +197,27 @@ export default function Home() {
             <span className="material-symbols-outlined text-5xl text-primary mb-4 block">swords</span>
             <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface mb-4">Únete a la Hermandad</h2>
             <p className="font-body-lg text-on-surface-variant mb-8 max-w-xl mx-auto">
-              Apoya nuestro proyecto donando en nuestro perfil de Facebook y recibe como recompensa <strong className="text-primary">archivos descargables con música extrema</strong> para que reproduzcas localmente desde todos tus dispositivos en cualquier momento.
+              Apoya nuestro proyecto y recibe como recompensa <strong className="text-primary">archivos descargables con música extrema</strong> para escuchar localmente. Ingresa tu correo y serás dirigido a Facebook Stars para realizar tu donación y habilitar tu acceso.
             </p>
-            <div className="flex flex-col items-center gap-4 max-w-2xl mx-auto">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="bg-primary-container text-white px-10 py-5 font-headline-md uppercase tracking-widest hover:bg-background hover:text-primary border-2 border-primary-container transition-all flex items-center justify-center gap-3 w-full sm:w-auto shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:scale-105">
-                <span className="material-symbols-outlined text-[24px]">volunteer_activism</span>
-                DONAR EN FACEBOOK
-              </a>
-              <span className="font-label-technical text-label-technical text-on-surface-variant tracking-widest text-[10px]">
-                * AL DONAR OBTIENES ACCESO AL MATERIAL DESCARGABLE
-              </span>
-            </div>
+            <form 
+              className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" 
+              onSubmit={e => {
+                e.preventDefault();
+                window.open('https://fb.com/stars', '_blank');
+              }}
+            >
+              <div className="flex-grow relative">
+                <label className="absolute -top-2.5 left-3 bg-surface-container-low px-1 font-label-technical text-label-technical text-primary z-10" htmlFor="email">CREDENCIAL (EMAIL)</label>
+                <input className="w-full bg-background border border-outline-variant text-on-surface font-body-md p-4 focus:ring-0 focus:border-primary-container outline-none transition-colors" id="email" placeholder="ingresa@tu-correo.com" required type="email" />
+              </div>
+              <button className="bg-primary-container text-white px-8 py-4 font-label-technical text-label-technical uppercase hover:bg-background hover:text-primary border-2 border-primary-container transition-all flex items-center justify-center gap-2 whitespace-nowrap" type="submit">
+                <span className="material-symbols-outlined text-[20px]">volunteer_activism</span>
+                DONAR Y ACCEDER
+              </button>
+            </form>
+            <span className="block mt-4 font-label-technical text-label-technical text-on-surface-variant tracking-widest text-[10px]">
+              * SERÁS REDIRIGIDO A FB.COM/STARS
+            </span>
           </div>
         </div>
       </section>
