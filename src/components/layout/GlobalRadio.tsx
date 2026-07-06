@@ -100,6 +100,7 @@ export default function GlobalRadio() {
         ref={audioRef} 
         src={STATIONS[currentStationIdx].url} 
         preload="none"
+        autoPlay={true}
         onPlaying={() => { setIsPlaying(true); setIsBuffering(false); }}
         onPause={() => setIsPlaying(false)}
         onWaiting={() => setIsBuffering(true)}
