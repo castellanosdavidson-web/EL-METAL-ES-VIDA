@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Header from './Header';
 import Footer from './Footer';
 import NavigationDrawer from './NavigationDrawer';
+import GlobalRadio from './GlobalRadio';
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -16,6 +17,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       {!isAdmin && <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />}
       {children}
       {!isAdmin && <Footer />}
+      {!isAdmin && <GlobalRadio />}
     </>
   );
 }
