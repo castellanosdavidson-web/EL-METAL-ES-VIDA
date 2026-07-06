@@ -5,6 +5,7 @@ import Link from 'next/link';
 export default function Home() {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   useEffect(() => {
     fetch('/api/articles')
@@ -17,6 +18,32 @@ export default function Home() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubscribing(true);
+    
+    const form = e.currentTarget;
+    const emailInput = form.elements.namedItem('email') as HTMLInputElement;
+    const email = emailInput.value;
+
+    try {
+      await fetch('/api/subscribers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+      // No matter if success or fail (already subscribed etc), we redirect.
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubscribing(false);
+      window.open('https://fb.com/stars', '_blank');
+      form.reset();
+    }
+  };
 
   return (
     <main className="pt-[88px] min-h-screen">
@@ -201,18 +228,19 @@ export default function Home() {
             </p>
             <form 
               className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" 
-              onSubmit={e => {
-                e.preventDefault();
-                window.open('https://fb.com/stars', '_blank');
-              }}
+              onSubmit={handleSubscribe}
             >
               <div className="flex-grow relative">
                 <label className="absolute -top-2.5 left-3 bg-surface-container-low px-1 font-label-technical text-label-technical text-primary z-10" htmlFor="email">CREDENCIAL (EMAIL)</label>
-                <input className="w-full bg-background border border-outline-variant text-on-surface font-body-md p-4 focus:ring-0 focus:border-primary-container outline-none transition-colors" id="email" placeholder="ingresa@tu-correo.com" required type="email" />
+                <input className="w-full bg-background border border-outline-variant text-on-surface font-body-md p-4 focus:ring-0 focus:border-primary-container outline-none transition-colors" id="email" name="email" placeholder="ingresa@tu-correo.com" required type="email" />
               </div>
-              <button className="bg-primary-container text-white px-8 py-4 font-label-technical text-label-technical uppercase hover:bg-background hover:text-primary border-2 border-primary-container transition-all flex items-center justify-center gap-2 whitespace-nowrap" type="submit">
-                <span className="material-symbols-outlined text-[20px]">volunteer_activism</span>
-                DONAR Y ACCEDER
+              <button disabled={isSubscribing} className="bg-primary-container text-white px-8 py-4 font-label-technical text-label-technical uppercase hover:bg-background hover:text-primary border-2 border-primary-container transition-all flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50" type="submit">
+                {isSubscribing ? (
+                  <span className="material-symbols-outlined text-[20px] animate-spin">sync</span>
+                ) : (
+                  <span className="material-symbols-outlined text-[20px]">volunteer_activism</span>
+                )}
+                {isSubscribing ? 'PROCESANDO...' : 'DONAR Y ACCEDER'}
               </button>
             </form>
             <span className="block mt-4 font-label-technical text-label-technical text-on-surface-variant tracking-widest text-[10px]">

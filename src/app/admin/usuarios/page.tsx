@@ -1,37 +1,35 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabase';
 
 export default function UsuariosPage() {
-  const dummyUsers = [
-    {
-      id: "K_VALENTINE_88",
-      email: "val.k@neuralmail.io",
-      tier: "Backstage",
-      tierColor: "bg-primary-container/20 border-primary text-primary",
-      joinDate: "2023.11.12"
-    },
-    {
-      id: "VOID_STRIDER",
-      email: "strider@void.tech",
-      tier: "Vinyl",
-      tierColor: "bg-secondary-container/20 border-secondary text-secondary",
-      joinDate: "2024.01.05"
-    },
-    {
-      id: "CYBER_PUNK_X",
-      email: "x@underground.net",
-      tier: "Cassette",
-      tierColor: "bg-outline-variant/20 border-outline text-outline",
-      joinDate: "2024.02.28"
-    },
-    {
-      id: "NEON_GHOST",
-      email: "ghost@neon.sys",
-      tier: "Backstage",
-      tierColor: "bg-primary-container/20 border-primary text-primary",
-      joinDate: "2023.12.30"
+  const [subscribers, setSubscribers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSubscribers();
+  }, []);
+
+  const fetchSubscribers = async () => {
+    setLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const res = await fetch('/api/subscribers', {
+        headers: {
+          'Authorization': `Bearer ${session?.access_token}`
+        }
+      });
+      const data = await res.json();
+      if (!data.error) {
+        setSubscribers(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   return (
     <main className="p-8 flex-1 flex flex-col h-full">
@@ -60,26 +58,11 @@ export default function UsuariosPage() {
         {/* STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-masonry-gap">
           <div className="border border-outline-variant/20 p-6 bg-surface-container-lowest">
-            <p className="font-label-sm text-on-surface-variant uppercase mb-2">Activos_Ahora</p>
-            <p className="font-headline-lg text-headline-lg text-on-surface">1,204</p>
+            <p className="font-label-sm text-on-surface-variant uppercase mb-2">Total_Correos</p>
+            <p className="font-headline-lg text-headline-lg text-on-surface">{subscribers.length}</p>
             <div className="w-full bg-outline-variant/20 h-1 mt-4">
-              <div className="bg-primary h-full w-[65%]"></div>
+              <div className="bg-primary h-full w-[100%]"></div>
             </div>
-          </div>
-          <div className="border border-outline-variant/20 p-6 bg-surface-container-lowest">
-            <p className="font-label-sm text-on-surface-variant uppercase mb-2">Nivel_Backstage</p>
-            <p className="font-headline-lg text-headline-lg text-primary">842</p>
-            <p className="font-mono-technical text-[10px] text-outline mt-2">+12% vs ciclo anterior</p>
-          </div>
-          <div className="border border-outline-variant/20 p-6 bg-surface-container-lowest">
-            <p className="font-label-sm text-on-surface-variant uppercase mb-2">Nivel_Vinyl</p>
-            <p className="font-headline-lg text-headline-lg text-on-surface">3,120</p>
-            <p className="font-mono-technical text-[10px] text-outline mt-2">+4% vs ciclo anterior</p>
-          </div>
-          <div className="border border-outline-variant/20 p-6 bg-surface-container-lowest">
-            <p className="font-label-sm text-on-surface-variant uppercase mb-2">Nivel_Cassette</p>
-            <p className="font-headline-lg text-headline-lg text-on-surface">8,440</p>
-            <p className="font-mono-technical text-[10px] text-outline mt-2">-2% vs ciclo anterior</p>
           </div>
         </div>
 
@@ -100,42 +83,51 @@ export default function UsuariosPage() {
                 <tr className="bg-surface-container-highest/50">
                   <th className="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20">Nombre de Usuario</th>
                   <th className="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20">Email</th>
-                  <th className="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20">Nivel de Membresía</th>
-                  <th className="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20">Fecha de Ingreso</th>
+                  <th className="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20">Fecha de Registro</th>
                   <th className="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/10">
-                {dummyUsers.map((user, idx) => (
-                  <tr key={idx} className="hover:bg-surface-variant/20 transition-colors group">
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-surface-container border border-outline-variant/20 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
-                        </div>
-                        <span className="font-mono-technical text-on-surface font-bold uppercase tracking-tight">{user.id}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-on-surface-variant font-mono-technical">{user.email}</td>
-                    <td className="px-6 py-5">
-                      <span className={`px-3 py-1 border font-label-sm uppercase text-[10px] ${user.tierColor}`}>{user.tier}</span>
-                    </td>
-                    <td className="px-6 py-5 text-on-surface-variant font-mono-technical">{user.joinDate}</td>
-                    <td className="px-6 py-5 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 text-on-surface-variant hover:text-primary transition-all" title="Mensaje">
-                          <span className="material-symbols-outlined text-[18px]">mail</span>
-                        </button>
-                        <button className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 text-on-surface-variant hover:text-on-surface transition-all" title="Editar">
-                          <span className="material-symbols-outlined text-[18px]">edit</span>
-                        </button>
-                        <button className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 text-on-surface-variant hover:text-error hover:border-error transition-all" title="Bloquear">
-                          <span className="material-symbols-outlined text-[18px]">block</span>
-                        </button>
-                      </div>
-                    </td>
+                {loading ? (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-primary animate-pulse font-mono-technical">CARGANDO_BASE_DE_DATOS...</td>
                   </tr>
-                ))}
+                ) : subscribers.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-on-surface-variant font-mono-technical">NO HAY REGISTROS TODAVÍA</td>
+                  </tr>
+                ) : (
+                  subscribers.map((sub, idx) => (
+                    <tr key={idx} className="hover:bg-surface-variant/20 transition-colors group">
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-surface-container border border-outline-variant/20 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+                          </div>
+                          <span className="font-mono-technical text-on-surface font-bold uppercase tracking-tight">SUBSCRIPTOR_{idx+1}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 text-on-surface-variant font-mono-technical">{sub.email}</td>
+                      <td className="px-6 py-5 text-on-surface-variant font-mono-technical">
+                        {new Date(sub.created_at).toLocaleDateString()} {new Date(sub.created_at).toLocaleTimeString()}
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => {
+                              navigator.clipboard.writeText(sub.email);
+                              alert('Correo copiado al portapapeles');
+                            }}
+                            className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 text-on-surface-variant hover:text-primary transition-all" 
+                            title="Copiar Correo"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">content_copy</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
