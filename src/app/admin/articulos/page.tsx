@@ -16,6 +16,7 @@ export default function ArticulosPage() {
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [desc, setDesc] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
 
   useEffect(() => {
     fetchArticles();
@@ -35,6 +36,7 @@ export default function ArticulosPage() {
   const handleOpenEdit = (article: any) => {
     setEditArticle(article);
     setDesc(article.desc || '');
+    setYoutubeUrl(article.youtubeUrl || '');
     setMessage('');
     setIsModalOpen(true);
   };
@@ -42,6 +44,7 @@ export default function ArticulosPage() {
   const handleOpenNew = () => {
     setEditArticle(null);
     setDesc('');
+    setYoutubeUrl('');
     setMessage('');
     setIsModalOpen(true);
   };
@@ -55,7 +58,13 @@ export default function ArticulosPage() {
     const formData = new FormData(form);
 
     // Override the description with the ReactQuill state
-    formData.set('desc', desc);
+    // Si hay URL de YouTube, añadirla al final del contenido
+    let finalDesc = desc;
+    if (youtubeUrl.trim()) {
+      finalDesc += `\n<p>${youtubeUrl.trim()}</p>`;
+    }
+    formData.set('desc', finalDesc);
+    formData.set('youtubeUrl', youtubeUrl.trim());
 
     if (editArticle) {
       formData.append('id', editArticle.id);
@@ -304,6 +313,22 @@ export default function ArticulosPage() {
                 <div className="bg-surface border border-outline-variant text-on-surface">
                   <ReactQuill theme="snow" value={desc} onChange={setDesc} className="bg-background text-on-surface font-body-md" placeholder="Extracto o contenido del artículo (soporta formato, enlaces, videos, etc)..." />
                 </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-error">play_circle</span>
+                  URL de Video de YouTube (Opcional)
+                </label>
+                <input 
+                  type="url" 
+                  name="youtubeUrl" 
+                  value={youtubeUrl}
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical text-sm" 
+                  placeholder="Ej: https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
+                />
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Pega aquí el enlace de YouTube y se mostrará como video embebido en el artículo</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

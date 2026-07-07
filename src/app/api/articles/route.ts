@@ -39,6 +39,7 @@ export async function POST(request: Request) {
     const desc = formData.get('desc') as string;
     const category = formData.get('category') as string;
     const readTime = formData.get('readTime') as string;
+    const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File;
 
     const serviceSupabase = getServiceSupabase();
@@ -79,8 +80,9 @@ export async function POST(request: Request) {
     const newPost = {
       id: Date.now().toString(),
       title,
-      slug: slug + '-' + Date.now().toString().slice(-4), // Añadimos ID al final para asegurar unicidad
+      slug: slug + '-' + Date.now().toString().slice(-4),
       desc: desc || '',
+      youtubeUrl: youtubeUrl || '',
       category,
       readTime: readTime || '',
       imageUrl,
@@ -127,6 +129,7 @@ export async function PUT(request: Request) {
     const desc = formData.get('desc') as string;
     const category = formData.get('category') as string;
     const readTime = formData.get('readTime') as string;
+    const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File | null;
 
     const serviceSupabase = getServiceSupabase();
@@ -180,6 +183,7 @@ export async function PUT(request: Request) {
       title: title || posts[postIndex].title,
       slug: slug,
       desc: desc !== null ? desc : posts[postIndex].desc,
+      youtubeUrl: youtubeUrl !== null ? youtubeUrl : (posts[postIndex].youtubeUrl || ''),
       category: category || posts[postIndex].category,
       readTime: readTime !== null ? readTime : posts[postIndex].readTime,
       imageUrl: imageUrl,
