@@ -73,7 +73,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
   return (
     <>
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
         /* ============================================
            HERO SECTION
@@ -188,9 +188,9 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
            ============================================ */
         .article-content {
           color: #d8cec4;
-          font-family: 'Cinzel', serif;
-          font-size: 0.95rem;
-          line-height: 2;
+          font-family: 'Lora', Georgia, serif;
+          font-size: 1.05rem;
+          line-height: 1.85;
           word-wrap: break-word;
           overflow-wrap: break-word;
           hyphens: none !important;
@@ -201,15 +201,15 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
 
         @media (min-width: 640px) {
           .article-content {
-            font-size: 1rem;
-            line-height: 2.05;
+            font-size: 1.1rem;
+            line-height: 1.9;
           }
         }
 
         @media (min-width: 768px) {
           .article-content {
-            font-size: 1.05rem;
-            line-height: 2.1;
+            font-size: 1.15rem;
+            line-height: 1.95;
           }
         }
 
