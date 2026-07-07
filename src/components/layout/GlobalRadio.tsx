@@ -5,7 +5,7 @@ const STATIONS = [
   { id: 'rockantenne', name: 'Rock Antenne Heavy', url: 'https://stream.rockantenne.de/heavy-metal/stream/mp3', tagline: 'Clásicos y Heavy Metal 24/7' },
   { id: 'maximusrock', name: 'Maximus Rock FM', url: 'https://stream.laut.fm/maximusrockfm', tagline: 'Rock & Metal en Castellano' },
   { id: 'metalonly', name: 'Metal Only', url: 'https://stream.laut.fm/metal-only', tagline: 'El soberano del metal alemán' },
-  { id: 'classicmetal', name: 'Classic Metal Radio', url: 'https://stream.laut.fm/classic-metal', tagline: 'Heavy, Thrash y Power Metal clásico' }
+  { id: 'wacken', name: 'Wacken Radio', url: 'https://stream.laut.fm/wacken', tagline: 'La radio oficial de la comunidad de Wacken' }
 ];
 
 export default function GlobalRadio() {
@@ -55,6 +55,7 @@ export default function GlobalRadio() {
   useEffect(() => {
     setTrackInfo(null); // Reset when station changes
     if (audioRef.current) {
+      audioRef.current.load(); // ¡IMPORTANTE! Forzar la recarga del nuevo src del audio
       if (isPlaying) {
         setIsBuffering(true);
         audioRef.current.play().then(() => {
