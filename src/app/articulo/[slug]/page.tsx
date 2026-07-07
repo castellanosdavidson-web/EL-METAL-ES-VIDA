@@ -1,4 +1,4 @@
-import { getServiceSupabase } from '@/utils/supabase';
+import { supabase } from '@/utils/supabase';
 import ArticleClient from './ArticleClient';
 import { Metadata } from 'next';
 
@@ -7,9 +7,8 @@ interface PageProps {
 }
 
 async function getArticleData(slug: string) {
-  const serviceSupabase = getServiceSupabase();
   try {
-    const { data: fileData, error } = await serviceSupabase.storage
+    const { data: fileData, error } = await supabase.storage
       .from('articles')
       .download('posts.json');
       
