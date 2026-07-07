@@ -93,6 +93,18 @@ export default function RootLayout({
             })(window,document,'script','dataLayer','GTM-TWWHZ5P3');`
           }}
         />
+        {/* Google Analytics (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-H5DD80FFKE"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-H5DD80FFKE');
+            `
+          }}
+        />
         <meta name="google" content="notranslate" />
         <link rel="icon" href={logoUrl} />
         <link rel="apple-touch-icon" href={logoUrl} />
@@ -114,19 +126,6 @@ export default function RootLayout({
         <LayoutWrapper>
           {children}
         </LayoutWrapper>
-        {/* Google Analytics */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${gaId}');
-          `}
-        </Script>
       </body>
     </html>
   );
