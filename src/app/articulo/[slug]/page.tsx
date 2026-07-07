@@ -10,12 +10,6 @@ import Link from 'next/link';
 function processYouTubeEmbeds(html: string): string {
   if (!html) return '';
 
-  // Regex para capturar URLs de YouTube en múltiples formatos
-  const ytRegex = /(?:<a[^>]*href=["'])?(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})(?:[^"'<\s]*)(?:["'][^>]*>.*?<\/a>)?/gi;
-
-  // También capturamos URLs "sueltas" que Quill pone como texto plano (no como <a>)
-  const plainUrlRegex = /(?:^|[\s>])(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})(?:[^\s<]*)/gi;
-
   let processed = html;
 
   // Primero: reemplazar enlaces <a> que apuntan a YouTube
@@ -28,7 +22,6 @@ function processYouTubeEmbeds(html: string): string {
   processed = processed.replace(
     /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})(?:[^\s<"']*)/gi,
     (match, videoId) => {
-      // Evitar doble reemplazo (si ya fue convertido a iframe)
       if (match.includes('iframe')) return match;
       return createYouTubeEmbed(videoId);
     }
@@ -38,10 +31,9 @@ function processYouTubeEmbeds(html: string): string {
 }
 
 function createYouTubeEmbed(videoId: string): string {
-  return `<div class="yt-embed-wrapper" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:2rem 0;border:1px solid rgba(255,255,255,0.1);background:#000;">
+  return `<div class="yt-embed-wrapper">
     <iframe 
       src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1" 
-      style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" 
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
       allowfullscreen
       title="Video de YouTube"
@@ -71,7 +63,10 @@ export default function ArticuloPage() {
   if (loading) {
     return (
       <main className="pt-[120px] min-h-screen flex items-center justify-center bg-background">
-        <span className="font-label-technical text-primary animate-pulse tracking-widest">Sincronizando Archivo...</span>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <span className="font-mono-technical text-primary animate-pulse tracking-widest text-xs uppercase">Cargando Archivo...</span>
+        </div>
       </main>
     );
   }
@@ -88,196 +83,453 @@ export default function ArticuloPage() {
     );
   }
 
-  // Procesar el contenido para embeber videos de YouTube
   const processedContent = processYouTubeEmbeds(article.desc || '');
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Hero Header — con padding-top generoso para no colisionar con el menú */}
-      <section className="relative flex items-end overflow-hidden border-b-2 border-outline-variant bg-surface-dim pt-[140px] md:pt-[160px] pb-10 md:pb-16 min-h-[50vh] md:min-h-[60vh]">
-        {/* Background image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40" 
-          style={{ backgroundImage: `url('${article.imageUrl || ''}')` }}
-        />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 to-background/40" />
-        
-        {/* Content */}
-        <div className="relative z-10 w-full max-w-4xl mx-auto px-6 md:px-12 lg:px-16">
-          {/* Badges */}
-          <div className="flex flex-wrap gap-3 mb-5">
-            <span className="bg-primary-container text-white px-3 py-1 font-label-technical text-label-technical text-xs md:text-sm">
-              {article.category}
-            </span>
-            <span className="border border-outline-variant text-on-surface-variant px-3 py-1 font-label-technical text-label-technical text-xs md:text-sm">
-              LECTURA: {article.readTime || '5 MIN'}
-            </span>
-          </div>
-          
-          {/* Title — tamaños responsivos con word-break para pantallas pequeñas */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display-lg uppercase text-on-surface leading-tight drop-shadow-2xl break-words hyphens-auto">
-            {article.title}
-          </h1>
-          
-          {/* Meta info */}
-          <p className="font-mono-technical text-primary mt-5 tracking-widest uppercase text-xs md:text-sm break-all">
-            PUBLICADO: {new Date(article.createdAt || Date.now()).toISOString().split('T')[0]} // ARCHIVO: ART-{article.id.toString().slice(-4)}-X
-          </p>
-        </div>
-      </section>
+    <>
+      {/* Google Fonts metaleras */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&display=swap');
 
-      {/* Content Section — responsive con buena legibilidad */}
-      <section className="py-12 md:py-20 lg:py-24 px-6 md:px-12 lg:px-16 max-w-4xl mx-auto">
-        {/* Estilos del contenido enriquecido */}
-        <style jsx global>{`
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .article-hero {
+          position: relative;
+          min-height: 65vh;
+          display: flex;
+          align-items: flex-end;
+          overflow: hidden;
+          padding-top: 140px;
+          padding-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+          .article-hero {
+            min-height: 70vh;
+            padding-top: 160px;
+            padding-bottom: 4rem;
+          }
+        }
+
+        .article-hero__bg {
+          position: absolute;
+          inset: 0;
+          background-size: cover;
+          background-position: center;
+          filter: saturate(0.3) contrast(1.2);
+          opacity: 0.5;
+        }
+
+        .article-hero__overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to top,
+            #0d0907 0%,
+            #0d0907ee 25%,
+            #0d0907aa 50%,
+            #0d090744 75%,
+            #0d090722 100%
+          );
+        }
+
+        .article-hero__vignette {
+          position: absolute;
+          inset: 0;
+          box-shadow: inset 0 0 150px 60px rgba(0,0,0,0.8);
+          pointer-events: none;
+        }
+
+        .article-hero__title {
+          font-family: 'Cinzel Decorative', 'Cinzel', serif;
+          text-transform: uppercase;
+          color: #f0e6d8;
+          text-shadow: 
+            0 0 40px rgba(196, 112, 75, 0.3),
+            0 4px 20px rgba(0,0,0,0.8);
+          line-height: 1.15;
+          letter-spacing: 0.03em;
+          word-break: break-word;
+          font-size: 1.6rem;
+          font-weight: 700;
+        }
+
+        @media (min-width: 480px) {
+          .article-hero__title { font-size: 2rem; }
+        }
+        @media (min-width: 640px) {
+          .article-hero__title { font-size: 2.4rem; }
+        }
+        @media (min-width: 768px) {
+          .article-hero__title { font-size: 2.8rem; }
+        }
+        @media (min-width: 1024px) {
+          .article-hero__title { font-size: 3.4rem; }
+        }
+
+        .article-hero__divider {
+          width: 80px;
+          height: 2px;
+          background: linear-gradient(90deg, #c4704b, transparent);
+          margin: 1.5rem 0;
+        }
+
+        /* ============================================
+           ARTICLE BODY — BACKGROUND + ATMOSPHERE
+           ============================================ */
+        .article-body-wrapper {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .article-body-wrapper__bg {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-size: cover;
+          background-position: center;
+          background-attachment: fixed;
+          filter: saturate(0) brightness(0.15) contrast(1.1);
+          opacity: 0.4;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        /* Scanlines effect */
+        .article-body-wrapper__scanlines {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0,0,0,0.03) 2px,
+            rgba(0,0,0,0.03) 4px
+          );
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        /* Grain texture */
+        .article-body-wrapper__grain {
+          position: fixed;
+          top: -50%;
+          left: -50%;
+          right: -50%;
+          bottom: -50%;
+          width: 200%;
+          height: 200%;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+          pointer-events: none;
+          z-index: 1;
+          opacity: 0.5;
+        }
+
+        .article-body-content {
+          position: relative;
+          z-index: 2;
+        }
+
+        /* ============================================
+           ARTICLE CONTENT TYPOGRAPHY — METAL STYLE
+           ============================================ */
+        .article-content {
+          color: #d8cec4;
+          font-family: 'Cinzel', serif;
+          font-size: 0.95rem;
+          line-height: 2;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          hyphens: auto;
+          font-weight: 400;
+        }
+
+        @media (min-width: 640px) {
           .article-content {
-            color: #e0d6cc;
             font-size: 1rem;
-            line-height: 1.85;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
+            line-height: 2.05;
           }
-          
-          @media (min-width: 640px) {
-            .article-content {
-              font-size: 1.075rem;
-              line-height: 1.9;
-            }
+        }
+
+        @media (min-width: 768px) {
+          .article-content {
+            font-size: 1.05rem;
+            line-height: 2.1;
           }
-          
-          @media (min-width: 768px) {
-            .article-content {
-              font-size: 1.125rem;
-              line-height: 1.95;
-            }
-          }
+        }
 
-          .article-content p {
-            margin-bottom: 1.25em;
-            max-width: 100%;
-          }
+        .article-content p {
+          margin-bottom: 1.5em;
+          max-width: 100%;
+        }
 
-          .article-content h1,
-          .article-content h2,
-          .article-content h3 {
-            color: #fff;
-            text-transform: uppercase;
-            margin-top: 2em;
-            margin-bottom: 0.75em;
-            line-height: 1.3;
-            word-break: break-word;
-          }
+        /* Drop cap en el primer párrafo */
+        .article-content > p:first-of-type::first-letter {
+          font-family: 'Cinzel Decorative', serif;
+          font-size: 3.5em;
+          float: left;
+          line-height: 0.8;
+          margin-right: 0.1em;
+          margin-top: 0.05em;
+          color: #c4704b;
+          text-shadow: 0 0 20px rgba(196, 112, 75, 0.4);
+          font-weight: 900;
+        }
 
-          .article-content h1 { font-size: 1.75rem; }
-          .article-content h2 { font-size: 1.4rem; }
-          .article-content h3 { font-size: 1.15rem; }
+        .article-content h1,
+        .article-content h2,
+        .article-content h3 {
+          font-family: 'Cinzel Decorative', 'Cinzel', serif;
+          color: #f0e6d8;
+          text-transform: uppercase;
+          margin-top: 2.5em;
+          margin-bottom: 0.75em;
+          line-height: 1.3;
+          word-break: break-word;
+          text-shadow: 0 0 20px rgba(196, 112, 75, 0.2);
+          letter-spacing: 0.02em;
+        }
 
-          @media (min-width: 768px) {
-            .article-content h1 { font-size: 2.25rem; }
-            .article-content h2 { font-size: 1.75rem; }
-            .article-content h3 { font-size: 1.35rem; }
-          }
+        .article-content h1 { font-size: 1.6rem; font-weight: 700; }
+        .article-content h2 { font-size: 1.3rem; font-weight: 600; }
+        .article-content h3 { font-size: 1.1rem; font-weight: 500; }
 
-          .article-content strong,
-          .article-content b {
-            color: #ffffff;
-            font-weight: 700;
-          }
+        @media (min-width: 768px) {
+          .article-content h1 { font-size: 2rem; }
+          .article-content h2 { font-size: 1.6rem; }
+          .article-content h3 { font-size: 1.25rem; }
+        }
 
-          .article-content em,
-          .article-content i {
-            font-style: italic;
-            color: #d4c5b5;
-          }
+        .article-content strong,
+        .article-content b {
+          color: #f0e6d8;
+          font-weight: 700;
+          text-shadow: 0 0 8px rgba(240, 230, 216, 0.1);
+        }
 
-          .article-content a {
-            color: #c4704b;
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            transition: color 0.2s ease;
-          }
+        .article-content em,
+        .article-content i {
+          font-style: italic;
+          color: #c4a882;
+        }
 
-          .article-content a:hover {
-            color: #e8956e;
-          }
+        .article-content a {
+          color: #c4704b;
+          text-decoration: none;
+          border-bottom: 1px solid rgba(196, 112, 75, 0.4);
+          transition: all 0.3s ease;
+          padding-bottom: 1px;
+        }
 
-          .article-content ul,
-          .article-content ol {
-            padding-left: 1.5em;
-            margin-bottom: 1.25em;
-          }
+        .article-content a:hover {
+          color: #e8956e;
+          border-bottom-color: #e8956e;
+          text-shadow: 0 0 12px rgba(196, 112, 75, 0.3);
+        }
 
-          .article-content li {
-            margin-bottom: 0.5em;
-          }
+        .article-content ul,
+        .article-content ol {
+          padding-left: 1.5em;
+          margin-bottom: 1.5em;
+        }
 
-          .article-content ul li {
-            list-style-type: disc;
-          }
+        .article-content li {
+          margin-bottom: 0.6em;
+        }
 
-          .article-content ol li {
-            list-style-type: decimal;
-          }
+        .article-content ul li {
+          list-style-type: '⛧ ';
+        }
 
-          .article-content blockquote {
-            border-left: 3px solid #c4704b;
-            padding: 0.75em 1em;
-            margin: 1.5em 0;
-            background: rgba(255,255,255,0.03);
-            font-style: italic;
-            color: #d4c5b5;
-          }
+        .article-content ol li {
+          list-style-type: decimal;
+        }
 
-          .article-content img {
-            max-width: 100%;
-            height: auto;
-            margin: 1.5em 0;
-            border: 1px solid rgba(255,255,255,0.1);
-          }
+        .article-content blockquote {
+          border-left: 3px solid #c4704b;
+          padding: 1em 1.5em;
+          margin: 2em 0;
+          background: rgba(196, 112, 75, 0.05);
+          font-style: italic;
+          color: #c4a882;
+          position: relative;
+        }
 
-          .article-content .yt-embed-wrapper {
-            border-radius: 2px;
-          }
+        .article-content blockquote::before {
+          content: '"';
+          font-family: 'Cinzel Decorative', serif;
+          font-size: 4rem;
+          color: rgba(196, 112, 75, 0.15);
+          position: absolute;
+          top: -10px;
+          left: 10px;
+          line-height: 1;
+        }
 
-          .article-content pre,
-          .article-content code {
-            background: rgba(255,255,255,0.05);
-            padding: 0.2em 0.4em;
-            font-size: 0.9em;
-            border: 1px solid rgba(255,255,255,0.08);
-          }
+        .article-content img {
+          max-width: 100%;
+          height: auto;
+          margin: 2em 0;
+          border: 1px solid rgba(196, 112, 75, 0.2);
+          box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
 
-          .article-content pre {
-            padding: 1em;
-            overflow-x: auto;
-            margin: 1.5em 0;
-          }
+        /* YouTube embeds */
+        .article-content .yt-embed-wrapper {
+          position: relative;
+          padding-bottom: 56.25%;
+          height: 0;
+          overflow: hidden;
+          margin: 2.5rem 0;
+          border: 1px solid rgba(196, 112, 75, 0.3);
+          box-shadow: 
+            0 4px 40px rgba(0,0,0,0.6),
+            0 0 60px rgba(196, 112, 75, 0.08);
+          background: #000;
+        }
 
-          /* Quill classes */
-          .article-content .ql-align-center { text-align: center; }
-          .article-content .ql-align-right { text-align: right; }
-          .article-content .ql-align-justify { text-align: justify; }
+        .article-content .yt-embed-wrapper iframe {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border: none;
+        }
 
-          .article-content .ql-size-small { font-size: 0.85em; }
-          .article-content .ql-size-large { font-size: 1.35em; }
-          .article-content .ql-size-huge { font-size: 1.75em; }
-        `}</style>
+        .article-content pre,
+        .article-content code {
+          background: rgba(255,255,255,0.04);
+          padding: 0.2em 0.5em;
+          font-size: 0.85em;
+          font-family: 'JetBrains Mono', monospace;
+          border: 1px solid rgba(255,255,255,0.06);
+          color: #c4704b;
+        }
 
-        <div 
-          className="article-content"
-          dangerouslySetInnerHTML={{ __html: processedContent }} 
-        />
-        
-        {/* Footer / Navigation */}
-        <div className="mt-16 md:mt-20 pt-8 md:pt-10 border-t border-outline-variant">
-          <Link href="/enciclopedia" className="text-on-surface-variant font-label-technical hover:text-primary transition-colors flex items-center gap-2 text-sm uppercase">
-            <span className="material-symbols-outlined">arrow_back</span>
-            VOLVER AL ARCHIVO GENERAL
-          </Link>
+        .article-content pre {
+          padding: 1.25em;
+          overflow-x: auto;
+          margin: 2em 0;
+        }
+
+        /* Quill alignment classes */
+        .article-content .ql-align-center { text-align: center; }
+        .article-content .ql-align-right { text-align: right; }
+        .article-content .ql-align-justify { text-align: justify; }
+
+        .article-content .ql-size-small { font-size: 0.85em; }
+        .article-content .ql-size-large { font-size: 1.3em; }
+        .article-content .ql-size-huge { font-size: 1.7em; }
+
+        /* ============================================
+           DECORATIVE ELEMENTS
+           ============================================ */
+        .metal-separator {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin: 3rem 0;
+          opacity: 0.4;
+        }
+
+        .metal-separator__line {
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, #c4704b, transparent);
+        }
+
+        .metal-separator__icon {
+          color: #c4704b;
+          font-size: 0.7rem;
+          font-family: 'Cinzel Decorative', serif;
+        }
+      `}</style>
+
+      <main className="min-h-screen bg-background">
+        {/* ===== HERO SECTION ===== */}
+        <section className="article-hero">
+          <div 
+            className="article-hero__bg"
+            style={{ backgroundImage: `url('${article.imageUrl || ''}')` }}
+          />
+          <div className="article-hero__overlay" />
+          <div className="article-hero__vignette" />
+
+          <div className="relative z-10 w-full max-w-4xl mx-auto px-6 md:px-12 lg:px-16">
+            {/* Category badges */}
+            <div className="flex flex-wrap gap-3 mb-5">
+              <span className="bg-primary-container/80 text-white px-4 py-1.5 font-mono-technical text-[10px] md:text-xs uppercase tracking-widest backdrop-blur-sm">
+                {article.category}
+              </span>
+              <span className="border border-outline-variant/50 text-on-surface-variant/80 px-4 py-1.5 font-mono-technical text-[10px] md:text-xs uppercase tracking-widest backdrop-blur-sm">
+                ⏱ {article.readTime || '5 MIN'}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h1 className="article-hero__title">
+              {article.title}
+            </h1>
+
+            <div className="article-hero__divider" />
+
+            {/* Meta */}
+            <p className="font-mono-technical text-primary/70 tracking-widest uppercase text-[10px] md:text-xs">
+              PUBLICADO: {new Date(article.createdAt || Date.now()).toISOString().split('T')[0]} &nbsp;&#47;&#47;&nbsp; ARCHIVO: ART-{article.id.toString().slice(-4)}-X
+            </p>
+          </div>
+        </section>
+
+        {/* ===== ARTICLE BODY ===== */}
+        <div className="article-body-wrapper">
+          {/* Background image (portada) sutil y fija */}
+          <div 
+            className="article-body-wrapper__bg"
+            style={{ backgroundImage: `url('${article.imageUrl || ''}')` }}
+          />
+          {/* Atmospheric overlays */}
+          <div className="article-body-wrapper__scanlines" />
+          <div className="article-body-wrapper__grain" />
+
+          {/* Content */}
+          <section className="article-body-content py-12 md:py-20 lg:py-24 px-6 md:px-12 lg:px-16 max-w-4xl mx-auto">
+            {/* Decorative separator */}
+            <div className="metal-separator">
+              <div className="metal-separator__line" />
+              <span className="metal-separator__icon">⛧ ⛧ ⛧</span>
+              <div className="metal-separator__line" />
+            </div>
+
+            {/* Article content */}
+            <div 
+              className="article-content"
+              dangerouslySetInnerHTML={{ __html: processedContent }} 
+            />
+
+            {/* Bottom separator */}
+            <div className="metal-separator">
+              <div className="metal-separator__line" />
+              <span className="metal-separator__icon">⛧ ⛧ ⛧</span>
+              <div className="metal-separator__line" />
+            </div>
+
+            {/* Navigation */}
+            <div className="mt-8 md:mt-12 pt-6 border-t border-outline-variant/30">
+              <Link href="/enciclopedia" className="text-on-surface-variant/60 font-mono-technical hover:text-primary transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group">
+                <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                VOLVER AL ARCHIVO GENERAL
+              </Link>
+            </div>
+          </section>
         </div>
-      </section>
-    </main>
+      </main>
+    </>
   );
 }
