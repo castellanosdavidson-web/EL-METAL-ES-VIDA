@@ -43,9 +43,9 @@ export default function Header({ onOpenMenu }: HeaderProps) {
           <span className="text-headline-md md:text-headline-lg font-headline-lg uppercase tracking-tighter text-primary">EL METAL ES VIDA</span>
         </Link>
         <div className="flex items-center gap-6">
-          <button className="text-on-surface-variant hover:text-primary transition-colors duration-200 hidden md:block">
+          <Link href="/admin" className="text-on-surface-variant hover:text-primary transition-colors duration-200 hidden md:block">
             <span className="material-symbols-outlined text-3xl">account_circle</span>
-          </button>
+          </Link>
           <button onClick={onOpenMenu} className="text-on-surface-variant hover:text-primary transition-colors duration-200 flex items-center gap-2 group">
             <span className="font-label-technical text-label-technical uppercase hidden md:inline-block group-hover:text-primary">Archivo</span>
             <span className="material-symbols-outlined text-3xl">menu</span>

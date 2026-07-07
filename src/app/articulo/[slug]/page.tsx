@@ -138,30 +138,31 @@ export default function ArticuloPage() {
         }
 
         .article-hero__title {
-          font-family: 'Cinzel Decorative', 'Cinzel', serif;
+          font-family: 'Cinzel', serif;
           text-transform: uppercase;
           color: #f0e6d8;
           text-shadow: 
-            0 0 40px rgba(196, 112, 75, 0.3),
+            0 0 30px rgba(196, 112, 75, 0.25),
             0 4px 20px rgba(0,0,0,0.8);
-          line-height: 1.15;
-          letter-spacing: 0.03em;
+          line-height: 1.25;
+          letter-spacing: 0.08em;
+          word-spacing: 0.12em;
           word-break: break-word;
-          font-size: 1.6rem;
-          font-weight: 700;
+          font-size: 1.5rem;
+          font-weight: 600;
         }
 
         @media (min-width: 480px) {
-          .article-hero__title { font-size: 2rem; }
+          .article-hero__title { font-size: 1.8rem; }
         }
         @media (min-width: 640px) {
-          .article-hero__title { font-size: 2.4rem; }
+          .article-hero__title { font-size: 2.1rem; }
         }
         @media (min-width: 768px) {
-          .article-hero__title { font-size: 2.8rem; }
+          .article-hero__title { font-size: 2.5rem; }
         }
         @media (min-width: 1024px) {
-          .article-hero__title { font-size: 3.4rem; }
+          .article-hero__title { font-size: 3rem; }
         }
 
         .article-hero__divider {
@@ -247,32 +248,33 @@ export default function ArticuloPage() {
         .article-content h1,
         .article-content h2,
         .article-content h3 {
-          font-family: 'Cinzel Decorative', 'Cinzel', serif;
+          font-family: 'Cinzel', serif;
           color: #f0e6d8;
           text-transform: uppercase;
           margin-top: 2.5em;
           margin-bottom: 0.75em;
-          line-height: 1.3;
+          line-height: 1.35;
           word-break: break-word;
-          text-shadow: 0 0 20px rgba(196, 112, 75, 0.2);
-          letter-spacing: 0.02em;
+          text-shadow: 0 0 15px rgba(196, 112, 75, 0.15);
+          letter-spacing: 0.06em;
+          word-spacing: 0.1em;
         }
 
-        .article-content h1 { font-size: 1.6rem; font-weight: 700; }
-        .article-content h2 { font-size: 1.3rem; font-weight: 600; }
-        .article-content h3 { font-size: 1.1rem; font-weight: 500; }
+        .article-content h1 { font-size: 1.5rem; font-weight: 600; }
+        .article-content h2 { font-size: 1.25rem; font-weight: 600; }
+        .article-content h3 { font-size: 1.05rem; font-weight: 500; }
 
         @media (min-width: 768px) {
-          .article-content h1 { font-size: 2rem; }
-          .article-content h2 { font-size: 1.6rem; }
-          .article-content h3 { font-size: 1.25rem; }
+          .article-content h1 { font-size: 1.85rem; }
+          .article-content h2 { font-size: 1.5rem; }
+          .article-content h3 { font-size: 1.2rem; }
         }
 
         .article-content strong,
         .article-content b {
           color: #f0e6d8;
-          font-weight: 700;
-          text-shadow: 0 0 8px rgba(240, 230, 216, 0.1);
+          font-weight: 600;
+          letter-spacing: 0.02em;
         }
 
         .article-content em,
