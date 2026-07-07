@@ -35,7 +35,7 @@ export default function UsuariosPage() {
     if (subscribers.length === 0) return;
     
     const headers = ['Email', 'Fecha de Registro'];
-    const csvRows = [headers.join(',')];
+    const csvRows = ['sep=,', headers.join(',')];
     
     subscribers.forEach(sub => {
       const date = new Date(sub.created_at).toISOString();

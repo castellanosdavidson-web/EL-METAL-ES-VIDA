@@ -14,7 +14,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
-    <div className={isAdmin ? '' : 'pb-[76px] md:pb-[88px]'}>
+    <div className={isAdmin ? '' : 'pb-[92px] md:pb-[96px]'}>
       {!isAdmin && <Header onOpenMenu={() => setIsDrawerOpen(true)} />}
       {!isAdmin && <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />}
       {children}
