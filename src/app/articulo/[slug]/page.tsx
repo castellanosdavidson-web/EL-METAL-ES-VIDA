@@ -45,7 +45,9 @@ function createYouTubeEmbed(videoId: string): string {
 export default function ArticuloPage() {
   const { slug } = useParams();
   const [article, setArticle] = useState<any>(null);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     fetch('/api/articles')
@@ -54,6 +56,14 @@ export default function ArticuloPage() {
         if (!data.error) {
           const found = data.find((a: any) => a.slug === slug || a.id.toString() === slug);
           setArticle(found);
+          if (found) {
+            const others = data.filter((a: any) => a.id !== found.id);
+            const shuffledOthers = others
+              .map((value: any) => ({ value, sort: Math.random() }))
+              .sort((a: any, b: any) => a.sort - b.sort)
+              .map(({ value }: any) => value);
+            setRecommendations(shuffledOthers.slice(0, 3));
+          }
         }
       })
       .catch(console.error)
@@ -209,7 +219,9 @@ export default function ArticuloPage() {
           line-height: 2;
           word-wrap: break-word;
           overflow-wrap: break-word;
-          hyphens: auto;
+          hyphens: none !important;
+          word-break: normal !important;
+          text-align: justify;
           font-weight: 400;
         }
 
@@ -479,6 +491,84 @@ export default function ArticuloPage() {
               <span className="metal-separator__icon">⛧ ⛧ ⛧</span>
               <div className="metal-separator__line" />
             </div>
+
+            {/* Share section */}
+            <div className="my-8 p-6 bg-surface-container/30 border border-outline-variant/20 rounded">
+              <h3 className="font-label-technical text-label-technical uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm">share</span>
+                Compartir Documento
+              </h3>
+              <div className="flex flex-wrap gap-4">
+                <a 
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-2 px-4 py-2 border border-outline-variant text-[11px] uppercase tracking-wider font-mono-technical text-on-surface-variant hover:text-primary hover:border-primary transition-all duration-300"
+                >
+                  Facebook
+                </a>
+                <a 
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&text=${encodeURIComponent(article.title || '')}`}
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-2 px-4 py-2 border border-outline-variant text-[11px] uppercase tracking-wider font-mono-technical text-on-surface-variant hover:text-primary hover:border-primary transition-all duration-300"
+                >
+                  Twitter / X
+                </a>
+                <a 
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent((article.title || '') + ' ' + (typeof window !== 'undefined' ? window.location.href : ''))}`}
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-2 px-4 py-2 border border-outline-variant text-[11px] uppercase tracking-wider font-mono-technical text-on-surface-variant hover:text-primary hover:border-primary transition-all duration-300"
+                >
+                  WhatsApp
+                </a>
+                <button 
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      navigator.clipboard.writeText(window.location.href);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary-container/20 border border-primary-container text-[11px] uppercase tracking-wider font-mono-technical text-primary hover:bg-primary-container/40 transition-all duration-300"
+                >
+                  {copied ? '¡ENLACE COPIADO!' : 'COPIAR ENLACE'}
+                </button>
+              </div>
+            </div>
+
+            {/* Recommendations Section */}
+            {recommendations.length > 0 && (
+              <div className="my-12 pt-8 border-t border-outline-variant/20">
+                <h3 className="font-headline-md text-headline-md text-on-surface uppercase mb-6 tracking-wide">MÁS EXPEDIENTES RECOMENDADOS</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {recommendations.map((rec) => (
+                    <Link key={rec.id} href={`/articulo/${rec.slug || rec.id}`} className="flex flex-col border border-outline-variant/10 bg-surface-container-lowest/30 hover:border-primary/50 transition-all group overflow-hidden">
+                      <div className="h-32 w-full overflow-hidden relative">
+                        <img 
+                          src={rec.imageUrl} 
+                          alt={rec.title} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-80" />
+                        <span className="absolute bottom-2 left-2 bg-primary-container/95 text-white px-2 py-0.5 text-[8px] font-mono-technical tracking-wider uppercase">
+                          {rec.category}
+                        </span>
+                      </div>
+                      <div className="p-4 flex-grow flex flex-col justify-between">
+                        <h4 className="font-headline-md text-sm text-on-surface line-clamp-2 uppercase tracking-wide group-hover:text-primary transition-colors">
+                          {rec.title}
+                        </h4>
+                        <span className="text-[9px] font-mono-technical text-on-surface-variant/60 block mt-2 uppercase">
+                          LEER EXPEDIENTE
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Navigation */}
             <div className="mt-8 md:mt-12 pt-6 border-t border-outline-variant/30">

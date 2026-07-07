@@ -29,14 +29,15 @@ export async function POST(request: Request) {
 
     const serviceSupabase = getServiceSupabase();
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}_editor.${fileExt}`;
+    const filenameParam = formData.get('filename') as string;
+    const fileName = filenameParam ? filenameParam : `${Date.now()}_editor.${fileExt}`;
 
     // 3. Subir usando la cuenta de servicio (service role) que tiene bypass RLS
     const { error: uploadError } = await serviceSupabase.storage
       .from('articles')
       .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
+        cacheControl: filenameParam ? '0' : '3600',
+        upsert: filenameParam ? true : false,
       });
 
     if (uploadError) throw uploadError;

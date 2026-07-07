@@ -54,15 +54,23 @@ export default function AjustesPage() {
     const file = e.target.files[0];
     setUploadingLogo(true);
     try {
-      const { error } = await supabase.storage
-        .from('articles')
-        .upload('logo.png', file, { upsert: true, cacheControl: '0' });
-      
-      if (error) {
-        alert('Error subiendo logo: ' + error.message);
+      const { data: { session } } = await supabase.auth.getSession();
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filename', 'logo.png');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session?.access_token}`
+        },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert('Error subiendo logo: ' + data.error);
       } else {
-        const { data } = supabase.storage.from('articles').getPublicUrl('logo.png');
-        setLogoUrl(data.publicUrl + '?t=' + Date.now());
+        setLogoUrl(data.url + '?t=' + Date.now());
       }
     } catch (err: any) {
       alert('Error: ' + err.message);
@@ -76,15 +84,23 @@ export default function AjustesPage() {
     const file = e.target.files[0];
     setUploadingCover(true);
     try {
-      const { error } = await supabase.storage
-        .from('articles')
-        .upload('cover.png', file, { upsert: true, cacheControl: '0' });
-      
-      if (error) {
-        alert('Error subiendo carátula: ' + error.message);
+      const { data: { session } } = await supabase.auth.getSession();
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filename', 'cover.png');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session?.access_token}`
+        },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert('Error subiendo carátula: ' + data.error);
       } else {
-        const { data } = supabase.storage.from('articles').getPublicUrl('cover.png');
-        setCoverUrl(data.publicUrl + '?t=' + Date.now());
+        setCoverUrl(data.url + '?t=' + Date.now());
       }
     } catch (err: any) {
       alert('Error: ' + err.message);
@@ -98,15 +114,23 @@ export default function AjustesPage() {
     const file = e.target.files[0];
     setUploadingAvatar(true);
     try {
-      const { error } = await supabase.storage
-        .from('articles')
-        .upload('avatar.png', file, { upsert: true, cacheControl: '0' });
-      
-      if (error) {
-        alert('Error subiendo avatar: ' + error.message);
+      const { data: { session } } = await supabase.auth.getSession();
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filename', 'avatar.png');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session?.access_token}`
+        },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert('Error subiendo foto de perfil: ' + data.error);
       } else {
-        const { data } = supabase.storage.from('articles').getPublicUrl('avatar.png');
-        setAvatarUrl(data.publicUrl + '?t=' + Date.now());
+        setAvatarUrl(data.url + '?t=' + Date.now());
       }
     } catch (err: any) {
       alert('Error: ' + err.message);
@@ -140,8 +164,6 @@ export default function AjustesPage() {
         {/* Navigation Tabs (Local) */}
         <div className="flex border-b border-outline-variant/20 gap-8 pb-0">
           <button className="border-b-2 border-primary-container pb-4 px-2 font-label-sm text-label-sm uppercase tracking-widest text-on-surface">Visión General</button>
-          <button className="pb-4 px-2 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">Logs</button>
-          <button className="pb-4 px-2 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">Acceso API</button>
         </div>
 
         <div className="grid grid-cols-1 gap-12">

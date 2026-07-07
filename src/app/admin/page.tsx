@@ -165,6 +165,7 @@ export default function AdminDashboard() {
                 <div className="flex flex-col gap-2">
                   <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Categoría</label>
                   <select name="category" className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical">
+                    <option value="Noticias">Noticias</option>
                     <option value="Documental Histórico">Documental Histórico</option>
                     <option value="Análisis Técnico">Análisis Técnico</option>
                     <option value="Ciencia Sonora">Ciencia Sonora</option>

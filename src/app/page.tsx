@@ -12,7 +12,11 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
-          setArticles(data.slice(0, 3));
+          const shuffled = data
+            .map((value: any) => ({ value, sort: Math.random() }))
+            .sort((a: any, b: any) => a.sort - b.sort)
+            .map(({ value }: any) => value);
+          setArticles(shuffled.slice(0, 3));
         }
       })
       .catch(console.error)
