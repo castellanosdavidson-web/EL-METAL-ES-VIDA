@@ -5,7 +5,10 @@ import Link from 'next/link';
 function processYouTubeEmbeds(html: string): string {
   if (!html) return '';
 
-  let processed = html;
+  // Limpiar espacios no divisibles (&nbsp; y \u00a0) para evitar que el navegador pegue las palabras
+  let processed = html
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\u00a0/g, ' ');
 
   // Primero: reemplazar enlaces <a> que apuntan a YouTube
   processed = processed.replace(
@@ -191,8 +194,8 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
           font-family: 'Lora', Georgia, serif;
           font-size: 1.05rem;
           line-height: 1.85;
-          word-wrap: break-word;
-          overflow-wrap: break-word;
+          word-wrap: normal !important;
+          overflow-wrap: normal !important;
           hyphens: none !important;
           word-break: normal !important;
           text-align: justify;
