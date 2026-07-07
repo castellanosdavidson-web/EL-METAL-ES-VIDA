@@ -18,6 +18,72 @@ export default function ArticulosPage() {
   const [desc, setDesc] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
 
+  const quillModules = React.useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [{'list': 'ordered'}, {'list': 'bullet'}],
+        ['link', 'image', 'video'],
+        ['clean']
+      ],
+      handlers: {
+        image: function(this: any) {
+          const quill = this.quill;
+          
+          const choice = confirm(
+            "¿Deseas SUBIR una imagen desde tu PC?\n\n- Presiona 'Aceptar' para subir desde tu PC.\n- Presiona 'Cancelar' para ingresar una URL de Internet."
+          );
+          
+          if (choice) {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.onchange = async () => {
+              const file = input.files?.[0];
+              if (file) {
+                try {
+                  const fileExt = file.name.split('.').pop();
+                  const fileName = `${Date.now()}_editor.${fileExt}`;
+                  
+                  const { data, error } = await supabase.storage
+                    .from('articles')
+                    .upload(fileName, file, {
+                      cacheControl: '3600',
+                      upsert: false
+                    });
+                    
+                  if (error) throw error;
+                  
+                  const { data: publicUrlData } = supabase.storage
+                    .from('articles')
+                    .getPublicUrl(fileName);
+                    
+                  const range = quill.getSelection();
+                  if (range) {
+                    quill.insertEmbed(range.index, 'image', publicUrlData.publicUrl);
+                  }
+                } catch (err: any) {
+                  alert(`Error al subir la imagen: ${err.message}`);
+                }
+              }
+            };
+          } else {
+            const url = prompt("Ingresa la URL de la imagen (debe iniciar con http:// o https://):");
+            if (url) {
+              const range = quill.getSelection();
+              if (range) {
+                quill.insertEmbed(range.index, 'image', url);
+              }
+            }
+          }
+        }
+      }
+    }
+  }), []);
+
   useEffect(() => {
     fetchArticles();
   }, []);
@@ -311,7 +377,14 @@ export default function ArticulosPage() {
               <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Descripción / Contenido</label>
                 <div className="bg-surface border border-outline-variant text-on-surface">
-                  <ReactQuill theme="snow" value={desc} onChange={setDesc} className="bg-background text-on-surface font-body-md" placeholder="Extracto o contenido del artículo (soporta formato, enlaces, videos, etc)..." />
+                  <ReactQuill 
+                    theme="snow" 
+                    value={desc} 
+                    onChange={setDesc} 
+                    modules={quillModules}
+                    className="bg-background text-on-surface font-body-md" 
+                    placeholder="Extracto o contenido del artículo (soporta formato, enlaces, videos, etc)..." 
+                  />
                 </div>
               </div>
 
