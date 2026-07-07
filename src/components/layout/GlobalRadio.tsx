@@ -4,8 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 const STATIONS = [
   { id: 'rockantenne', name: 'Rock Antenne Heavy', url: 'https://stream.rockantenne.de/heavy-metal/stream/mp3', tagline: 'Clásicos y Heavy Metal 24/7' },
   { id: 'maximusrock', name: 'Maximus Rock FM', url: 'https://stream.laut.fm/maximusrockfm', tagline: 'Rock & Metal en Castellano' },
-  { id: 'distorsion', name: 'Distorsión FM', url: 'https://tunein.radiomaniacos.cl/distorsion.mp3', tagline: 'Metal Latinoamericano y Clásico' },
-  { id: 'nevermore', name: 'Nevermore Radio', url: 'https://panel.nevermorenetwork.com/listen/nevermorenetwork.com/radio.mp3', tagline: 'Programación Extrema y Entrevistas' }
+  { id: 'metalonly', name: 'Metal Only', url: 'https://stream.laut.fm/metal-only', tagline: 'El soberano del metal alemán' },
+  { id: 'classicmetal', name: 'Classic Metal Radio', url: 'https://stream.laut.fm/classic-metal', tagline: 'Heavy, Thrash y Power Metal clásico' }
 ];
 
 export default function GlobalRadio() {
