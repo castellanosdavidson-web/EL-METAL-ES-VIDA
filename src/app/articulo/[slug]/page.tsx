@@ -117,8 +117,9 @@ export default function ArticuloPage() {
           inset: 0;
           background-size: cover;
           background-position: center;
-          filter: saturate(0.3) contrast(1.2);
-          opacity: 0.5;
+          opacity: 0.35;
+          will-change: transform;
+          transform: translateZ(0);
         }
 
         .article-hero__overlay {
@@ -127,18 +128,13 @@ export default function ArticuloPage() {
           background: linear-gradient(
             to top,
             #0d0907 0%,
-            #0d0907ee 25%,
-            #0d0907aa 50%,
-            #0d090744 75%,
+            #0d0907ee 30%,
+            #0d0907aa 55%,
+            #0d090744 80%,
             #0d090722 100%
           );
-        }
-
-        .article-hero__vignette {
-          position: absolute;
-          inset: 0;
-          box-shadow: inset 0 0 150px 60px rgba(0,0,0,0.8);
-          pointer-events: none;
+          will-change: transform;
+          transform: translateZ(0);
         }
 
         .article-hero__title {
@@ -180,55 +176,21 @@ export default function ArticuloPage() {
            ============================================ */
         .article-body-wrapper {
           position: relative;
-          overflow: hidden;
         }
 
         .article-body-wrapper__bg {
-          position: fixed;
+          position: absolute;
           top: 0;
           left: 0;
           right: 0;
-          bottom: 0;
+          height: 100%;
           background-size: cover;
-          background-position: center;
-          background-attachment: fixed;
-          filter: saturate(0) brightness(0.15) contrast(1.1);
-          opacity: 0.4;
+          background-position: center top;
+          opacity: 0.08;
           pointer-events: none;
           z-index: 0;
-        }
-
-        /* Scanlines effect */
-        .article-body-wrapper__scanlines {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            rgba(0,0,0,0.03) 2px,
-            rgba(0,0,0,0.03) 4px
-          );
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        /* Grain texture */
-        .article-body-wrapper__grain {
-          position: fixed;
-          top: -50%;
-          left: -50%;
-          right: -50%;
-          bottom: -50%;
-          width: 200%;
-          height: 200%;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-          pointer-events: none;
-          z-index: 1;
-          opacity: 0.5;
+          will-change: transform;
+          transform: translateZ(0);
         }
 
         .article-body-content {
@@ -460,7 +422,6 @@ export default function ArticuloPage() {
             style={{ backgroundImage: `url('${article.imageUrl || ''}')` }}
           />
           <div className="article-hero__overlay" />
-          <div className="article-hero__vignette" />
 
           <div className="relative z-10 w-full max-w-4xl mx-auto px-6 md:px-12 lg:px-16">
             {/* Category badges */}
@@ -494,9 +455,6 @@ export default function ArticuloPage() {
             className="article-body-wrapper__bg"
             style={{ backgroundImage: `url('${article.imageUrl || ''}')` }}
           />
-          {/* Atmospheric overlays */}
-          <div className="article-body-wrapper__scanlines" />
-          <div className="article-body-wrapper__grain" />
 
           {/* Content */}
           <section className="article-body-content py-12 md:py-20 lg:py-24 px-6 md:px-12 lg:px-16 max-w-4xl mx-auto">
