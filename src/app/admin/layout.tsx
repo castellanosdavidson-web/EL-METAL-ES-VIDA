@@ -10,6 +10,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sessionUser, setSessionUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
 
+  const [adminName, setAdminName] = React.useState('OPERATOR_01');
+  const [avatarUrl, setAvatarUrl] = React.useState('');
+
   React.useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session && pathname !== '/admin/login') {
@@ -27,6 +30,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         setSessionUser(session?.user);
       }
     });
+
+    // Cargar perfil dinámico
+    const storedName = localStorage.getItem('admin_name');
+    if (storedName) setAdminName(storedName);
+    
+    const { data } = supabase.storage.from('articles').getPublicUrl('avatar.png');
+    if (data && data.publicUrl) {
+      setAvatarUrl(data.publicUrl + '?t=' + Date.now());
+    }
 
     return () => subscription.unsubscribe();
   }, [pathname, router]);
@@ -57,19 +69,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="bg-background min-h-screen text-on-surface font-body-md overflow-x-hidden flex">
       {/* SideNavBar */}
       <aside className="fixed left-0 top-0 h-screen flex flex-col border-r border-outline-variant/20 bg-surface-dim w-64 z-50">
-        <div className="p-gutter flex flex-col gap-base">
-          <h1 className="font-headline-md text-headline-md text-primary tracking-tighter uppercase font-bold mt-4">METAL_ARCHIVE</h1>
-          <div className="flex items-center gap-stack-tight mt-stack-loose">
-            <div className="w-10 h-10 bg-primary-container rounded-sm flex items-center justify-center overflow-hidden">
-              <span className="material-symbols-outlined text-white">person</span>
+        <div className="p-4 flex flex-col gap-2 border-b border-outline-variant/10">
+          <h1 className="font-mono-technical text-[10px] tracking-widest text-primary/60 uppercase">System console // ARCHIVE</h1>
+          <div className="flex items-center gap-2 mt-2">
+            <div className="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center overflow-hidden border border-outline-variant/30">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              ) : (
+                <span className="material-symbols-outlined text-white text-base">person</span>
+              )}
             </div>
             <div>
-              <p className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface">OPERATOR_01</p>
-              <p className="text-[10px] uppercase tracking-tighter text-on-surface-variant opacity-60">Administrador de Sistema</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface leading-none">{adminName}</p>
+              <p className="text-[8.5px] uppercase tracking-tighter text-on-surface-variant opacity-60 mt-0.5">Admin de Sistema</p>
             </div>
           </div>
         </div>
-        <nav className="flex-1 mt-stack-loose flex flex-col">
+        <nav className="flex-1 mt-4 flex flex-col">
           <Link className={getLinkClass('/admin')} href="/admin">
             <span className="material-symbols-outlined" style={pathname === '/admin' ? { fontVariationSettings: "'FILL' 1" } : {}}>dashboard</span>
             <span className="font-label-sm text-label-sm uppercase tracking-widest">Dashboard</span>
@@ -77,10 +93,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link className={getLinkClass('/admin/articulos')} href="/admin/articulos">
             <span className="material-symbols-outlined" style={pathname.includes('/articulos') ? { fontVariationSettings: "'FILL' 1" } : {}}>article</span>
             <span className="font-label-sm text-label-sm uppercase tracking-widest">Artículos</span>
-          </Link>
-          <Link className={getLinkClass('/admin/productos')} href="/admin/productos">
-            <span className="material-symbols-outlined" style={pathname.includes('/productos') ? { fontVariationSettings: "'FILL' 1" } : {}}>inventory_2</span>
-            <span className="font-label-sm text-label-sm uppercase tracking-widest">Productos</span>
           </Link>
 
           <Link className={getLinkClass('/admin/usuarios')} href="/admin/usuarios">

@@ -67,26 +67,12 @@ export default function AdminDashboard() {
   return (
     <main className="p-8 flex-1">
       {/* Quick Stats Bento Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-masonry-gap mb-stack-loose">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-masonry-gap mb-stack-loose">
         <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
           <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Artículos</span>
           <div className="flex items-baseline justify-between mt-base">
             <span className="font-display-lg text-display-lg text-primary">{articles.length}</span>
             <span className="text-primary-container material-symbols-outlined">article</span>
-          </div>
-        </div>
-        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Productos</span>
-          <div className="flex items-baseline justify-between mt-base">
-            <span className="font-display-lg text-display-lg text-primary">0</span>
-            <span className="text-primary-container material-symbols-outlined">inventory_2</span>
-          </div>
-        </div>
-        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Ventas del Mes</span>
-          <div className="flex items-baseline justify-between mt-base">
-            <span className="font-display-lg text-display-lg text-primary">$0</span>
-            <span className="text-primary-container material-symbols-outlined">payments</span>
           </div>
         </div>
         <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
@@ -100,7 +86,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-masonry-gap items-start">
         {/* Recents Articles Table */}
-        <div className="xl:col-span-2 technical-border overflow-hidden bg-surface-container-lowest">
+        <div className="xl:col-span-3 technical-border overflow-hidden bg-surface-container-lowest">
           <div className="bg-surface-variant/20 p-4 border-b border-outline-variant/20 flex justify-between items-center">
             <h2 className="font-headline-md text-headline-md text-on-surface">ARTÍCULOS RECIENTES</h2>
             <button onClick={() => setIsModalOpen(true)} className="bg-primary-container hover:bg-inverse-primary transition-colors px-4 py-2 text-white font-bold uppercase font-label-sm text-label-sm tracking-widest flex items-center gap-2">
@@ -140,16 +126,6 @@ export default function AdminDashboard() {
                 )}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        {/* Featured Products Placeholder */}
-        <div className="technical-border flex flex-col h-full bg-surface-container-lowest">
-          <div className="bg-surface-variant/20 p-4 border-b border-outline-variant/20 flex justify-between items-center">
-            <h2 className="font-headline-md text-headline-md text-on-surface">PRODUCTOS TOP</h2>
-          </div>
-          <div className="p-4 flex flex-col gap-4">
-            <p className="text-on-surface-variant text-sm text-center py-8">Conecta la tienda para ver estadísticas reales.</p>
           </div>
         </div>
       </div>

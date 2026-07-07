@@ -166,7 +166,7 @@ export default function Home() {
       </section>
 
       {/* Taller de Distorsión */}
-      <section className="py-24 bg-surface-dim relative overflow-hidden">
+      <section id="taller" className="py-24 bg-surface-dim relative overflow-hidden">
         <div className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
           <div className="border-l-4 border-primary-container pl-6 mb-12">
             <div className="flex items-center gap-3 mb-2">

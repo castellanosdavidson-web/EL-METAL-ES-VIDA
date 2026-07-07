@@ -48,15 +48,9 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
             </Link>
           </li>
           <li>
-            <Link onClick={onClose} href="/taller" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
+            <Link onClick={onClose} href="/#taller" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
               <span className="material-symbols-outlined">build</span>
               <span>Taller</span>
-            </Link>
-          </li>
-          <li>
-            <Link onClick={onClose} href="/tienda" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
-              <span className="material-symbols-outlined">shopping_cart</span>
-              <span>Tienda</span>
             </Link>
           </li>
           <li>

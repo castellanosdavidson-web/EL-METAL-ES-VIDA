@@ -12,6 +12,10 @@ export default function AjustesPage() {
   const [coverUrl, setCoverUrl] = useState('');
   const [uploadingCover, setUploadingCover] = useState(false);
 
+  const [adminName, setAdminName] = useState('OPERATOR_01');
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
   useEffect(() => {
     // Check if logo exists
     const checkLogo = async () => {
@@ -27,8 +31,22 @@ export default function AjustesPage() {
         setCoverUrl(data.publicUrl + '?t=' + Date.now());
       }
     };
+    // Check if avatar exists
+    const checkAvatar = async () => {
+      const { data } = supabase.storage.from('articles').getPublicUrl('avatar.png');
+      if (data && data.publicUrl) {
+        setAvatarUrl(data.publicUrl + '?t=' + Date.now());
+      }
+    };
+    
+    const storedName = localStorage.getItem('admin_name');
+    if (storedName) {
+      setAdminName(storedName);
+    }
+    
     checkLogo();
     checkCover();
+    checkAvatar();
   }, []);
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,9 +93,32 @@ export default function AjustesPage() {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setUploadingAvatar(true);
+    try {
+      const { error } = await supabase.storage
+        .from('articles')
+        .upload('avatar.png', file, { upsert: true, cacheControl: '0' });
+      
+      if (error) {
+        alert('Error subiendo avatar: ' + error.message);
+      } else {
+        const { data } = supabase.storage.from('articles').getPublicUrl('avatar.png');
+        setAvatarUrl(data.publicUrl + '?t=' + Date.now());
+      }
+    } catch (err: any) {
+      alert('Error: ' + err.message);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const handleCommit = () => {
     setIsCommitting(true);
     setCommitStatus('SINCRONIZANDO...');
+    localStorage.setItem('admin_name', adminName);
     setTimeout(() => {
       setCommitStatus('ÉXITO_CONFIRMACIÓN');
       setTimeout(() => {
@@ -194,11 +235,46 @@ export default function AjustesPage() {
               </div>
             </div>
           </section>
+          
+          {/* Admin Profile */}
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b border-outline-variant/10 pb-2">
+              <h3 className="font-headline-md text-headline-md text-primary uppercase">03_Perfil_Administrador</h3>
+              <span className="font-mono-technical text-mono-technical text-on-surface-variant/50">[ CONTROL_ACCESO ]</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+              <div className="md:col-span-4 space-y-4">
+                <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Foto de Perfil Admin</label>
+                <div className="relative h-40 w-full border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center group cursor-pointer hover:border-primary-container transition-colors bg-surface-container-lowest overflow-hidden rounded">
+                  <input type="file" accept="image/*" onChange={handleAvatarUpload} className="absolute inset-0 opacity-0 cursor-pointer z-20" title="Subir Foto Perfil" />
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Foto Perfil" className="w-full h-full object-cover relative z-10 bg-black/50" />
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-primary text-3xl mb-1">account_circle</span>
+                      <p className="font-label-sm text-[10px] uppercase tracking-tighter text-on-surface-variant z-10">{uploadingAvatar ? 'SUBIENDO...' : 'SOLTAR_FOTO_AQUÍ'}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="md:col-span-8 space-y-4">
+                <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Nombre del Administrador</label>
+                <input 
+                  value={adminName} 
+                  onChange={(e) => setAdminName(e.target.value)} 
+                  className="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary-container p-4 font-mono-technical outline-none text-on-surface transition-all" 
+                  type="text" 
+                  placeholder="Ej: OPERATOR_01" 
+                />
+                <p className="text-[10px] text-on-surface-variant/60 uppercase">Nombre visible en la barra lateral del panel de control.</p>
+              </div>
+            </div>
+          </section>
 
           {/* Security Settings */}
           <section className="space-y-6">
             <div className="flex items-center justify-between border-b border-outline-variant/10 pb-2">
-              <h3 className="font-headline-md text-headline-md text-primary uppercase">03_Seguridad_Encriptación</h3>
+              <h3 className="font-headline-md text-headline-md text-primary uppercase">04_Seguridad_Encriptación</h3>
               <span className="font-mono-technical text-mono-technical text-on-surface-variant/50">[ ESTADO: PROTEGIDO ]</span>
             </div>
             <div className="space-y-8">
