@@ -46,10 +46,9 @@ export default async function EnciclopediaPage() {
         {sortedPosts.map((post) => (
           <a href={post.slug ? `/articulo/${post.slug}` : `/articulo/${post.id}`} key={post.id} className="break-inside-avoid border border-outline-variant/30 flex flex-col bg-surface-container-low group cursor-pointer relative overflow-hidden block">
             <div className="w-full relative pt-[75%] bg-surface-variant">
-              <Image 
+              <img 
                 src={post.imageUrl || '/posts/placeholder.png'} 
                 alt={post.title}
-                fill
                 className="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
               />
               <div className="absolute top-2 left-2 bg-surface border border-outline-variant px-2 py-1 flex items-center gap-1 z-10 shadow-md">

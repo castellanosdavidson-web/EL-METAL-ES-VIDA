@@ -15,11 +15,45 @@ export default function GlobalRadio() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [trackInfo, setTrackInfo] = useState<{ title: string; artist: string } | null>(null);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Poll ICY Metadata
+  useEffect(() => {
+    let intervalId: any;
+
+    const fetchMetadata = async () => {
+      try {
+        const stationUrl = STATIONS[currentStationIdx].url;
+        const res = await fetch(`/api/radio-metadata?url=${encodeURIComponent(stationUrl)}`);
+        const data = await res.json();
+        
+        if (data && !data.error && data.raw) {
+          setTrackInfo({ title: data.title, artist: data.artist });
+        } else {
+          setTrackInfo(null);
+        }
+      } catch (err) {
+        console.error('Error fetching radio metadata:', err);
+      }
+    };
+
+    if (isPlaying) {
+      fetchMetadata();
+      intervalId = setInterval(fetchMetadata, 20000); // Poll every 20s
+    } else {
+      setTrackInfo(null);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isPlaying, currentStationIdx]);
+
   // Handle station change
   useEffect(() => {
+    setTrackInfo(null); // Reset when station changes
     if (audioRef.current) {
       if (isPlaying) {
         setIsBuffering(true);
@@ -136,12 +170,12 @@ export default function GlobalRadio() {
             )}
           </button>
           
-          <div className="flex flex-col">
+          <div className="flex flex-col max-w-[120px]">
             <span className="font-label-technical text-[10px] text-primary tracking-widest uppercase">
               {isPlaying ? 'EN VIVO' : 'RADIO'}
             </span>
-            <span className="font-label-technical text-[8px] text-on-surface-variant truncate max-w-[100px]">
-              {STATIONS[currentStationIdx].name}
+            <span className="font-label-technical text-[8px] text-on-surface-variant truncate" title={trackInfo ? `${trackInfo.title} - ${trackInfo.artist}` : STATIONS[currentStationIdx].name}>
+              {trackInfo ? `${trackInfo.title} - ${trackInfo.artist}` : STATIONS[currentStationIdx].name}
             </span>
           </div>
 
@@ -184,12 +218,25 @@ export default function GlobalRadio() {
             ))}
           </select>
           
-          {/* Fallback Metadata */}
-          <div className="flex flex-col gap-1 bg-surface-container-lowest p-2 border-l-2 border-primary">
-            <span className="font-label-technical text-[8px] text-on-surface-variant tracking-widest uppercase">INFO:</span>
-            <span className="font-body-md text-sm text-on-surface leading-tight glitch-hover truncate" title={STATIONS[currentStationIdx].tagline}>
-              {STATIONS[currentStationIdx].tagline}
+          {/* Fallback & Live Metadata */}
+          <div className="flex flex-col gap-1 bg-surface-container-lowest p-2 border-l-2 border-primary min-h-[48px] justify-center">
+            <span className="font-label-technical text-[8px] text-on-surface-variant tracking-widest uppercase">
+              {trackInfo ? 'SONANDO AHORA:' : 'INFO:'}
             </span>
+            {trackInfo ? (
+              <div className="flex flex-col">
+                <span className="font-body-md text-xs font-bold text-primary truncate leading-tight" title={trackInfo.title}>
+                  {trackInfo.title}
+                </span>
+                <span className="font-mono-technical text-[9px] text-on-surface-variant truncate uppercase tracking-wider mt-0.5" title={trackInfo.artist}>
+                  {trackInfo.artist}
+                </span>
+              </div>
+            ) : (
+              <span className="font-body-md text-xs text-on-surface leading-tight glitch-hover truncate" title={STATIONS[currentStationIdx].tagline}>
+                {STATIONS[currentStationIdx].tagline}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-3 mt-2">
