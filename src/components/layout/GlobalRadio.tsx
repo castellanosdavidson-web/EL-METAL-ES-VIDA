@@ -335,9 +335,6 @@ export default function GlobalRadio() {
                 </span>
               )}
             </button>
-            <span className="font-label-technical text-[8px] text-on-surface-variant/60 tracking-widest uppercase mt-2">
-              {isPlaying ? 'PAUSAR FUEGO' : 'ENCENDER FUEGO'}
-            </span>
           </div>
 
           {/* Volume Control */}
