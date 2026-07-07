@@ -33,15 +33,35 @@ export default function Header({ onOpenMenu }: HeaderProps) {
   return (
     <header className={`fixed w-full z-40 bg-background/95 backdrop-blur-sm border-b-2 border-outline-variant transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-        <Link href="/" className="flex items-center gap-4 group">
-          <img 
-            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/logo.png`} 
-            alt="EL METAL ES VIDA Logo" 
-            className="w-24 md:w-32 h-auto object-contain" 
-            onError={(e) => { e.currentTarget.src = "/LOGO 2.png"; }}
-          />
-          <span className="text-headline-md md:text-headline-lg font-headline-lg uppercase tracking-tighter text-primary">EL METAL ES VIDA</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center group">
+            <img 
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/logo.png`} 
+              alt="EL METAL ES VIDA Logo" 
+              className="w-20 md:w-28 h-auto object-contain" 
+              onError={(e) => { e.currentTarget.src = "/LOGO 2.png"; }}
+            />
+          </Link>
+          <div className="flex flex-col md:flex-row md:items-center gap-2 border-l border-outline-variant/30 pl-3">
+            <a 
+              href="https://www.facebook.com/share/17soCvuQJe/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="font-label-technical text-[10px] uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1"
+            >
+              <span className="material-symbols-outlined text-[14px]">link</span>
+              Facebook
+            </a>
+            <span className="text-outline-variant/30 hidden md:inline">|</span>
+            <a 
+              href="mailto:elmetalesvidalml@gmail.com" 
+              className="font-label-technical text-[10px] uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1"
+            >
+              <span className="material-symbols-outlined text-[14px]">mail</span>
+              Contacto
+            </a>
+          </div>
+        </div>
         <div className="flex items-center gap-6">
           <Link href="/admin" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors duration-200 hidden md:block">
             <span className="material-symbols-outlined text-3xl">account_circle</span>
