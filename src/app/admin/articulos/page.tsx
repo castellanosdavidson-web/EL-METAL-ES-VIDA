@@ -292,10 +292,7 @@ export default function ArticulosPage() {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Clave de Acceso</label>
-                <input type="password" name="password" required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" placeholder="Contraseña de admin" />
-              </div>
+              {/* Clave de acceso removida - ahora usa token seguro */}
 
               <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Título del Artículo</label>
