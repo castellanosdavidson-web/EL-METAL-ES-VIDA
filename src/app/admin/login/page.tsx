@@ -74,7 +74,6 @@ export default function LoginPage() {
         <form onSubmit={handleAuth} className="w-full flex flex-col gap-4">
           <input 
             type="email" 
-            placeholder="elmetalesvidalml@gmail.com" 
             required 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -83,7 +82,6 @@ export default function LoginPage() {
           <div className="relative w-full">
             <input 
               type={showPassword ? "text" : "password"} 
-              placeholder="Contraseña" 
               required 
               value={password}
               onChange={(e) => setPassword(e.target.value)}

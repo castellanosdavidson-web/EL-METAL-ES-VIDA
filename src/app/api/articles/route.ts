@@ -74,9 +74,12 @@ export async function POST(request: Request) {
       posts = JSON.parse(text || '[]');
     }
 
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
     const newPost = {
       id: Date.now().toString(),
       title,
+      slug: slug + '-' + Date.now().toString().slice(-4), // Añadimos ID al final para asegurar unicidad
       desc: desc || '',
       category,
       readTime: readTime || '',
@@ -166,10 +169,16 @@ export async function PUT(request: Request) {
       imageUrl = publicUrlData.publicUrl;
     }
 
+    let slug = posts[postIndex].slug;
+    if (!slug) {
+      slug = (title || posts[postIndex].title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + id.toString().slice(-4);
+    }
+
     // Actualizar el post
     posts[postIndex] = {
       ...posts[postIndex],
       title: title || posts[postIndex].title,
+      slug: slug,
       desc: desc !== null ? desc : posts[postIndex].desc,
       category: category || posts[postIndex].category,
       readTime: readTime !== null ? readTime : posts[postIndex].readTime,
@@ -194,3 +203,104 @@ export async function PUT(request: Request) {
   }
 }
 
+export async function PATCH(request: Request) {
+  try {
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Falta token de autenticación' }, { status: 401 });
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Acceso Denegado (Token inválido)' }, { status: 401 });
+    }
+
+    const { id, is_hidden } = await request.json();
+
+    const serviceSupabase = getServiceSupabase();
+
+    const { data: fileData, error: downloadError } = await serviceSupabase.storage
+      .from('articles')
+      .download('posts.json');
+
+    if (downloadError || !fileData) {
+      throw new Error('No se pudo descargar la base de datos de artículos.');
+    }
+
+    const text = await fileData.text();
+    let posts = JSON.parse(text || '[]');
+
+    const postIndex = posts.findIndex((p: any) => p.id.toString() === id.toString());
+    if (postIndex === -1) {
+      return NextResponse.json({ error: 'Artículo no encontrado' }, { status: 404 });
+    }
+
+    posts[postIndex].is_hidden = is_hidden;
+
+    const { error: updateError } = await serviceSupabase.storage
+      .from('articles')
+      .upload('posts.json', JSON.stringify(posts), {
+        upsert: true,
+        contentType: 'application/json'
+      });
+
+    if (updateError) throw updateError;
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Falta token de autenticación' }, { status: 401 });
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Acceso Denegado (Token inválido)' }, { status: 401 });
+    }
+
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+
+    if (!id) return NextResponse.json({ error: 'ID requerido' }, { status: 400 });
+
+    const serviceSupabase = getServiceSupabase();
+
+    const { data: fileData, error: downloadError } = await serviceSupabase.storage
+      .from('articles')
+      .download('posts.json');
+
+    if (downloadError || !fileData) {
+      throw new Error('No se pudo descargar la base de datos de artículos.');
+    }
+
+    const text = await fileData.text();
+    let posts = JSON.parse(text || '[]');
+
+    posts = posts.filter((p: any) => p.id.toString() !== id.toString());
+
+    const { error: updateError } = await serviceSupabase.storage
+      .from('articles')
+      .upload('posts.json', JSON.stringify(posts), {
+        upsert: true,
+        contentType: 'application/json'
+      });
+
+    if (updateError) throw updateError;
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

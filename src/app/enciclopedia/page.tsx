@@ -44,7 +44,7 @@ export default async function EnciclopediaPage() {
       {/* Encyclopedic Masonry Grid */}
       <section className="columns-1 md:columns-2 lg:columns-3 gap-masonry-gap space-y-masonry-gap">
         {sortedPosts.map((post) => (
-          <a href={post.imageUrl || '#'} target="_blank" rel="noopener noreferrer" key={post.id} className="break-inside-avoid border border-outline-variant/30 flex flex-col bg-surface-container-low group cursor-pointer relative overflow-hidden block">
+          <a href={post.slug ? `/articulo/${post.slug}` : `/articulo/${post.id}`} key={post.id} className="break-inside-avoid border border-outline-variant/30 flex flex-col bg-surface-container-low group cursor-pointer relative overflow-hidden block">
             <div className="w-full relative pt-[75%] bg-surface-variant">
               <Image 
                 src={post.imageUrl || '/posts/placeholder.png'} 
@@ -59,7 +59,7 @@ export default async function EnciclopediaPage() {
             </div>
             <div className="p-4 flex flex-col gap-2 border-t border-outline-variant/30 bg-surface-container-lowest relative z-20">
               <h2 className="font-headline-md text-headline-md text-on-surface leading-tight group-hover:text-primary transition-colors">{post.title}</h2>
-              <p className="font-body-md text-body-md text-on-surface-variant text-sm">{post.desc}</p>
+              <div className="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-3" dangerouslySetInnerHTML={{__html: post.desc}} />
               <div className="mt-2 flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase opacity-80 group-hover:opacity-100 cursor-pointer">
                 <span>Ver Registro</span>
                 <span className="material-symbols-outlined text-[16px] transform group-hover:translate-x-1 transition-transform">arrow_forward</span>

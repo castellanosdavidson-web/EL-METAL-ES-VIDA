@@ -82,10 +82,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="material-symbols-outlined" style={pathname.includes('/productos') ? { fontVariationSettings: "'FILL' 1" } : {}}>inventory_2</span>
             <span className="font-label-sm text-label-sm uppercase tracking-widest">Productos</span>
           </Link>
-          <Link className={getLinkClass('/admin/pedidos')} href="/admin/pedidos">
-            <span className="material-symbols-outlined" style={pathname.includes('/pedidos') ? { fontVariationSettings: "'FILL' 1" } : {}}>shopping_cart</span>
-            <span className="font-label-sm text-label-sm uppercase tracking-widest">Pedidos</span>
-          </Link>
+
           <Link className={getLinkClass('/admin/usuarios')} href="/admin/usuarios">
             <span className="material-symbols-outlined" style={pathname.includes('/usuarios') ? { fontVariationSettings: "'FILL' 1" } : {}}>group</span>
             <span className="font-label-sm text-label-sm uppercase tracking-widest">Usuarios</span>

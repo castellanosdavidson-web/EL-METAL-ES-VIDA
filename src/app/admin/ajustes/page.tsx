@@ -1,9 +1,47 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabase';
 
 export default function AjustesPage() {
   const [isCommitting, setIsCommitting] = useState(false);
   const [commitStatus, setCommitStatus] = useState('Confirmar Configuración');
+  
+  const [logoUrl, setLogoUrl] = useState('');
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  useEffect(() => {
+    // Check if logo exists
+    const checkLogo = async () => {
+      const { data } = supabase.storage.from('articles').getPublicUrl('logo.png');
+      if (data && data.publicUrl) {
+        // Añadimos un timestamp para evitar cache
+        setLogoUrl(data.publicUrl + '?t=' + Date.now());
+      }
+    };
+    checkLogo();
+  }, []);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setUploadingLogo(true);
+    try {
+      const { error } = await supabase.storage
+        .from('articles')
+        .upload('logo.png', file, { upsert: true, cacheControl: '0' });
+      
+      if (error) {
+        alert('Error subiendo logo: ' + error.message);
+      } else {
+        const { data } = supabase.storage.from('articles').getPublicUrl('logo.png');
+        setLogoUrl(data.publicUrl + '?t=' + Date.now());
+      }
+    } catch (err: any) {
+      alert('Error: ' + err.message);
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   const handleCommit = () => {
     setIsCommitting(true);
@@ -63,8 +101,15 @@ export default function AjustesPage() {
               <div className="md:col-span-4 space-y-4">
                 <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Recurso de Logo Principal</label>
                 <div className="relative h-48 w-full border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center group cursor-pointer hover:border-primary-container transition-colors bg-surface-container-lowest overflow-hidden">
-                  <span className="material-symbols-outlined text-primary text-4xl mb-2">upload_file</span>
-                  <p className="font-label-sm text-label-sm uppercase tracking-tighter text-on-surface-variant z-10">SOLTAR_LOGO_AQUÍ</p>
+                  <input type="file" accept="image/*" onChange={handleLogoUpload} className="absolute inset-0 opacity-0 cursor-pointer z-20" title="Subir Logo" />
+                  {logoUrl ? (
+                    <img src={logoUrl} alt="Logo" className="w-full h-full object-contain p-4 relative z-10 bg-black/50" />
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-primary text-4xl mb-2">upload_file</span>
+                      <p className="font-label-sm text-label-sm uppercase tracking-tighter text-on-surface-variant z-10">{uploadingLogo ? 'SUBIENDO...' : 'SOLTAR_LOGO_AQUÍ'}</p>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="md:col-span-8 space-y-8">
@@ -108,37 +153,7 @@ export default function AjustesPage() {
               <span className="font-mono-technical text-mono-technical text-on-surface-variant/50">[ ESTADO: PROTEGIDO ]</span>
             </div>
             <div className="space-y-8">
-              {/* API Keys Bento */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-surface-container border border-outline-variant/20 p-6 flex flex-col justify-between group hover:border-primary-container transition-all">
-                  <div className="flex justify-between items-start mb-8">
-                    <div className="space-y-1">
-                      <h4 className="font-label-sm text-label-sm uppercase font-black text-on-surface">API Key de Producción</h4>
-                      <p className="text-[10px] text-on-surface-variant uppercase tracking-widest">X-METAL-CORE-PROD</p>
-                    </div>
-                    <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">vpn_key</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input className="flex-1 bg-surface-container-lowest p-2 font-mono-technical text-xs border-none outline-none text-on-surface-variant" readOnly type="password" value="sk_live_990123984712039487123" />
-                    <button className="p-2 text-on-surface-variant hover:text-primary transition-colors"><span className="material-symbols-outlined text-sm">content_copy</span></button>
-                    <button className="p-2 text-on-surface-variant hover:text-primary transition-colors"><span className="material-symbols-outlined text-sm">visibility</span></button>
-                  </div>
-                </div>
-                <div className="bg-surface-container border border-outline-variant/20 p-6 flex flex-col justify-between group hover:border-primary-container transition-all">
-                  <div className="flex justify-between items-start mb-8">
-                    <div className="space-y-1">
-                      <h4 className="font-label-sm text-label-sm uppercase font-black text-on-surface">Secreto de Webhook Webflow</h4>
-                      <p className="text-[10px] text-on-surface-variant uppercase tracking-widest">WF_HOOK_AUTH_V2</p>
-                    </div>
-                    <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">webhook</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input className="flex-1 bg-surface-container-lowest p-2 font-mono-technical text-xs border-none outline-none text-on-surface-variant" readOnly type="password" value="wh_990123984712039487123" />
-                    <button className="p-2 text-on-surface-variant hover:text-primary transition-colors"><span className="material-symbols-outlined text-sm">content_copy</span></button>
-                    <button className="p-2 text-on-surface-variant hover:text-primary transition-colors"><span className="material-symbols-outlined text-sm">visibility</span></button>
-                  </div>
-                </div>
-              </div>
+              {/* Eliminadas las API keys innecesarias a petición del usuario */}
 
               {/* Password Management */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">

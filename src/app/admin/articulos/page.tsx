@@ -1,5 +1,10 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import 'react-quill/dist/quill.snow.css';
+import { supabase } from '@/utils/supabase';
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 export default function ArticulosPage() {
   const [articles, setArticles] = useState<any[]>([]);
@@ -10,6 +15,7 @@ export default function ArticulosPage() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [desc, setDesc] = useState('');
 
   useEffect(() => {
     fetchArticles();
@@ -28,12 +34,14 @@ export default function ArticulosPage() {
 
   const handleOpenEdit = (article: any) => {
     setEditArticle(article);
+    setDesc(article.desc || '');
     setMessage('');
     setIsModalOpen(true);
   };
 
   const handleOpenNew = () => {
     setEditArticle(null);
+    setDesc('');
     setMessage('');
     setIsModalOpen(true);
   };
@@ -46,13 +54,22 @@ export default function ArticulosPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    // Override the description with the ReactQuill state
+    formData.set('desc', desc);
+
     if (editArticle) {
       formData.append('id', editArticle.id);
     }
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
       const response = await fetch('/api/articles', {
         method: editArticle ? 'PUT' : 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
 
@@ -74,6 +91,48 @@ export default function ArticulosPage() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('¿Estás seguro de eliminar este artículo definitivamente?')) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const res = await fetch(`/api/articles?id=${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchArticles();
+      } else {
+        const data = await res.json();
+        alert(`Error al eliminar: ${data.error}`);
+      }
+    } catch (e) { console.error(e); }
+  };
+
+  const handleToggleVisibility = async (article: any) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const newHiddenState = !article.is_hidden;
+      const res = await fetch(`/api/articles`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ id: article.id, is_hidden: newHiddenState })
+      });
+      if (res.ok) {
+        fetchArticles();
+      } else {
+        const data = await res.json();
+        alert(`Error al ocultar: ${data.error}`);
+      }
+    } catch (e) { console.error(e); }
   };
 
   const filteredArticles = articles.filter(article => 
@@ -107,11 +166,11 @@ export default function ArticulosPage() {
           </div>
           <div className="p-6 border border-outline-variant/20 bg-surface-container-lowest">
             <p className="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Publicados</p>
-            <p className="font-headline-md text-headline-md text-on-surface">{articles.length}</p>
+            <p className="font-headline-md text-headline-md text-on-surface">{articles.filter((a:any) => !a.is_hidden).length}</p>
           </div>
           <div className="p-6 border border-outline-variant/20 bg-surface-container-lowest">
-            <p className="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Borradores</p>
-            <p className="font-headline-md text-headline-md text-on-surface">0</p>
+            <p className="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Borradores / Ocultos</p>
+            <p className="font-headline-md text-headline-md text-on-surface">{articles.filter((a:any) => a.is_hidden).length}</p>
           </div>
           <div className="p-6 border border-outline-variant/20 bg-surface-container-lowest">
             <p className="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Crecimiento Mensual</p>
@@ -151,7 +210,7 @@ export default function ArticulosPage() {
                   <tr><td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant font-mono-technical uppercase">NO HAY REGISTROS COINCIDENTES</td></tr>
                 ) : (
                   filteredArticles.map((article, idx) => (
-                    <tr key={article.id} className="hover:bg-surface-variant/10 transition-colors group">
+                    <tr key={article.id} className={`hover:bg-surface-variant/10 transition-colors group ${article.is_hidden ? 'opacity-50' : ''}`}>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-surface-container border border-outline-variant/20 overflow-hidden shrink-0">
@@ -175,17 +234,17 @@ export default function ArticulosPage() {
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-primary-container rounded-full animate-pulse"></span>
-                          <span className="font-label-sm text-label-sm text-on-surface uppercase">Publicado</span>
+                          <span className={`w-1.5 h-1.5 rounded-full ${article.is_hidden ? 'bg-error' : 'bg-primary-container animate-pulse'}`}></span>
+                          <span className="font-label-sm text-label-sm text-on-surface uppercase">{article.is_hidden ? 'Oculto' : 'Publicado'}</span>
                         </div>
                       </td>
                       <td className="px-6 py-5 font-mono-technical text-mono-technical text-on-surface-variant">
                         {new Date(article.createdAt || Date.now()).toISOString().split('T')[0]}
                       </td>
                       <td className="px-6 py-5 text-right space-x-2">
-                        <button className="p-2 hover:text-primary transition-colors" title="Ver"><span className="material-symbols-outlined text-sm">visibility</span></button>
+                        <button onClick={() => handleToggleVisibility(article)} className="p-2 hover:text-primary transition-colors" title={article.is_hidden ? "Mostrar" : "Ocultar"}><span className="material-symbols-outlined text-sm">{article.is_hidden ? 'visibility_off' : 'visibility'}</span></button>
                         <button onClick={() => handleOpenEdit(article)} className="p-2 hover:text-primary transition-colors" title="Editar"><span className="material-symbols-outlined text-sm">edit</span></button>
-                        <button className="p-2 hover:text-error transition-colors" title="Eliminar"><span className="material-symbols-outlined text-sm">delete</span></button>
+                        <button onClick={() => handleDelete(article.id)} className="p-2 hover:text-error transition-colors" title="Eliminar"><span className="material-symbols-outlined text-sm">delete</span></button>
                       </td>
                     </tr>
                   ))
@@ -245,7 +304,9 @@ export default function ArticulosPage() {
               
               <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Descripción / Contenido</label>
-                <textarea name="desc" defaultValue={editArticle?.desc || ''} required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-body-md min-h-[100px]" placeholder="Extracto o contenido del artículo..."></textarea>
+                <div className="bg-surface border border-outline-variant text-on-surface">
+                  <ReactQuill theme="snow" value={desc} onChange={setDesc} className="bg-background text-on-surface font-body-md" placeholder="Extracto o contenido del artículo (soporta formato, enlaces, videos, etc)..." />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

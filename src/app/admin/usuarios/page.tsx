@@ -31,6 +31,30 @@ export default function UsuariosPage() {
     }
   };
 
+  const handleDownloadCSV = () => {
+    if (subscribers.length === 0) return;
+    
+    const headers = ['Email', 'Fecha de Registro'];
+    const csvRows = [headers.join(',')];
+    
+    subscribers.forEach(sub => {
+      const date = new Date(sub.created_at).toISOString();
+      csvRows.push(`${sub.email},${date}`);
+    });
+    
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `suscriptores_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <main className="p-8 flex-1 flex flex-col h-full">
       <div className="space-y-8 max-w-7xl mx-auto w-full">
@@ -40,11 +64,14 @@ export default function UsuariosPage() {
             <h2 className="font-display-lg text-display-lg text-on-surface leading-tight mb-2 uppercase tracking-tight">La Legión</h2>
             <div className="flex items-center gap-4">
               <span className="h-px w-12 bg-primary-container"></span>
-              <p className="font-mono-technical text-mono-technical text-primary uppercase tracking-widest">Archivo de Personal Registrado // TOTAL_CUENTA: 12,402</p>
+              <p className="font-mono-technical text-mono-technical text-primary uppercase tracking-widest">Archivo de Personal Registrado // TOTAL_CUENTA: {subscribers.length}</p>
             </div>
           </div>
           <div className="flex gap-4">
-            <button className="px-6 py-3 border border-outline-variant/30 text-on-surface font-label-sm uppercase tracking-widest hover:bg-surface-variant/40 transition-all flex items-center gap-2">
+            <button 
+              onClick={handleDownloadCSV}
+              className="px-6 py-3 border border-outline-variant/30 text-on-surface font-label-sm uppercase tracking-widest hover:bg-surface-variant/40 transition-all flex items-center gap-2"
+            >
               <span className="material-symbols-outlined text-[18px]">download</span>
               Exportar_CSV
             </button>
