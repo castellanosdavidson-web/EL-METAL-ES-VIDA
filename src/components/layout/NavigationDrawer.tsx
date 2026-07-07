@@ -68,7 +68,7 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
         </ul>
 
         <div className="mt-auto border-t-2 border-surface-container-highest pt-6">
-          <Link href="/admin" onClick={onClose} className="w-full bg-primary-container text-on-primary hover:bg-primary-container/80 transition-colors py-4 px-6 border border-primary-container font-label-technical text-label-technical uppercase flex items-center justify-center gap-2">
+          <Link href="/admin" target="_blank" rel="noopener noreferrer" onClick={onClose} className="w-full bg-primary-container text-on-primary hover:bg-primary-container/80 transition-colors py-4 px-6 border border-primary-container font-label-technical text-label-technical uppercase flex items-center justify-center gap-2">
             <span className="material-symbols-outlined text-sm">lock</span>
             ACCESO RESTRINGIDO
           </Link>

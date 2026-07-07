@@ -134,3 +134,15 @@ body {
   color: var(--color-on-background);
   font-family: var(--font-body-md);
 }
+
+/* Escalar tipografía responsiva para móvil de forma global */
+@media (max-width: 768px) {
+  :root {
+    --text-display-lg: 32px;
+    --text-headline-xl: 26px;
+    --text-headline-lg: 22px;
+    --text-headline-lg-mobile: 18px;
+    --text-body-lg: 14px;
+    --text-body-md: 13px;
+  }
+}

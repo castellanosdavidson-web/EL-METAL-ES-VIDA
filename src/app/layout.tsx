@@ -23,9 +23,19 @@ const hanken = Hanken_Grotesk({
   display: "swap",
 });
 
+const logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL || ''}/storage/v1/object/public/articles/logo.png`;
+
 export const metadata: Metadata = {
   title: "EL METAL ES VIDA - Cultura Extrema",
   description: "El medio definitivo de cultura extrema.",
+  icons: {
+    icon: [
+      { url: logoUrl },
+      { url: '/LOGO 2.png', rel: 'icon' }
+    ],
+    shortcut: logoUrl,
+    apple: logoUrl,
+  }
 };
 
 export default function RootLayout({

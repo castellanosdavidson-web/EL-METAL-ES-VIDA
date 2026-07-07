@@ -51,6 +51,39 @@ export default function GlobalRadio() {
     };
   }, [isPlaying, currentStationIdx]);
 
+  // Update Media Session Metadata & System Player Thumbnail
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'mediaSession' in navigator && isPlaying) {
+      const logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/logo.png`;
+      
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: trackInfo ? trackInfo.title : STATIONS[currentStationIdx].name,
+        artist: trackInfo ? trackInfo.artist : STATIONS[currentStationIdx].tagline,
+        album: 'EL METAL ES VIDA',
+        artwork: [
+          { src: logoUrl, sizes: '512x512', type: 'image/png' },
+          { src: '/LOGO 2.png', sizes: '512x512', type: 'image/png' }
+        ]
+      });
+
+      navigator.mediaSession.playbackState = 'playing';
+
+      navigator.mediaSession.setActionHandler('play', () => {
+        if (audioRef.current) {
+          audioRef.current.play().then(() => setIsPlaying(true));
+        }
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        }
+      });
+    } else if (typeof window !== 'undefined' && 'mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'paused';
+    }
+  }, [isPlaying, trackInfo, currentStationIdx]);
+
   // Handle station change
   useEffect(() => {
     setTrackInfo(null); // Reset when station changes
