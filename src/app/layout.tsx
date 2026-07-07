@@ -26,7 +26,7 @@ const hanken = Hanken_Grotesk({
 import Script from 'next/script';
 
 const logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL || ''}/storage/v1/object/public/articles/logo.png`;
-const gaId = process.env.NEXT_PUBLIC_GA_ID || 'G-XXXXXXXXXX';
+const gaId = process.env.NEXT_PUBLIC_GA_ID || 'G-H5DD80FFKE';
 
 export const metadata: Metadata = {
   title: "EL METAL ES VIDA - Cultura Extrema",
