@@ -9,16 +9,26 @@ export default function AjustesPage() {
   const [logoUrl, setLogoUrl] = useState('');
   const [uploadingLogo, setUploadingLogo] = useState(false);
 
+  const [coverUrl, setCoverUrl] = useState('');
+  const [uploadingCover, setUploadingCover] = useState(false);
+
   useEffect(() => {
     // Check if logo exists
     const checkLogo = async () => {
       const { data } = supabase.storage.from('articles').getPublicUrl('logo.png');
       if (data && data.publicUrl) {
-        // Añadimos un timestamp para evitar cache
         setLogoUrl(data.publicUrl + '?t=' + Date.now());
       }
     };
+    // Check if cover exists
+    const checkCover = async () => {
+      const { data } = supabase.storage.from('articles').getPublicUrl('cover.png');
+      if (data && data.publicUrl) {
+        setCoverUrl(data.publicUrl + '?t=' + Date.now());
+      }
+    };
     checkLogo();
+    checkCover();
   }, []);
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,6 +50,28 @@ export default function AjustesPage() {
       alert('Error: ' + err.message);
     } finally {
       setUploadingLogo(false);
+    }
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setUploadingCover(true);
+    try {
+      const { error } = await supabase.storage
+        .from('articles')
+        .upload('cover.png', file, { upsert: true, cacheControl: '0' });
+      
+      if (error) {
+        alert('Error subiendo carátula: ' + error.message);
+      } else {
+        const { data } = supabase.storage.from('articles').getPublicUrl('cover.png');
+        setCoverUrl(data.publicUrl + '?t=' + Date.now());
+      }
+    } catch (err: any) {
+      alert('Error: ' + err.message);
+    } finally {
+      setUploadingCover(false);
     }
   };
 
@@ -98,18 +130,35 @@ export default function AjustesPage() {
               <span className="font-mono-technical text-mono-technical text-on-surface-variant/50">[ ESTÉTICA_SISTEMA ]</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-              <div className="md:col-span-4 space-y-4">
-                <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Recurso de Logo Principal</label>
-                <div className="relative h-48 w-full border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center group cursor-pointer hover:border-primary-container transition-colors bg-surface-container-lowest overflow-hidden">
-                  <input type="file" accept="image/*" onChange={handleLogoUpload} className="absolute inset-0 opacity-0 cursor-pointer z-20" title="Subir Logo" />
-                  {logoUrl ? (
-                    <img src={logoUrl} alt="Logo" className="w-full h-full object-contain p-4 relative z-10 bg-black/50" />
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined text-primary text-4xl mb-2">upload_file</span>
-                      <p className="font-label-sm text-label-sm uppercase tracking-tighter text-on-surface-variant z-10">{uploadingLogo ? 'SUBIENDO...' : 'SOLTAR_LOGO_AQUÍ'}</p>
-                    </>
-                  )}
+              <div className="md:col-span-4 space-y-6">
+                <div className="space-y-3">
+                  <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Logo Principal</label>
+                  <div className="relative h-36 w-full border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center group cursor-pointer hover:border-primary-container transition-colors bg-surface-container-lowest overflow-hidden rounded">
+                    <input type="file" accept="image/*" onChange={handleLogoUpload} className="absolute inset-0 opacity-0 cursor-pointer z-20" title="Subir Logo" />
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="Logo" className="w-full h-full object-contain p-2 relative z-10 bg-black/50" />
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined text-primary text-3xl mb-1">upload_file</span>
+                        <p className="font-label-sm text-[10px] uppercase tracking-tighter text-on-surface-variant z-10">{uploadingLogo ? 'SUBIENDO...' : 'SOLTAR_LOGO_AQUÍ'}</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Carátula del Reproductor</label>
+                  <div className="relative h-36 w-full border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center group cursor-pointer hover:border-primary-container transition-colors bg-surface-container-lowest overflow-hidden rounded">
+                    <input type="file" accept="image/*" onChange={handleCoverUpload} className="absolute inset-0 opacity-0 cursor-pointer z-20" title="Subir Carátula" />
+                    {coverUrl ? (
+                      <img src={coverUrl} alt="Carátula" className="w-full h-full object-contain p-2 relative z-10 bg-black/50" />
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined text-primary text-3xl mb-1">image</span>
+                        <p className="font-label-sm text-[10px] uppercase tracking-tighter text-on-surface-variant z-10">{uploadingCover ? 'SUBIENDO...' : 'SOLTAR_CARÁTULA'}</p>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="md:col-span-8 space-y-8">

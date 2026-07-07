@@ -52,9 +52,9 @@ export default function GlobalRadio() {
     };
   }, [isPlaying, currentStationIdx]);
 
-  // Update Media Session Metadata & System Player Thumbnail
   useEffect(() => {
     if (typeof window !== 'undefined' && 'mediaSession' in navigator && isPlaying) {
+      const coverUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/cover.png`;
       const logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/logo.png`;
       
       navigator.mediaSession.metadata = new MediaMetadata({
@@ -62,6 +62,7 @@ export default function GlobalRadio() {
         artist: trackInfo ? trackInfo.artist : STATIONS[currentStationIdx].tagline,
         album: 'EL METAL ES VIDA',
         artwork: [
+          { src: coverUrl, sizes: '512x512', type: 'image/png' },
           { src: logoUrl, sizes: '512x512', type: 'image/png' },
           { src: '/LOGO 2.png', sizes: '512x512', type: 'image/png' }
         ]
@@ -184,9 +185,16 @@ export default function GlobalRadio() {
           <div className="flex-1 flex flex-col justify-center items-center py-6">
             <div className="relative w-64 h-64 border-2 border-outline-variant rounded-lg overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.7)] bg-surface-container-lowest">
               <img 
-                src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/logo.png`}
-                onError={(e) => { e.currentTarget.src = "/LOGO 2.png"; }}
-                alt="Logo" 
+                src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/cover.png`}
+                onError={(e) => { 
+                  const logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/logo.png`;
+                  if (e.currentTarget.src !== logoUrl) {
+                    e.currentTarget.src = logoUrl;
+                  } else {
+                    e.currentTarget.src = "/LOGO 2.png";
+                  }
+                }}
+                alt="Carátula" 
                 className="w-full h-full object-contain p-4"
               />
             </div>
@@ -197,7 +205,7 @@ export default function GlobalRadio() {
             <span className="font-label-technical text-[10px] text-primary tracking-widest uppercase font-extrabold block mb-1">
               {STATIONS[currentStationIdx].name}
             </span>
-            <h3 className="font-headline-lg text-2xl font-black text-on-surface leading-tight tracking-tight truncate" title={trackInfo ? trackInfo.title : STATIONS[currentStationIdx].tagline}>
+            <h3 className="font-headline-lg text-lg font-bold text-on-surface leading-tight tracking-tight mt-1" title={trackInfo ? trackInfo.title : STATIONS[currentStationIdx].tagline}>
               {trackInfo ? trackInfo.title : STATIONS[currentStationIdx].tagline}
             </h3>
             {trackInfo && (
@@ -310,9 +318,16 @@ export default function GlobalRadio() {
         <div className="flex items-center gap-3.5 w-[55%] md:w-1/3 min-w-0">
           <div className="relative w-12 h-12 md:w-14 md:h-14 flex-shrink-0 border border-outline-variant bg-surface-container-lowest overflow-hidden rounded shadow-sm">
             <img 
-              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/logo.png`}
-              onError={(e) => { e.currentTarget.src = "/LOGO 2.png"; }}
-              alt="Logo" 
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/cover.png`}
+              onError={(e) => { 
+                const logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/logo.png`;
+                if (e.currentTarget.src !== logoUrl) {
+                  e.currentTarget.src = logoUrl;
+                } else {
+                  e.currentTarget.src = "/LOGO 2.png";
+                }
+              }}
+              alt="Carátula" 
               className="w-full h-full object-contain"
             />
           </div>

@@ -23,11 +23,22 @@ const hanken = Hanken_Grotesk({
   display: "swap",
 });
 
+import Script from 'next/script';
+
 const logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL || ''}/storage/v1/object/public/articles/logo.png`;
+const gaId = process.env.NEXT_PUBLIC_GA_ID || 'G-XXXXXXXXXX';
 
 export const metadata: Metadata = {
   title: "EL METAL ES VIDA - Cultura Extrema",
-  description: "El medio definitivo de cultura extrema.",
+  description: "El archivo técnico definitivo para la legión. Desglosamos la agresión sonora, documentamos el equipo, reseñas de bandas, enciclopedia de metal y transmisiones de radio en vivo.",
+  keywords: ["metal", "heavy metal", "rock", "metal colombiano", "musica extrema", "cultura extrema", "gabinete", "amplificador", "wacken", "el metal es vida"],
+  authors: [{ name: "El Metal Es Vida" }],
+  creator: "El Metal Es Vida",
+  publisher: "El Metal Es Vida",
+  metadataBase: new URL('https://elmetalesvida.com'),
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: [
       { url: logoUrl },
@@ -35,6 +46,28 @@ export const metadata: Metadata = {
     ],
     shortcut: logoUrl,
     apple: logoUrl,
+  },
+  openGraph: {
+    title: "EL METAL ES VIDA - Cultura Extrema",
+    description: "El archivo técnico definitivo para la legión. Enciclopedia, reseñas, comunidad y radio en vivo.",
+    url: 'https://elmetalesvida.com',
+    siteName: 'EL METAL ES VIDA',
+    images: [
+      {
+        url: logoUrl || '/LOGO 2.png',
+        width: 800,
+        height: 800,
+        alt: 'EL METAL ES VIDA'
+      },
+    ],
+    locale: 'es_CO',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "EL METAL ES VIDA - Cultura Extrema",
+    description: "El archivo técnico definitivo para la legión.",
+    images: [logoUrl || '/LOGO 2.png'],
   }
 };
 
@@ -62,6 +95,19 @@ export default function RootLayout({
         <LayoutWrapper>
           {children}
         </LayoutWrapper>
+        {/* Google Analytics */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${gaId}');
+          `}
+        </Script>
       </body>
     </html>
   );
