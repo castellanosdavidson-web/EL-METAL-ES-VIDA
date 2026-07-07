@@ -45,25 +45,26 @@ export default function ArticulosPage() {
               const file = input.files?.[0];
               if (file) {
                 try {
-                  const fileExt = file.name.split('.').pop();
-                  const fileName = `${Date.now()}_editor.${fileExt}`;
+                  const { data: { session } } = await supabase.auth.getSession();
+                  const token = session?.access_token;
                   
-                  const { data, error } = await supabase.storage
-                    .from('articles')
-                    .upload(fileName, file, {
-                      cacheControl: '3600',
-                      upsert: false
-                    });
-                    
-                  if (error) throw error;
+                  const uploadFormData = new FormData();
+                  uploadFormData.append('file', file);
                   
-                  const { data: publicUrlData } = supabase.storage
-                    .from('articles')
-                    .getPublicUrl(fileName);
-                    
+                  const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`
+                    },
+                    body: uploadFormData
+                  });
+                  
+                  const data = await res.json();
+                  if (!res.ok) throw new Error(data.error || 'Error en el servidor');
+                  
                   const range = quill.getSelection();
-                  if (range) {
-                    quill.insertEmbed(range.index, 'image', publicUrlData.publicUrl);
+                  if (range && data.url) {
+                    quill.insertEmbed(range.index, 'image', data.url);
                   }
                 } catch (err: any) {
                   alert(`Error al subir la imagen: ${err.message}`);
