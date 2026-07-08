@@ -45,6 +45,7 @@ export async function POST(request: Request) {
     const clientImageUrl = formData.get('imageUrl') as string | null;
     const type = (formData.get('type') as string) || 'article';
     const externalUrl = formData.get('externalUrl') as string | null;
+    const publishDate = formData.get('publishDate') as string | null;
 
     const serviceSupabase = getServiceSupabase();
 
@@ -95,7 +96,7 @@ export async function POST(request: Request) {
       audioUrl,
       type,
       externalUrl: externalUrl || '',
-      createdAt: new Date().toISOString()
+      createdAt: publishDate ? new Date(publishDate).toISOString() : new Date().toISOString()
     };
 
     posts.push(newPost);
@@ -144,6 +145,7 @@ export async function PUT(request: Request) {
     const clientImageUrl = formData.get('imageUrl') as string | null;
     const type = formData.get('type') as string | null;
     const externalUrl = formData.get('externalUrl') as string | null;
+    const publishDate = formData.get('publishDate') as string | null;
 
     const serviceSupabase = getServiceSupabase();
 
@@ -205,7 +207,8 @@ export async function PUT(request: Request) {
       audioUrl: audioUrl,
       type: type || posts[postIndex].type || 'article',
       externalUrl: externalUrl !== null ? externalUrl : (posts[postIndex].externalUrl || ''),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      ...(publishDate && { createdAt: new Date(publishDate).toISOString() })
     };
 
     // Subir nuevamente los posts

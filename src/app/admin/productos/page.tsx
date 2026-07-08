@@ -321,7 +321,7 @@ export default function GearPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
                   <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Categoría</label>
                   <select name="category" defaultValue={editArticle?.category || 'Audio Pro'} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical">
@@ -333,6 +333,10 @@ export default function GearPage() {
                     <option value="Batería">Batería</option>
                     <option value="Bajo">Bajo</option>
                   </select>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Fecha de Publ. (Opcional)</label>
+                  <input type="datetime-local" name="publishDate" defaultValue={editArticle?.createdAt ? new Date(editArticle.createdAt).toISOString().slice(0, 16) : ''} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" />
                 </div>
               </div>
 
