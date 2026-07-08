@@ -176,10 +176,22 @@ export default function Home() {
         )}
       </section>
 
-      {/* Decorative Transition */}
-      <div className="relative w-full h-32 bg-gradient-to-b from-background to-surface-dim flex items-center justify-center overflow-hidden">
-        <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-        <span className="material-symbols-outlined text-primary/30 text-4xl rotate-180 drop-shadow-[0_0_8px_rgba(var(--md-sys-color-primary),0.5)]">stat_minus_1</span>
+      {/* Animated Marquee Transition 1 */}
+      <div className="relative w-full py-4 md:py-6 bg-surface-container-highest border-y-2 border-primary overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-primary),0.15)] -skew-y-2 my-12 md:my-24">
+        <div className="flex w-[200%] animate-[marquee_25s_linear_infinite]">
+          <div className="flex-1 flex justify-around items-center opacity-30">
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">⛧ TALLER ⛧</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-transparent whitespace-nowrap px-4" style={{ WebkitTextStroke: '1px var(--md-sys-color-primary)' }}>DISTORSIÓN</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">⛧ TALLER ⛧</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-transparent whitespace-nowrap px-4" style={{ WebkitTextStroke: '1px var(--md-sys-color-primary)' }}>DISTORSIÓN</span>
+          </div>
+          <div className="flex-1 flex justify-around items-center opacity-30">
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">⛧ TALLER ⛧</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-transparent whitespace-nowrap px-4" style={{ WebkitTextStroke: '1px var(--md-sys-color-primary)' }}>DISTORSIÓN</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">⛧ TALLER ⛧</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-transparent whitespace-nowrap px-4" style={{ WebkitTextStroke: '1px var(--md-sys-color-primary)' }}>DISTORSIÓN</span>
+          </div>
+        </div>
       </div>
 
       {/* Taller de Distorsión */}
@@ -229,10 +241,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Decorative Transition */}
-      <div className="relative w-full h-32 bg-gradient-to-b from-surface-dim to-background flex items-center justify-center overflow-hidden">
-        <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-error/20 to-transparent" />
-        <span className="material-symbols-outlined text-error/30 text-4xl drop-shadow-[0_0_8px_rgba(var(--md-sys-color-error),0.5)]">keyboard_double_arrow_down</span>
+      {/* Animated Marquee Transition 2 */}
+      <div className="relative w-full py-4 md:py-6 bg-surface-container-highest border-y-2 border-error overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-error),0.15)] skew-y-2 my-12 md:my-24">
+        <div className="flex w-[200%] animate-[marquee_20s_linear_infinite_reverse]">
+          <div className="flex-1 flex justify-around items-center opacity-30">
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">X ARSENAL X</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-transparent whitespace-nowrap px-4" style={{ WebkitTextStroke: '1px var(--md-sys-color-error)' }}>EQUIPAMIENTO</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">X ARSENAL X</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-transparent whitespace-nowrap px-4" style={{ WebkitTextStroke: '1px var(--md-sys-color-error)' }}>EQUIPAMIENTO</span>
+          </div>
+          <div className="flex-1 flex justify-around items-center opacity-30">
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">X ARSENAL X</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-transparent whitespace-nowrap px-4" style={{ WebkitTextStroke: '1px var(--md-sys-color-error)' }}>EQUIPAMIENTO</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">X ARSENAL X</span>
+            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-transparent whitespace-nowrap px-4" style={{ WebkitTextStroke: '1px var(--md-sys-color-error)' }}>EQUIPAMIENTO</span>
+          </div>
+        </div>
       </div>
 
       {/* Arsenal */}

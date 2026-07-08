@@ -154,3 +154,8 @@ body {
   z-index: 50;
   background-color: var(--md-sys-color-surface, #131313);
 }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
