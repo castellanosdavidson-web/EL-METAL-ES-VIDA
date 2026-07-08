@@ -12,7 +12,7 @@ export default function EnciclopediaPage() {
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
-          setPosts(data.filter((a: any) => a.type !== 'plugin' && !a.is_hidden));
+          setPosts(data.filter((a: any) => a.type !== 'plugin' && a.type !== 'gear' && !a.is_hidden));
         }
       })
       .catch(console.error)

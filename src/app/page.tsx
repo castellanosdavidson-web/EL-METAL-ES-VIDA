@@ -13,7 +13,7 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
-          const filteredArticles = data.filter((a: any) => a.type !== 'plugin' && !a.is_hidden);
+          const filteredArticles = data.filter((a: any) => a.type !== 'plugin' && a.type !== 'gear' && !a.is_hidden);
           const shuffledArticles = filteredArticles
             .map((value: any) => ({ value, sort: Math.random() }))
             .sort((a: any, b: any) => a.sort - b.sort)

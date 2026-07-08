@@ -53,6 +53,12 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
               <span>Taller</span>
             </Link>
           </li>
+          <li>
+            <Link onClick={onClose} href="/tienda" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
+              <span className="material-symbols-outlined text-[32px] text-primary">shopping_cart</span>
+              <span>Arsenal</span>
+            </Link>
+          </li>
         </ul>
 
         <div className="mt-auto border-t-2 border-surface-container-highest pt-6">
