@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 export default function Home() {
   const [articles, setArticles] = useState<any[]>([]);
+  const [plugins, setPlugins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubscribing, setIsSubscribing] = useState(false);
 
@@ -12,12 +13,16 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
-          const filtered = data.filter((a: any) => a.type !== 'plugin' && !a.is_hidden);
-          const shuffled = filtered
+          const filteredArticles = data.filter((a: any) => a.type !== 'plugin' && !a.is_hidden);
+          const shuffledArticles = filteredArticles
             .map((value: any) => ({ value, sort: Math.random() }))
             .sort((a: any, b: any) => a.sort - b.sort)
             .map(({ value }: any) => value);
-          setArticles(shuffled.slice(0, 3));
+          setArticles(shuffledArticles.slice(0, 3));
+
+          const filteredPlugins = data.filter((a: any) => a.type === 'plugin' && !a.is_hidden);
+          const sortedPlugins = [...filteredPlugins].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setPlugins(sortedPlugins.slice(0, 3));
         }
       })
       .catch(console.error)
@@ -178,37 +183,25 @@ export default function Home() {
             <p className="font-body-md text-on-surface-variant mt-4 max-w-xl">Herramientas analíticas y calibración de equipo. Sólo para ingenieros del sonido pesado.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group">
-              <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors">
-                <span className="material-symbols-outlined text-on-surface">graphic_eq</span>
+            {plugins.length > 0 ? (
+              plugins.map((plugin) => (
+                <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} key={plugin.id} className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
+                  <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0">
+                    <span className="material-symbols-outlined text-on-surface">extension</span>
+                  </div>
+                  <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors">{plugin.title}</h3>
+                  <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3" dangerouslySetInnerHTML={{__html: plugin.desc}} />
+                  <button className="w-full mt-auto border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-primary-container group-hover:text-white group-hover:border-primary-container">
+                    Ver Herramienta
+                  </button>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-1 md:col-span-3 text-center py-12 border border-dashed border-outline-variant/30">
+                <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">extension_off</span>
+                <p className="font-mono-technical text-xs text-on-surface-variant uppercase">Ningún plugin ha sido cargado en el taller.</p>
               </div>
-              <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2">Simulador de Gabinete</h3>
-              <p className="font-body-md text-on-surface-variant text-sm mb-6">Aplica respuestas a impulsos (IR) de pantallas 4x12 capturadas en estudios legendarios.</p>
-              <button className="w-full border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface">
-                Cargar Módulo
-              </button>
-            </div>
-            <div className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
-              <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors">
-                <span className="material-symbols-outlined text-on-surface">speed</span>
-              </div>
-              <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2">BPM & Metrónomo</h3>
-              <p className="font-body-md text-on-surface-variant text-sm mb-6">Calculadora de subdivisiones rítmicas para blast beats y compases compuestos.</p>
-              <button className="w-full bg-primary-container border border-primary-container text-white py-3 font-label-technical text-label-technical uppercase hover:bg-background hover:text-primary transition-colors">
-                Iniciar Secuencia
-              </button>
-            </div>
-            <div className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group">
-              <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors">
-                <span className="material-symbols-outlined text-on-surface">cable</span>
-              </div>
-              <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2">Ruteo de Señal</h3>
-              <p className="font-body-md text-on-surface-variant text-sm mb-6">Diagramas interactivos para configuración de pedaleras y loops de efectos estéreo.</p>
-              <button className="w-full border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface">
-                Ver Esquemas
-              </button>
-            </div>
+            )}
           </div>
         </div>
       </section>

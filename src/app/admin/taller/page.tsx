@@ -94,7 +94,7 @@ export default function ArticulosPage() {
     fetch('/api/articles')
       .then(res => res.json())
       .then(data => {
-        if (!data.error) setArticles(data);
+        if (!data.error) setArticles(data.filter((a: any) => a.type === 'plugin'));
       })
       .catch(console.error)
       .finally(() => setLoadingArticles(false));
