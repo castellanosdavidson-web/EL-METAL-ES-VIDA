@@ -504,8 +504,41 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
               <div className="metal-separator__line" />
             </div>
 
+            {/* External Download / Plugin */}
+            {initialArticle.type === 'plugin' && initialArticle.externalUrl && (
+              <div className="my-12 p-6 md:p-8 bg-surface-container-lowest border border-primary/30 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent" />
+                <div className="absolute -right-16 -top-16 opacity-5 pointer-events-none group-hover:scale-110 group-hover:rotate-12 transition-transform duration-1000">
+                  <span className="material-symbols-outlined text-[200px]">extension</span>
+                </div>
+                
+                <h3 className="font-headline-md text-headline-md uppercase text-on-surface mb-2">Herramienta Disponible</h3>
+                <div className="font-body-md text-on-surface-variant/90 mb-6 space-y-2">
+                  <p>Accede directamente al sitio oficial para obtener este recurso.</p>
+                </div>
+                
+                <div className="bg-primary-container/10 border border-primary p-6">
+                  <div className="mb-4 p-3 border border-error/50 bg-error/10 flex items-start gap-2">
+                    <span className="material-symbols-outlined text-error text-[16px] mt-0.5">warning</span>
+                    <p className="font-mono-technical text-[10px] md:text-xs text-on-surface-variant leading-relaxed">
+                      <strong className="text-error uppercase">IMPORTANTE:</strong> El metal es vida, no aloja ningún software para su descarga. Los contenidos enlazan con los sitios oficiales de descarga de los programas originales proporcionados por sus desarrolladores.
+                    </p>
+                  </div>
+                  <a 
+                    href={initialArticle.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 bg-primary text-on-primary px-8 py-4 uppercase font-bold tracking-widest hover:bg-inverse-primary hover:text-primary-container transition-all active:scale-95 shadow-[0_0_15px_rgba(var(--md-sys-color-primary),0.3)] w-full md:w-auto justify-center"
+                  >
+                    <span className="material-symbols-outlined">exit_to_app</span>
+                    IR AL SITIO DE DESCARGA
+                  </a>
+                </div>
+              </div>
+            )}
+
             {/* Lead Magnet / Descarga de Audio */}
-            {initialArticle.audioUrl && (
+            {initialArticle.type !== 'plugin' && initialArticle.audioUrl && (
               <div className="my-12 p-6 md:p-8 bg-surface-container-lowest border border-primary/30 relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent" />
                 <div className="absolute -right-16 -top-16 opacity-5 pointer-events-none group-hover:scale-110 group-hover:rotate-12 transition-transform duration-1000">
@@ -662,9 +695,9 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
 
             {/* Navigation */}
             <div className="mt-8 md:mt-12 pt-6 border-t border-outline-variant/30">
-              <Link href="/archivo" className="text-on-surface-variant/60 font-mono-technical hover:text-primary transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group">
+              <Link href={initialArticle.type === 'plugin' ? "/taller" : "/archivo"} className="text-on-surface-variant/60 font-mono-technical hover:text-primary transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group">
                 <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                VOLVER AL ARCHIVO GENERAL
+                VOLVER {initialArticle.type === 'plugin' ? "AL TALLER TÉCNICO" : "AL ARCHIVO GENERAL"}
               </Link>
             </div>
           </section>

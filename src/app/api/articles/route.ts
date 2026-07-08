@@ -42,6 +42,8 @@ export async function POST(request: Request) {
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File;
     const clientAudioUrl = formData.get('audioUrl') as string | null;
+    const type = (formData.get('type') as string) || 'article';
+    const externalUrl = formData.get('externalUrl') as string | null;
 
     const serviceSupabase = getServiceSupabase();
 
@@ -90,6 +92,8 @@ export async function POST(request: Request) {
       readTime: readTime || '',
       imageUrl,
       audioUrl,
+      type,
+      externalUrl: externalUrl || '',
       createdAt: new Date().toISOString()
     };
 
@@ -136,6 +140,8 @@ export async function PUT(request: Request) {
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File | null;
     const clientAudioUrl = formData.get('audioUrl') as string | null;
+    const type = (formData.get('type') as string) || 'article';
+    const externalUrl = formData.get('externalUrl') as string | null;
 
     const serviceSupabase = getServiceSupabase();
 
@@ -195,6 +201,8 @@ export async function PUT(request: Request) {
       readTime: readTime !== null ? readTime : posts[postIndex].readTime,
       imageUrl: imageUrl,
       audioUrl: audioUrl,
+      type: type || posts[postIndex].type || 'article',
+      externalUrl: externalUrl !== null ? externalUrl : (posts[postIndex].externalUrl || ''),
       updatedAt: new Date().toISOString()
     };
 

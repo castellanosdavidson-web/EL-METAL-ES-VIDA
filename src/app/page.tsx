@@ -12,7 +12,8 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
-          const shuffled = data
+          const filtered = data.filter((a: any) => a.type !== 'plugin' && !a.is_hidden);
+          const shuffled = filtered
             .map((value: any) => ({ value, sort: Math.random() }))
             .sort((a: any, b: any) => a.sort - b.sort)
             .map(({ value }: any) => value);

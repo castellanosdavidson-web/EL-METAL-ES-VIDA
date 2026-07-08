@@ -94,7 +94,7 @@ export default function ArticulosPage() {
     fetch('/api/articles')
       .then(res => res.json())
       .then(data => {
-        if (!data.error) setArticles(data.filter((a: any) => a.type !== 'plugin'));
+        if (!data.error) setArticles(data);
       })
       .catch(console.error)
       .finally(() => setLoadingArticles(false));
@@ -139,58 +139,19 @@ export default function ArticulosPage() {
       finalDesc += `\n<p>${youtubeUrl.trim()}</p>`;
     }
     formData.set('desc', finalDesc);
-    formData.set('youtubeUrl', youtubeUrl.trim());
-    formData.append('type', 'article');
-
-    if (editArticle) {
-      formData.append('id', editArticle.id);
-    }
+    setMessage('INICIANDO CARGA...');
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
-      // Handle Audio Upload via Signed URL (Bypass Vercel 4.5MB limit)
-      const audioFile = formData.get('audio') as File | null;
-      if (audioFile && audioFile.size > 0) {
-        setMessage('SUBIENDO AUDIO (ESPERE POR FAVOR)...');
-        const originalNameWithoutExt = audioFile.name.substring(0, audioFile.name.lastIndexOf('.'));
-        const fileExt = audioFile.name.split('.').pop();
-        const sanitizedOriginal = originalNameWithoutExt.replace(/[^a-zA-Z0-9 -_]/g, '').trim();
-        const fileName = `Elmetalesvida - ${sanitizedOriginal} - ${Date.now()}.${fileExt}`;
+      if (!token) throw new Error('No autorizado');
 
-        // Get signed URL
-        const signedRes = await fetch('/api/upload/signed-url', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ fileName })
-        });
-        
-        const signedData = await signedRes.json();
-        if (!signedRes.ok) throw new Error(signedData.error || 'Error al obtener enlace de subida seguro');
-
-        // Upload directly to Supabase using signed URL
-        const uploadRes = await fetch(signedData.signedUrl, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': audioFile.type || 'audio/mpeg'
-          },
-          body: audioFile
-        });
-
-        if (!uploadRes.ok) throw new Error('Error al subir archivo MP3 a Supabase');
-
-        // Get the public URL for the uploaded file
-        const { data: publicUrlData } = supabase.storage
-          .from('articles')
-          .getPublicUrl(signedData.path);
-          
-        formData.set('audioUrl', publicUrlData.publicUrl);
-        // Remove the audio file from formData to avoid Vercel 4.5MB limit in API route
-        formData.delete('audio');
+      const formData = new FormData(e.currentTarget);
+      formData.append('desc', desc);
+      formData.append('type', 'plugin');
+      if (editArticle) {
+        formData.append('id', editArticle.id);
       }
 
       setMessage('EJECUTANDO INYECCIÓN AL SERVIDOR...');
@@ -212,7 +173,7 @@ export default function ArticulosPage() {
       }
 
       if (response.ok) {
-        setMessage(editArticle ? '¡Artículo actualizado con éxito!' : '¡Artículo subido con éxito!');
+        setMessage(editArticle ? '¡Plugin actualizado con éxito!' : '¡Plugin subido con éxito!');
         fetchArticles(); // Refrescar lista
         setTimeout(() => {
           setIsModalOpen(false);
@@ -230,7 +191,7 @@ export default function ArticulosPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar este artículo definitivamente?')) return;
+    if (!confirm('¿Estás seguro de eliminar este plugin definitivamente?')) return;
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
@@ -282,8 +243,8 @@ export default function ArticulosPage() {
         {/* Page Header */}
         <div className="flex justify-between items-end">
           <div>
-            <h2 className="font-headline-lg text-headline-lg text-on-surface uppercase tracking-tight">Archivos Técnicos</h2>
-            <p className="font-mono-technical text-mono-technical text-on-surface-variant">DIRECTORIO: /SISTEMA/CONTENIDO/ARTICULOS</p>
+            <h2 className="font-headline-lg text-headline-lg text-on-surface uppercase tracking-tight">Taller de Plugins</h2>
+            <p className="font-mono-technical text-mono-technical text-on-surface-variant">DIRECTORIO: /SISTEMA/CONTENIDO/TALLER</p>
           </div>
           <button 
             onClick={handleOpenNew}
@@ -468,13 +429,28 @@ export default function ArticulosPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
                   <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Categoría</label>
-                  <select name="category" defaultValue={editArticle?.category || 'Documental Histórico'} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical">
-                    <option value="Noticias">Noticias</option>
-                    <option value="Documental Histórico">Documental Histórico</option>
-                    <option value="Análisis Técnico">Análisis Técnico</option>
-                    <option value="Ciencia Sonora">Ciencia Sonora</option>
-                    <option value="Equipamiento">Equipamiento</option>
-                    <option value="Historia">Historia</option>
+                  <select name="category" defaultValue={editArticle?.category || 'Distorsion'} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical">
+                    <option value="808">808</option>
+                    <option value="Armónicos">Armónicos</option>
+                    <option value="Bajo">Bajo</option>
+                    <option value="Batería">Batería</option>
+                    <option value="Bitcrusher">Bitcrusher</option>
+                    <option value="Clipper">Clipper</option>
+                    <option value="Compresión">Compresión</option>
+                    <option value="De-esser">De-esser</option>
+                    <option value="Distorsion">Distorsion</option>
+                    <option value="EQs">EQs</option>
+                    <option value="Espectro">Espectro</option>
+                    <option value="Fases">Fases</option>
+                    <option value="Guitarra">Guitarra</option>
+                    <option value="Latencia">Latencia</option>
+                    <option value="LoFi">LoFi</option>
+                    <option value="Orquestal">Orquestal</option>
+                    <option value="Piano">Piano</option>
+                    <option value="Side-Chain">Side-Chain</option>
+                    <option value="Sintes">Sintes</option>
+                    <option value="Transiente">Transiente</option>
+                    <option value="Vocal">Vocal</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -485,14 +461,18 @@ export default function ArticulosPage() {
 
               <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm text-primary">audio_file</span>
-                  Archivo de Audio Descargable (MP3) {editArticle && '(Opcional)'}
+                  <span className="material-symbols-outlined text-sm text-primary">link</span>
+                  URL del Sitio Oficial de Descarga
                 </label>
-                <input type="file" name="audio" accept=".mp3,audio/*" className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
-                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Este archivo MP3 será ofrecido como descarga al lector a cambio de su correo (Lead Magnet).</p>
-                {editArticle?.audioUrl && (
-                  <p className="text-xs text-primary font-mono-technical mt-1 truncate">Archivo actual: {editArticle.audioUrl.split('/').pop()}</p>
-                )}
+                <input 
+                  type="url" 
+                  name="externalUrl" 
+                  defaultValue={editArticle?.externalUrl || ''} 
+                  required 
+                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" 
+                  placeholder="Ej: https://plugin-nation.com/es/efectos/amplificador..." 
+                />
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Este enlace dirige a los usuarios a la web oficial del desarrollador.</p>
               </div>
 
               <div className="flex flex-col gap-2">

@@ -94,6 +94,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="material-symbols-outlined" style={pathname.includes('/articulos') ? { fontVariationSettings: "'FILL' 1" } : {}}>article</span>
             <span className="font-label-sm text-label-sm uppercase tracking-widest">Artículos</span>
           </Link>
+          <Link className={getLinkClass('/admin/taller')} href="/admin/taller">
+            <span className="material-symbols-outlined" style={pathname.includes('/taller') ? { fontVariationSettings: "'FILL' 1" } : {}}>build</span>
+            <span className="font-label-sm text-label-sm uppercase tracking-widest">Taller</span>
+          </Link>
 
           <Link className={getLinkClass('/admin/usuarios')} href="/admin/usuarios">
             <span className="material-symbols-outlined" style={pathname.includes('/usuarios') ? { fontVariationSettings: "'FILL' 1" } : {}}>group</span>
