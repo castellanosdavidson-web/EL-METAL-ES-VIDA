@@ -112,10 +112,10 @@ export default function TiendaPage() {
               </div>
               
               <div className="p-6 flex flex-col gap-4 flex-grow">
-                <h3 className="font-headline-md text-headline-md text-on-surface leading-tight group-hover:text-primary transition-colors">{product.title}</h3>
+                <h3 className="font-headline-lg text-headline-lg text-on-surface leading-tight group-hover:text-primary transition-colors pb-2">{product.title}</h3>
                 
                 <div 
-                  className="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-4" 
+                  className="font-body-md text-body-md text-on-surface-variant text-sm" 
                   dangerouslySetInnerHTML={{ __html: product.desc }}
                 />
                 

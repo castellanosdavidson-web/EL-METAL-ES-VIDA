@@ -305,7 +305,10 @@ export default function GearPage() {
               </div>
               
               <div className="flex flex-col gap-2">
-                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Reseña / Descripción</label>
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center justify-between">
+                  <span>Reseña / Descripción</span>
+                  <span className="text-[10px] text-primary lowercase">(Recomendado: Máx 200 caracteres)</span>
+                </label>
                 <div className="bg-surface border border-outline-variant text-on-surface">
                   <ReactQuill 
                     theme="snow" 
@@ -313,7 +316,7 @@ export default function GearPage() {
                     onChange={setDesc} 
                     modules={quillModules}
                     className="bg-background text-on-surface font-body-md" 
-                    placeholder="Descripción y detalles técnicos del equipo..." 
+                    placeholder="Descripción rápida y precisa del equipo para no saturar el diseño..." 
                   />
                 </div>
               </div>
