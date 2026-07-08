@@ -205,19 +205,19 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
         @media (min-width: 640px) {
           .article-content {
             font-size: 1.1rem;
-            line-height: 1.9;
+            line-height: 1.7;
           }
         }
 
         @media (min-width: 768px) {
           .article-content {
             font-size: 1.15rem;
-            line-height: 1.95;
+            line-height: 1.75;
           }
         }
 
         .article-content p {
-          margin-bottom: 1.5em;
+          margin-bottom: 1em;
           max-width: 100%;
         }
 
@@ -240,8 +240,8 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
           font-family: 'Cinzel', serif;
           color: #f0e6d8;
           text-transform: uppercase;
-          margin-top: 2.5em;
-          margin-bottom: 0.75em;
+          margin-top: 1.8em;
+          margin-bottom: 0.5em;
           line-height: 1.35;
           word-break: normal;
           text-shadow: 0 0 15px rgba(196, 112, 75, 0.15);
