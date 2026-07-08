@@ -35,7 +35,7 @@ export default function EnciclopediaPage() {
     : sortedPosts.filter(p => p.category === selectedCategory);
 
   return (
-    <main className="flex-grow pt-[120px] pb-stack-loose px-margin-mobile flex flex-col gap-stack-loose w-full max-w-7xl mx-auto">
+    <main className="flex-grow pt-[160px] pb-stack-loose px-margin-mobile flex flex-col gap-stack-loose w-full max-w-7xl mx-auto">
       {/* Hero Section */}
       <section className="flex flex-col gap-stack-tight border-b border-outline-variant/20 pb-6">
         <div className="flex items-center gap-2 text-primary">

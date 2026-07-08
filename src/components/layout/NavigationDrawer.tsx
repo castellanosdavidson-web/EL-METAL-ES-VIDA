@@ -42,9 +42,9 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
 
         <ul className="flex-grow flex flex-col gap-6">
           <li>
-            <Link onClick={onClose} href="/enciclopedia" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-primary border-l-4 border-primary pl-4 opacity-80 hover:opacity-100 hover:translate-x-2 transition-all duration-300 glitch-hover">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>library_books</span>
-              <span>Enciclopedia</span>
+            <Link onClick={onClose} href="/tabernaculo" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-primary border-l-4 border-primary pl-4 opacity-80 hover:opacity-100 hover:translate-x-2 transition-all duration-300 glitch-hover">
+              <span className="material-symbols-outlined text-[32px]">auto_stories</span>
+              <span>Tabernáculo</span>
             </Link>
           </li>
           <li>

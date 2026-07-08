@@ -662,7 +662,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
 
             {/* Navigation */}
             <div className="mt-8 md:mt-12 pt-6 border-t border-outline-variant/30">
-              <Link href="/enciclopedia" className="text-on-surface-variant/60 font-mono-technical hover:text-primary transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group">
+              <Link href="/tabernaculo" className="text-on-surface-variant/60 font-mono-technical hover:text-primary transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group">
                 <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
                 VOLVER AL ARCHIVO GENERAL
               </Link>
