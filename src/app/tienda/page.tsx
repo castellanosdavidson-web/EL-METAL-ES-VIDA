@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 
 export default function TiendaPage() {
   const [gear, setGear] = useState<any[]>([]);
@@ -90,12 +89,21 @@ export default function TiendaPage() {
               
               <div className="relative w-full pt-[100%] overflow-hidden border-b border-outline-variant/20 bg-white">
                 {product.imageUrl ? (
-                  <Image 
-                    src={product.imageUrl} 
-                    alt={product.title} 
-                    fill
-                    className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700 ease-out" 
-                  />
+                  <>
+                    <img 
+                      src={product.imageUrl} 
+                      alt={product.title} 
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.nextElementSibling;
+                        if (fallback) fallback.classList.remove('hidden');
+                      }}
+                      className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700 ease-out" 
+                    />
+                    <div className="hidden absolute inset-0 flex items-center justify-center bg-surface-container">
+                      <span className="material-symbols-outlined text-on-surface-variant text-4xl">image</span>
+                    </div>
+                  </>
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-surface-container">
                     <span className="material-symbols-outlined text-on-surface-variant text-4xl">image</span>

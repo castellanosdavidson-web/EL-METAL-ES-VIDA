@@ -42,12 +42,13 @@ export async function POST(request: Request) {
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File;
     const clientAudioUrl = formData.get('audioUrl') as string | null;
+    const clientImageUrl = formData.get('imageUrl') as string | null;
     const type = (formData.get('type') as string) || 'article';
     const externalUrl = formData.get('externalUrl') as string | null;
 
     const serviceSupabase = getServiceSupabase();
 
-    let imageUrl = '';
+    let imageUrl = clientImageUrl || '';
     if (image && image.name) {
       const fileExt = image.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
@@ -140,7 +141,8 @@ export async function PUT(request: Request) {
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File | null;
     const clientAudioUrl = formData.get('audioUrl') as string | null;
-    const type = (formData.get('type') as string) || 'article';
+    const clientImageUrl = formData.get('imageUrl') as string | null;
+    const type = formData.get('type') as string | null;
     const externalUrl = formData.get('externalUrl') as string | null;
 
     const serviceSupabase = getServiceSupabase();
@@ -162,7 +164,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Artículo no encontrado' }, { status: 404 });
     }
 
-    let imageUrl = posts[postIndex].imageUrl;
+    let imageUrl = clientImageUrl || posts[postIndex].imageUrl;
 
     if (image && image.name && image.size > 0) {
       const fileExt = image.name.split('.').pop();

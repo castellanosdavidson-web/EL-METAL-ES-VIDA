@@ -350,8 +350,23 @@ export default function GearPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Imagen del Producto {editArticle && '(Opcional)'}</label>
-                <input type="file" name="image" accept="image/*" required={!editArticle} className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-primary">image</span>
+                  URL de la Imagen (Opción 1)
+                </label>
+                <input 
+                  type="url" 
+                  name="imageUrl" 
+                  defaultValue={editArticle?.imageUrl || ''} 
+                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" 
+                  placeholder="Ej: https://m.media-amazon.com/images/..." 
+                />
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Pega aquí el enlace de la imagen de Amazon si no quieres descargarla.</p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Imagen del Producto (Opción 2: Archivo local)</label>
+                <input type="file" name="image" accept="image/*" className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
               </div>
 
               <button type="submit" disabled={uploading} className="mt-4 bg-primary-container text-on-surface py-4 uppercase font-label-sm font-bold tracking-widest hover:bg-inverse-primary transition-colors disabled:opacity-50">
