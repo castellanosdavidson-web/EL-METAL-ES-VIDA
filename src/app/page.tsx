@@ -176,6 +176,12 @@ export default function Home() {
         )}
       </section>
 
+      {/* Decorative Transition */}
+      <div className="relative w-full h-32 bg-gradient-to-b from-background to-surface-dim flex items-center justify-center overflow-hidden">
+        <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+        <span className="material-symbols-outlined text-primary/30 text-4xl rotate-180 drop-shadow-[0_0_8px_rgba(var(--md-sys-color-primary),0.5)]">stat_minus_1</span>
+      </div>
+
       {/* Taller de Distorsión */}
       <section id="taller" className="py-24 bg-surface-dim relative overflow-hidden">
         <div className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
@@ -184,22 +190,34 @@ export default function Home() {
               <span className="material-symbols-outlined text-primary">electric_bolt</span>
               <span className="font-label-technical text-label-technical text-on-surface-variant">SECCIÓN 02</span>
             </div>
-            <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface">Taller de Distorsión</h2>
-            <p className="font-body-md text-on-surface-variant mt-4 max-w-xl">Herramientas analíticas y calibración de equipo. Sólo para ingenieros del sonido pesado.</p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div>
+                <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface">Taller de Distorsión</h2>
+                <p className="font-body-md text-on-surface-variant mt-4 max-w-xl">Herramientas analíticas y calibración de equipo. Sólo para ingenieros del sonido pesado.</p>
+              </div>
+              <Link href="/taller" className="group flex items-center gap-2 text-primary hover:text-white transition-colors border border-primary hover:bg-primary px-6 py-3 font-label-technical text-label-technical uppercase tracking-widest shrink-0">
+                <span className="material-symbols-outlined text-lg group-hover:animate-pulse">apps</span>
+                VER TODO EL TALLER
+              </Link>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {plugins.length > 0 ? (
               plugins.map((plugin) => (
-                <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} key={plugin.id} className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
-                  <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0">
+                <a href={plugin.externalUrl || '#'} target="_blank" rel="noopener noreferrer" key={plugin.id} className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
+                  <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
+                    <span className="material-symbols-outlined text-[120px]">electric_bolt</span>
+                  </div>
+                  <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0 relative z-10">
                     <span className="material-symbols-outlined text-on-surface">electric_bolt</span>
                   </div>
-                  <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors">{plugin.title}</h3>
-                  <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3" dangerouslySetInnerHTML={{__html: plugin.desc}} />
-                  <button className="w-full mt-auto border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-primary-container group-hover:text-white group-hover:border-primary-container">
-                    Ver Herramienta
+                  <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10">{plugin.title}</h3>
+                  <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: plugin.desc}} />
+                  <button className="w-full mt-auto border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-primary-container group-hover:text-white group-hover:border-primary-container relative z-10 flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined text-[16px]">exit_to_app</span>
+                    Ir al Enlace
                   </button>
-                </Link>
+                </a>
               ))
             ) : (
               <div className="col-span-1 md:col-span-3 text-center py-12 border border-dashed border-outline-variant/30">
@@ -211,6 +229,12 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Decorative Transition */}
+      <div className="relative w-full h-32 bg-gradient-to-b from-surface-dim to-background flex items-center justify-center overflow-hidden">
+        <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-error/20 to-transparent" />
+        <span className="material-symbols-outlined text-error/30 text-4xl drop-shadow-[0_0_8px_rgba(var(--md-sys-color-error),0.5)]">keyboard_double_arrow_down</span>
+      </div>
+
       {/* Arsenal */}
       <section id="arsenal" className="py-24 bg-background relative overflow-hidden">
         <div className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
@@ -219,22 +243,34 @@ export default function Home() {
               <span className="material-symbols-outlined text-error">hardware</span>
               <span className="font-label-technical text-label-technical text-on-surface-variant">SECCIÓN 03</span>
             </div>
-            <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface">El Arsenal</h2>
-            <p className="font-body-md text-on-surface-variant mt-4 max-w-xl">Equipamiento, hardware y enlaces de afiliados cuidadosamente seleccionados para llevar tu sonido al extremo.</p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div>
+                <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface">El Arsenal</h2>
+                <p className="font-body-md text-on-surface-variant mt-4 max-w-xl">Equipamiento, hardware y enlaces de afiliados cuidadosamente seleccionados para llevar tu sonido al extremo.</p>
+              </div>
+              <Link href="/tienda" className="group flex items-center gap-2 text-error hover:text-white transition-colors border border-error hover:bg-error px-6 py-3 font-label-technical text-label-technical uppercase tracking-widest shrink-0">
+                <span className="material-symbols-outlined text-lg group-hover:animate-pulse">grid_view</span>
+                VER TODO EL ARSENAL
+              </Link>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {gear.length > 0 ? (
               gear.map((item) => (
-                <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} key={item.id} className="bg-surface-dim border border-outline-variant p-6 hover:border-error transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
-                  <div className="w-12 h-12 bg-surface border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-error/20 transition-colors shrink-0">
+                <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" key={item.id} className="bg-surface-dim border border-outline-variant p-6 hover:border-error transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
+                  <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
+                    <span className="material-symbols-outlined text-[120px]">hardware</span>
+                  </div>
+                  <div className="w-12 h-12 bg-surface border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-error/20 transition-colors shrink-0 relative z-10">
                     <span className="material-symbols-outlined text-on-surface">hardware</span>
                   </div>
-                  <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors">{item.title}</h3>
-                  <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3" dangerouslySetInnerHTML={{__html: item.desc}} />
-                  <button className="w-full mt-auto border border-outline-variant py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-error group-hover:text-white group-hover:border-error">
-                    Ver Equipamiento
+                  <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors relative z-10">{item.title}</h3>
+                  <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: item.desc}} />
+                  <button className="w-full mt-auto border border-outline-variant py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-error group-hover:text-white group-hover:border-error relative z-10 flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined text-[16px]">exit_to_app</span>
+                    Ir al Enlace
                   </button>
-                </Link>
+                </a>
               ))
             ) : (
               <div className="col-span-1 md:col-span-3 text-center py-12 border border-dashed border-outline-variant/30">
