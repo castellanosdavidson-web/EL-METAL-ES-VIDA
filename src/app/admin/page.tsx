@@ -4,6 +4,8 @@ import { supabase } from '@/utils/supabase';
 
 export default function AdminDashboard() {
   const [articles, setArticles] = useState<any[]>([]);
+  const [plugins, setPlugins] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
   
   const [analyticsData, setAnalyticsData] = useState<any>({
@@ -44,7 +46,11 @@ export default function AdminDashboard() {
     fetch('/api/articles')
       .then(res => res.json())
       .then(data => {
-        if (!data.error) setArticles(data);
+        if (!data.error) {
+          setArticles(data.filter((a: any) => a.type === 'article' || !a.type));
+          setPlugins(data.filter((a: any) => a.type === 'plugin'));
+          setProducts(data.filter((a: any) => a.type === 'gear'));
+        }
       })
       .catch(console.error)
       .finally(() => setLoadingArticles(false));
@@ -105,15 +111,31 @@ export default function AdminDashboard() {
   return (
     <main className="p-8 flex-1">
       {/* Quick Stats Bento Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-masonry-gap mb-stack-loose">
-        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Artículos</span>
+      <section className="grid grid-cols-1 md:grid-cols-6 gap-masonry-gap mb-stack-loose">
+        <div className="md:col-span-2 technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Archivos Técnicos</span>
           <div className="flex items-baseline justify-between mt-base">
             <span className="font-display-lg text-display-lg text-primary">{articles.length}</span>
             <span className="text-primary-container material-symbols-outlined">article</span>
           </div>
         </div>
-        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low relative overflow-hidden">
+        <div className="md:col-span-2 technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Plugins (Taller)</span>
+          <div className="flex items-baseline justify-between mt-base">
+            <span className="font-display-lg text-display-lg text-primary">{plugins.length}</span>
+            <span className="text-primary-container material-symbols-outlined">build</span>
+          </div>
+        </div>
+        <div className="md:col-span-2 technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Productos (Afiliados)</span>
+          <div className="flex items-baseline justify-between mt-base">
+            <span className="font-display-lg text-display-lg text-primary">{products.length}</span>
+            <span className="text-primary-container material-symbols-outlined">shopping_cart</span>
+          </div>
+        </div>
+
+        {/* Analytics Row */}
+        <div className="md:col-span-2 technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low relative overflow-hidden">
           {loadingAnalytics && <div className="absolute top-0 left-0 w-full h-1 bg-primary animate-pulse"></div>}
           <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Visitas a Páginas (30d)</span>
           <div className="flex items-baseline justify-between mt-base">
@@ -121,7 +143,7 @@ export default function AdminDashboard() {
             <span className="text-primary-container material-symbols-outlined">visibility</span>
           </div>
         </div>
-        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low relative overflow-hidden">
+        <div className="md:col-span-2 technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low relative overflow-hidden">
           {loadingAnalytics && <div className="absolute top-0 left-0 w-full h-1 bg-primary animate-pulse"></div>}
           <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Tiempo Prom. (Minutos)</span>
           <div className="flex items-baseline justify-between mt-base">
@@ -129,7 +151,7 @@ export default function AdminDashboard() {
             <span className="text-primary-container material-symbols-outlined">timer</span>
           </div>
         </div>
-        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low relative overflow-hidden">
+        <div className="md:col-span-2 technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low relative overflow-hidden">
           {loadingAnalytics && <div className="absolute top-0 left-0 w-full h-1 bg-primary animate-pulse"></div>}
           <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Usuarios Activos (30d)</span>
           <div className="flex items-baseline justify-between mt-base">
