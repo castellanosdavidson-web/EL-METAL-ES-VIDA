@@ -468,9 +468,14 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
             <div className="article-hero__divider" />
 
             {/* Meta */}
-            <p className="font-mono-technical text-primary/70 tracking-widest uppercase text-[10px] md:text-xs">
-              PUBLICADO: {new Date(initialArticle.createdAt || Date.now()).toISOString().split('T')[0]} &nbsp;&#47;&#47;&nbsp; ARCHIVO: ART-{initialArticle.id.toString().slice(-4)}-X
-            </p>
+            <div className="flex flex-col gap-2">
+              <p className="font-mono-technical text-primary/70 tracking-widest uppercase text-[10px] md:text-xs">
+                PUBLICADO: {new Date(initialArticle.createdAt || Date.now()).toISOString().split('T')[0]} &nbsp;&#47;&#47;&nbsp; ARCHIVO: ART-{initialArticle.id.toString().slice(-4)}-X
+              </p>
+              <p className="font-mono-technical text-primary/70 tracking-widest uppercase text-[10px] md:text-xs flex items-center gap-2">
+                AUTOR: <a href="https://www.instagram.com/davidsoncastellanos?igsh=MTA2YXhqbTNtdmV3aw==" target="_blank" rel="noopener noreferrer" className="hover:text-primary-container transition-colors flex items-center gap-1 underline underline-offset-4 decoration-primary/30 hover:decoration-primary"><span className="material-symbols-outlined text-[14px]">open_in_new</span> DAVIDSON SCJ</a>
+              </p>
+            </div>
           </div>
         </section>
 
@@ -496,30 +501,6 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
               className="article-content"
               dangerouslySetInnerHTML={{ __html: processedContent }} 
             />
-
-            {/* Author Box */}
-            <div className="mt-16 mb-8 p-6 md:p-8 bg-surface-container border border-outline-variant/30 flex flex-col md:flex-row items-start md:items-center gap-6 relative overflow-hidden group">
-              <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
-              <div className="flex-shrink-0 relative">
-                <div className="w-20 h-20 md:w-24 md:h-24 overflow-hidden border-2 border-primary bg-[#0e0e0e]">
-                  <img src="https://elmetalesvida.com/LOGO%202.png" alt="Davidson SCJ" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <span className="font-mono-technical text-[10px] text-primary tracking-widest uppercase mb-1 block">Autor / Administrador Principal</span>
-                <a href="https://www.instagram.com/davidsoncastellanos?igsh=MTA2YXhqbTNtdmV3aw==" target="_blank" rel="noopener noreferrer" className="inline-block font-headline-md text-2xl md:text-3xl text-on-surface uppercase mb-2 hover:text-primary transition-colors">
-                  Davidson SCJ
-                </a>
-                <p className="font-body-md text-sm text-on-surface-variant/80 max-w-2xl leading-relaxed mb-4">
-                  Fundador de EL METAL ES VIDA. Productor musical, educador y apasionado por la ciencia detrás del sonido pesado.
-                </p>
-                <a href="https://www.instagram.com/davidsoncastellanos?igsh=MTA2YXhqbTNtdmV3aw==" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-label-sm uppercase tracking-widest text-primary hover:text-primary-container transition-colors text-xs md:text-sm group/link">
-                  <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                  <span>Seguir en Instagram</span>
-                  <span className="material-symbols-outlined text-[14px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
-                </a>
-              </div>
-            </div>
 
             {/* Bottom separator */}
             <div className="metal-separator">
