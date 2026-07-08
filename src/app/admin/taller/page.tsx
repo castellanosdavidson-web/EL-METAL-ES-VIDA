@@ -147,8 +147,6 @@ export default function ArticulosPage() {
 
       if (!token) throw new Error('No autorizado');
 
-      const formData = new FormData(e.currentTarget);
-      formData.append('desc', desc);
       formData.append('type', 'plugin');
       if (editArticle) {
         formData.append('id', editArticle.id);

@@ -43,7 +43,7 @@ export default function TallerPage() {
               <span className="material-symbols-outlined text-[16px]">build</span>
               <span className="font-mono-technical text-mono-technical uppercase">Taller Técnico</span>
             </div>
-            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Herramientas y Plugins</h1>
+            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface leading-normal pb-2">Herramientas y Plugins</h1>
             <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-2">
               Librería de efectos, instrumentos virtuales y procesadores para la creación de audio extremo.
             </p>
