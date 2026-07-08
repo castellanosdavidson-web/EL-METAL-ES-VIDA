@@ -41,6 +41,7 @@ export async function POST(request: Request) {
     const readTime = formData.get('readTime') as string;
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File;
+    const audio = formData.get('audio') as File | null;
 
     const serviceSupabase = getServiceSupabase();
 
@@ -62,6 +63,26 @@ export async function POST(request: Request) {
         .getPublicUrl(fileName);
         
       imageUrl = publicUrlData.publicUrl;
+    }
+
+    let audioUrl = '';
+    if (audio && audio.name) {
+      const fileExt = audio.name.split('.').pop();
+      const fileName = `audio_${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await serviceSupabase.storage
+        .from('articles')
+        .upload(fileName, audio, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+      
+      const { data: publicUrlData } = serviceSupabase.storage
+        .from('articles')
+        .getPublicUrl(fileName);
+        
+      audioUrl = publicUrlData.publicUrl;
     }
 
     // Download existing posts
@@ -86,6 +107,7 @@ export async function POST(request: Request) {
       category,
       readTime: readTime || '',
       imageUrl,
+      audioUrl,
       createdAt: new Date().toISOString()
     };
 
@@ -131,6 +153,7 @@ export async function PUT(request: Request) {
     const readTime = formData.get('readTime') as string;
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File | null;
+    const audio = formData.get('audio') as File | null;
 
     const serviceSupabase = getServiceSupabase();
 
@@ -172,6 +195,26 @@ export async function PUT(request: Request) {
       imageUrl = publicUrlData.publicUrl;
     }
 
+    let audioUrl = posts[postIndex].audioUrl || '';
+    if (audio && audio.name && audio.size > 0) {
+      const fileExt = audio.name.split('.').pop();
+      const fileName = `audio_${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await serviceSupabase.storage
+        .from('articles')
+        .upload(fileName, audio, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+      
+      const { data: publicUrlData } = serviceSupabase.storage
+        .from('articles')
+        .getPublicUrl(fileName);
+        
+      audioUrl = publicUrlData.publicUrl;
+    }
+
     let slug = posts[postIndex].slug;
     if (!slug) {
       slug = (title || posts[postIndex].title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + id.toString().slice(-4);
@@ -187,6 +230,7 @@ export async function PUT(request: Request) {
       category: category || posts[postIndex].category,
       readTime: readTime !== null ? readTime : posts[postIndex].readTime,
       imageUrl: imageUrl,
+      audioUrl: audioUrl,
       updatedAt: new Date().toISOString()
     };
 

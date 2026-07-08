@@ -439,6 +439,18 @@ export default function ArticulosPage() {
               </div>
 
               <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-primary">audio_file</span>
+                  Archivo de Audio Descargable (MP3) {editArticle && '(Opcional)'}
+                </label>
+                <input type="file" name="audio" accept=".mp3,audio/*" className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Este archivo MP3 será ofrecido como descarga al lector a cambio de su correo (Lead Magnet).</p>
+                {editArticle?.audioUrl && (
+                  <p className="text-xs text-primary font-mono-technical mt-1 truncate">Archivo actual: {editArticle.audioUrl.split('/').pop()}</p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Imagen de Portada {editArticle && '(Opcional)'}</label>
                 <input type="file" name="image" accept="image/*" required={!editArticle} className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
               </div>

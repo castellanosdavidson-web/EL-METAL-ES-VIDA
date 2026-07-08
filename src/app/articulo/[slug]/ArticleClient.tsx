@@ -49,6 +49,37 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
   const [copied, setCopied] = useState(false);
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [shareUrl, setShareUrl] = useState('');
+  
+  const [leadEmail, setLeadEmail] = useState('');
+  const [leadStatus, setLeadStatus] = useState<'idle' | 'loading' | 'unlocked'>('idle');
+  const [leadError, setLeadError] = useState('');
+
+  const handleLeadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLeadError('');
+    if (!leadEmail.includes('@')) {
+      setLeadError('Email inválido');
+      return;
+    }
+    setLeadStatus('loading');
+    try {
+      const res = await fetch('/api/subscribers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: leadEmail })
+      });
+      if (res.ok) {
+        setLeadStatus('unlocked');
+      } else {
+        const data = await res.json();
+        setLeadError(data.error || 'Error al procesar solicitud');
+        setLeadStatus('idle');
+      }
+    } catch (err) {
+      setLeadError('Error de conexión');
+      setLeadStatus('idle');
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -472,6 +503,67 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
               <span className="metal-separator__icon">⛧ ⛧ ⛧</span>
               <div className="metal-separator__line" />
             </div>
+
+            {/* Lead Magnet / Descarga de Audio */}
+            {initialArticle.audioUrl && (
+              <div className="my-12 p-6 md:p-8 bg-surface-container-lowest border border-primary/30 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent" />
+                <div className="absolute -right-16 -top-16 opacity-5 pointer-events-none group-hover:scale-110 group-hover:rotate-12 transition-transform duration-1000">
+                  <span className="material-symbols-outlined text-[200px]">audio_file</span>
+                </div>
+                
+                <h3 className="font-headline-md text-headline-md uppercase text-on-surface mb-2">Archivo Técnico Desclasificado</h3>
+                <p className="font-body-md text-on-surface-variant/90 mb-6 max-w-2xl">
+                  {initialArticle.title}: El archivo técnico definitivo para la legión. Desglosamos la agresión sonora, documentamos el equipo y forjamos acero. 
+                </p>
+
+                {leadStatus === 'unlocked' ? (
+                  <div className="bg-primary-container/10 border border-primary p-6 animate-fade-in">
+                    <p className="font-label-technical text-label-technical text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <span className="material-symbols-outlined">lock_open</span>
+                      ACCESO CONCEDIDO
+                    </p>
+                    <a 
+                      href={initialArticle.audioUrl} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-3 bg-primary text-on-primary px-8 py-4 uppercase font-bold tracking-widest hover:bg-inverse-primary hover:text-primary-container transition-all active:scale-95 shadow-[0_0_15px_rgba(var(--md-sys-color-primary),0.3)]"
+                    >
+                      <span className="material-symbols-outlined">download</span>
+                      CALIBRAR TONO (DESCARGAR MP3)
+                    </a>
+                  </div>
+                ) : (
+                  <form onSubmit={handleLeadSubmit} className="flex flex-col md:flex-row gap-4 relative z-10">
+                    <div className="flex-1">
+                      <input 
+                        type="email" 
+                        placeholder="INGRESAR COMUNICADOR (CORREO ELECTRÓNICO)" 
+                        value={leadEmail}
+                        onChange={(e) => setLeadEmail(e.target.value)}
+                        required
+                        className="w-full bg-surface-container border border-outline-variant/40 p-4 text-on-surface font-mono-technical focus:border-primary outline-none focus:bg-surface-container-high transition-colors"
+                      />
+                      {leadError && <p className="text-error font-mono-technical text-[10px] mt-2 uppercase">{leadError}</p>}
+                    </div>
+                    <button 
+                      type="submit"
+                      disabled={leadStatus === 'loading'}
+                      className="bg-surface-variant text-on-surface px-8 py-4 border border-outline-variant/50 uppercase font-bold tracking-widest hover:bg-primary-container hover:text-on-surface hover:border-primary transition-all disabled:opacity-50 whitespace-nowrap flex items-center gap-2 justify-center"
+                    >
+                      {leadStatus === 'loading' ? (
+                        'VERIFICANDO...'
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined text-sm">settings_power</span>
+                          HABILITAR ARCHIVO
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
 
             {/* Share section */}
             <div className="my-8 p-6 bg-surface-container/30 border border-outline-variant/20 rounded">
