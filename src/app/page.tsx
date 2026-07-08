@@ -71,7 +71,7 @@ export default function Home() {
             El archivo técnico definitivo para la legión. Desglosamos la agresión sonora, documentamos el equipo y forjamos acero. 
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/tabernaculo" className="bg-primary-container text-white border-2 border-primary-container hover:bg-background hover:text-primary transition-all duration-300 px-8 py-4 font-headline-lg text-headline-lg text-[18px] uppercase flex items-center gap-3 group relative overflow-hidden">
+            <Link href="/archivo" className="bg-primary-container text-white border-2 border-primary-container hover:bg-background hover:text-primary transition-all duration-300 px-8 py-4 font-headline-lg text-headline-lg text-[18px] uppercase flex items-center gap-3 group relative overflow-hidden">
               <span className="relative z-10">Ingresar al Archivo</span>
               <span className="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">arrow_forward</span>
               <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity"></div>
@@ -94,7 +94,7 @@ export default function Home() {
             </div>
             <h2 className="text-headline-lg font-headline-lg uppercase text-on-surface">Expedientes Destacados</h2>
           </div>
-          <Link href="/tabernaculo" className="font-label-technical text-label-technical text-primary hover:underline flex items-center gap-1">
+          <Link href="/archivo" className="font-label-technical text-label-technical text-primary hover:underline flex items-center gap-1">
             VER TODOS <span className="material-symbols-outlined text-sm">arrow_outward</span>
           </Link>
         </div>
