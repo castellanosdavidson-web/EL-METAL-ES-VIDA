@@ -13,9 +13,9 @@ export async function POST(request: Request) {
 
     const { error } = await serviceSupabase
       .from('subscribers')
-      .insert([{ email }]);
+      .upsert([{ email }], { onConflict: 'email' });
 
-    if (error) {
+    if (error && error.code !== '23505') { // Also handle unique constraint just in case onConflict is missing
       console.error('Error insertando email:', error);
       return NextResponse.json({ error: 'Error guardando email' }, { status: 500 });
     }
