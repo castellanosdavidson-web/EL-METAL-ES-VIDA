@@ -48,8 +48,12 @@ interface ArticleClientProps {
 export default function ArticleClient({ initialArticle, initialOthers }: ArticleClientProps) {
   const [copied, setCopied] = useState(false);
   const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [shareUrl, setShareUrl] = useState('');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setShareUrl(window.location.href);
+    }
     if (initialOthers && initialOthers.length > 0) {
       const shuffledOthers = [...initialOthers]
         .map((value: any) => ({ value, sort: Math.random() }))
@@ -477,7 +481,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
               </h3>
               <div className="flex flex-wrap gap-4">
                 <a 
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="flex items-center gap-2 px-4 py-2 border border-outline-variant text-[11px] uppercase tracking-wider font-mono-technical text-on-surface-variant hover:text-primary hover:border-primary transition-all duration-300"
@@ -485,7 +489,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                   Facebook
                 </a>
                 <a 
-                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&text=${encodeURIComponent(initialArticle.title || '')}`}
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(initialArticle.title || '')}`}
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="flex items-center gap-2 px-4 py-2 border border-outline-variant text-[11px] uppercase tracking-wider font-mono-technical text-on-surface-variant hover:text-primary hover:border-primary transition-all duration-300"
@@ -493,7 +497,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                   Twitter / X
                 </a>
                 <a 
-                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent((initialArticle.title || '') + ' ' + (typeof window !== 'undefined' ? window.location.href : ''))}`}
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent((initialArticle.title || '') + ' ' + shareUrl)}`}
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="flex items-center gap-2 px-4 py-2 border border-outline-variant text-[11px] uppercase tracking-wider font-mono-technical text-on-surface-variant hover:text-primary hover:border-primary transition-all duration-300"
@@ -502,8 +506,8 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                 </a>
                 <button 
                   onClick={() => {
-                    if (typeof window !== 'undefined') {
-                      navigator.clipboard.writeText(window.location.href);
+                    if (shareUrl) {
+                      navigator.clipboard.writeText(shareUrl);
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }

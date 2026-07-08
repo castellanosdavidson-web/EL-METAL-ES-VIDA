@@ -36,9 +36,6 @@ export const metadata: Metadata = {
   creator: "El Metal Es Vida",
   publisher: "El Metal Es Vida",
   metadataBase: new URL('https://elmetalesvida.com'),
-  alternates: {
-    canonical: '/',
-  },
   icons: {
     icon: [
       { url: logoUrl },

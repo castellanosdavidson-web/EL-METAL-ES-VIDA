@@ -43,9 +43,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${article.title} - EL METAL ES VIDA`,
     description: plainTextDesc,
+    alternates: {
+      canonical: `/articulo/${slug}`,
+    },
     openGraph: {
       title: `${article.title} - EL METAL ES VIDA`,
       description: plainTextDesc,
+      url: `/articulo/${slug}`,
       images: [
         {
           url: article.imageUrl || 'https://elmetalesvida.com/LOGO%202.png',
