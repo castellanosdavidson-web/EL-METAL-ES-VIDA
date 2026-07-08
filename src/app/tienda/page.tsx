@@ -5,6 +5,7 @@ export default function TiendaPage() {
   const [gear, setGear] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetch('/api/articles')
@@ -21,9 +22,12 @@ export default function TiendaPage() {
 
   const categories = ['Todos', ...Array.from(new Set(gear.map(item => item.category)))].filter(Boolean);
 
-  const filteredGear = selectedCategory === 'Todos' 
-    ? gear 
-    : gear.filter(item => item.category === selectedCategory);
+  const filteredGear = gear.filter(item => {
+    const matchCat = selectedCategory === 'Todos' || item.category === selectedCategory;
+    const matchSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        (item.desc && item.desc.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchCat && matchSearch;
+  });
 
   return (
     <main className="flex-grow pt-[160px] pb-stack-loose w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop">
@@ -50,14 +54,28 @@ export default function TiendaPage() {
         </div>
       </section>
 
-      {/* Category Navigation */}
-      <nav className="sticky top-[80px] z-40 bg-background/95 backdrop-blur py-4 border-b border-outline-variant/20 mb-8 overflow-x-auto no-scrollbar">
-        <div className="flex gap-4 px-2">
+      {/* Filters & Search */}
+      <div className="sticky top-[80px] z-40 bg-background/95 backdrop-blur py-4 border-b border-outline-variant/20 mb-8 flex flex-col gap-4">
+        
+        {/* Search Bar */}
+        <div className="relative w-full max-w-md mx-auto md:mx-0">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+          <input 
+            type="text" 
+            placeholder="Buscar por equipo, marca o descripción..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-surface border border-outline-variant py-3 pl-12 pr-4 text-on-surface focus:border-primary outline-none font-body-md"
+          />
+        </div>
+
+        {/* Category Navigation */}
+        <div className="flex flex-wrap gap-3">
           {categories.map((cat: any) => (
             <button 
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 font-label-sm text-label-sm uppercase tracking-widest whitespace-nowrap transition-colors border ${
+              className={`px-4 py-2 font-label-sm text-label-sm uppercase tracking-widest transition-colors border ${
                 selectedCategory === cat 
                   ? 'bg-primary-container text-on-primary-container border-primary-container' 
                   : 'border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline'
@@ -67,7 +85,7 @@ export default function TiendaPage() {
             </button>
           ))}
         </div>
-      </nav>
+      </div>
 
       {/* Product Catalog */}
       <div className="columns-1 md:columns-2 lg:columns-3 gap-masonry-gap space-y-masonry-gap">
@@ -115,7 +133,7 @@ export default function TiendaPage() {
                 <h3 className="font-headline-lg text-headline-lg text-on-surface leading-tight group-hover:text-primary transition-colors pb-2">{product.title}</h3>
                 
                 <div 
-                  className="font-body-md text-body-md text-on-surface-variant text-sm" 
+                  className="font-body-md text-body-md text-on-surface-variant text-sm break-words overflow-hidden w-full [&_p]:mb-2 [&_p:last-child]:mb-0" 
                   dangerouslySetInnerHTML={{ __html: product.desc }}
                 />
                 
