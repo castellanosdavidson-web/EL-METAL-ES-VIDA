@@ -206,43 +206,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-background">
-        <div className="max-w-4xl mx-auto bg-surface-container-low border-2 border-outline-variant p-8 md:p-12 relative overflow-hidden">
-          <div className="absolute -top-16 -right-16 w-32 h-32 bg-primary-container rotate-45 flex flex-col justify-center gap-1 p-2">
-            <div className="h-1 w-full bg-background"></div>
-            <div className="h-1 w-full bg-background"></div>
-            <div className="h-1 w-full bg-background"></div>
-          </div>
-          <div className="text-center relative z-10">
-            <span className="material-symbols-outlined text-5xl text-primary mb-4 block">swords</span>
-            <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface mb-4">Únete a la Hermandad</h2>
-            <p className="font-body-lg text-on-surface-variant mb-8 max-w-xl mx-auto">
-              Apoya nuestro proyecto y recibe como recompensa <strong className="text-primary">archivos descargables con música extrema</strong> para escuchar localmente. Ingresa tu correo y serás dirigido a Facebook Stars para realizar tu donación y habilitar tu acceso.
-            </p>
-            <form 
-              className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" 
-              onSubmit={handleSubscribe}
-            >
-              <div className="flex-grow relative">
-                <label className="absolute -top-2.5 left-3 bg-surface-container-low px-1 font-label-technical text-label-technical text-primary z-10" htmlFor="email">CREDENCIAL (EMAIL)</label>
-                <input className="w-full bg-background border border-outline-variant text-on-surface font-body-md p-4 focus:ring-0 focus:border-primary-container outline-none transition-colors" id="email" name="email" placeholder="ingresa@tu-correo.com" required type="email" />
-              </div>
-              <button disabled={isSubscribing} className="bg-primary-container text-white px-8 py-4 font-label-technical text-label-technical uppercase hover:bg-background hover:text-primary border-2 border-primary-container transition-all flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50" type="submit">
-                {isSubscribing ? (
-                  <span className="material-symbols-outlined text-[20px] animate-spin">sync</span>
-                ) : (
-                  <span className="material-symbols-outlined text-[20px]">volunteer_activism</span>
-                )}
-                {isSubscribing ? 'PROCESANDO...' : 'DONAR Y ACCEDER'}
-              </button>
-            </form>
-            <span className="block mt-4 font-label-technical text-label-technical text-on-surface-variant tracking-widest text-[10px]">
-              * SERÁS REDIRIGIDO A FB.COM/STARS
-            </span>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }
