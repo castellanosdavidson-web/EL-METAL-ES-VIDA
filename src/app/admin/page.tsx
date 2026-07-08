@@ -33,6 +33,14 @@ export default function AdminDashboard() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    // Validar el tamaño del archivo en el cliente para evitar el error 413 de Vercel (4.5 MB límite)
+    const imageFile = formData.get('image') as File | null;
+    if (imageFile && imageFile.name && imageFile.size > 4 * 1024 * 1024) {
+      setMessage('Error: La imagen de portada supera el límite de 4 MB de Vercel. Por favor, comprímela o usa una imagen más ligera.');
+      setUploading(false);
+      return;
+    }
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
