@@ -58,3 +58,41 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Falta token de autenticación' }, { status: 401 });
+    }
+
+    const serviceSupabase = getServiceSupabase();
+    const { data: { user }, error: authError } = await serviceSupabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Acceso Denegado (Token inválido)' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('email');
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email no proporcionado' }, { status: 400 });
+    }
+
+    const { error } = await serviceSupabase
+      .from('subscribers')
+      .delete()
+      .eq('email', email);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}

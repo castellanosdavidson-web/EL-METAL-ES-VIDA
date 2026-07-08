@@ -5,6 +5,9 @@ import { supabase } from '@/utils/supabase';
 export default function UsuariosPage() {
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     fetchSubscribers();
@@ -55,6 +58,53 @@ export default function UsuariosPage() {
     window.URL.revokeObjectURL(url);
   };
 
+  const handleAddSubscriber = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEmail.trim()) return;
+    setMessage('PROCESANDO...');
+    try {
+      const res = await fetch('/api/subscribers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newEmail.trim() })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMessage('USUARIO AÑADIDO CON ÉXITO');
+        setNewEmail('');
+        fetchSubscribers();
+        setTimeout(() => {
+          setIsModalOpen(false);
+          setMessage('');
+        }, 1500);
+      } else {
+        setMessage(`ERROR: ${data.error}`);
+      }
+    } catch (err) {
+      setMessage('ERROR DE CONEXIÓN');
+    }
+  };
+
+  const handleDelete = async (email: string) => {
+    if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente a ${email}?`)) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`/api/subscribers?email=${encodeURIComponent(email)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      });
+      if (res.ok) {
+        fetchSubscribers();
+      } else {
+        const data = await res.json();
+        alert(`Error al eliminar: ${data.error}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión al eliminar');
+    }
+  };
+
   return (
     <main className="p-8 flex-1 flex flex-col h-full">
       <div className="space-y-8 max-w-7xl mx-auto w-full">
@@ -75,7 +125,7 @@ export default function UsuariosPage() {
               <span className="material-symbols-outlined text-[18px]">download</span>
               Exportar_CSV
             </button>
-            <button className="px-6 py-3 bg-primary-container text-on-primary font-label-sm uppercase tracking-widest hover:bg-inverse-primary transition-all active:scale-95 flex items-center gap-2 border border-primary-container">
+            <button onClick={() => setIsModalOpen(true)} className="px-6 py-3 bg-primary-container text-on-primary font-label-sm uppercase tracking-widest hover:bg-inverse-primary transition-all active:scale-95 flex items-center gap-2 border border-primary-container">
               <span className="material-symbols-outlined text-[18px]">person_add</span>
               Registrar_Nuevo
             </button>
@@ -150,6 +200,13 @@ export default function UsuariosPage() {
                           >
                             <span className="material-symbols-outlined text-[18px]">content_copy</span>
                           </button>
+                          <button 
+                            onClick={() => handleDelete(sub.email)}
+                            className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 text-on-surface-variant hover:text-error transition-all" 
+                            title="Eliminar Perfil"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -192,23 +249,47 @@ export default function UsuariosPage() {
               </div>
               <p className="font-mono-technical text-[10px] text-on-surface-variant">08:42:12_UTC</p>
             </div>
-            <div className="p-4 border border-outline-variant/20 bg-surface-container-lowest flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                <p className="font-mono-technical text-sm"><span className="text-primary">SISTEMA</span> actualizó a <span className="text-on-surface font-bold">VOID_STRIDER</span> a VINYL_TIER</p>
-              </div>
-              <p className="font-mono-technical text-[10px] text-on-surface-variant">07:15:00_UTC</p>
-            </div>
-            <div className="p-4 border border-outline-variant/20 bg-surface-container-lowest flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                <p className="font-mono-technical text-sm"><span className="text-primary">ADMIN_03</span> modificó el perfil de <span className="text-on-surface font-bold">NEON_GHOST</span></p>
-              </div>
-              <p className="font-mono-technical text-[10px] text-on-surface-variant">06:58:33_UTC</p>
-            </div>
           </div>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center backdrop-blur-sm p-4">
+          <div className="border border-outline-variant bg-surface-container-low p-8 relative w-full max-w-md">
+            <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+            <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-on-surface-variant hover:text-white">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase mb-2">AÑADIR USUARIO</h2>
+            <p className="font-mono-technical text-mono-technical text-on-surface-variant mb-6">REGISTRO MANUAL EN LA BASE DE DATOS</p>
+            
+            {message && (
+              <div className={`p-4 mb-6 border ${message.includes('ERROR') ? 'border-error text-error' : 'border-primary text-primary'} font-label-sm uppercase`}>
+                {message}
+              </div>
+            )}
+
+            <form onSubmit={handleAddSubscriber} className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Correo Electrónico</label>
+                <input 
+                  type="email" 
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  required 
+                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" 
+                  placeholder="ejemplo@correo.com" 
+                />
+              </div>
+
+              <button type="submit" className="bg-primary-container text-on-surface py-4 uppercase font-label-sm font-bold tracking-widest hover:bg-inverse-primary transition-colors">
+                EJECUTAR REGISTRO
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
