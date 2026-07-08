@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     const readTime = formData.get('readTime') as string;
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File;
-    const audio = formData.get('audio') as File | null;
+    const clientAudioUrl = formData.get('audioUrl') as string | null;
 
     const serviceSupabase = getServiceSupabase();
 
@@ -65,25 +65,7 @@ export async function POST(request: Request) {
       imageUrl = publicUrlData.publicUrl;
     }
 
-    let audioUrl = '';
-    if (audio && audio.name) {
-      const fileExt = audio.name.split('.').pop();
-      const fileName = `audio_${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await serviceSupabase.storage
-        .from('articles')
-        .upload(fileName, audio, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-
-      if (uploadError) throw uploadError;
-      
-      const { data: publicUrlData } = serviceSupabase.storage
-        .from('articles')
-        .getPublicUrl(fileName);
-        
-      audioUrl = publicUrlData.publicUrl;
-    }
+    let audioUrl = clientAudioUrl || '';
 
     // Download existing posts
     const { data: fileData, error: downloadError } = await serviceSupabase.storage
@@ -153,7 +135,7 @@ export async function PUT(request: Request) {
     const readTime = formData.get('readTime') as string;
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File | null;
-    const audio = formData.get('audio') as File | null;
+    const clientAudioUrl = formData.get('audioUrl') as string | null;
 
     const serviceSupabase = getServiceSupabase();
 
@@ -195,25 +177,7 @@ export async function PUT(request: Request) {
       imageUrl = publicUrlData.publicUrl;
     }
 
-    let audioUrl = posts[postIndex].audioUrl || '';
-    if (audio && audio.name && audio.size > 0) {
-      const fileExt = audio.name.split('.').pop();
-      const fileName = `audio_${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await serviceSupabase.storage
-        .from('articles')
-        .upload(fileName, audio, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-
-      if (uploadError) throw uploadError;
-      
-      const { data: publicUrlData } = serviceSupabase.storage
-        .from('articles')
-        .getPublicUrl(fileName);
-        
-      audioUrl = publicUrlData.publicUrl;
-    }
+    let audioUrl = clientAudioUrl || posts[postIndex].audioUrl || '';
 
     let slug = posts[postIndex].slug;
     if (!slug) {

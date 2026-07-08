@@ -149,6 +149,49 @@ export default function ArticulosPage() {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
+      // Handle Audio Upload via Signed URL (Bypass Vercel 4.5MB limit)
+      const audioFile = formData.get('audio') as File | null;
+      if (audioFile && audioFile.size > 0) {
+        setMessage('SUBIENDO AUDIO (ESPERE POR FAVOR)...');
+        const fileExt = audioFile.name.split('.').pop();
+        const fileName = `audio_${Date.now()}.${fileExt}`;
+
+        // Get signed URL
+        const signedRes = await fetch('/api/upload/signed-url', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ fileName })
+        });
+        
+        const signedData = await signedRes.json();
+        if (!signedRes.ok) throw new Error(signedData.error || 'Error al obtener enlace de subida seguro');
+
+        // Upload directly to Supabase using signed URL
+        const uploadRes = await fetch(signedData.signedUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': audioFile.type || 'audio/mpeg'
+          },
+          body: audioFile
+        });
+
+        if (!uploadRes.ok) throw new Error('Error al subir archivo MP3 a Supabase');
+
+        // Get the public URL for the uploaded file
+        const { data: publicUrlData } = supabase.storage
+          .from('articles')
+          .getPublicUrl(signedData.path);
+          
+        formData.set('audioUrl', publicUrlData.publicUrl);
+        // Remove the audio file from formData to avoid Vercel 4.5MB limit in API route
+        formData.delete('audio');
+      }
+
+      setMessage('EJECUTANDO INYECCIÓN AL SERVIDOR...');
+
       const response = await fetch('/api/articles', {
         method: editArticle ? 'PUT' : 'POST',
         headers: {

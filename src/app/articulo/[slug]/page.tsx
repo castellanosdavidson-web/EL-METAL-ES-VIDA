@@ -2,6 +2,9 @@ import { supabase } from '@/utils/supabase';
 import ArticleClient from './ArticleClient';
 import { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
