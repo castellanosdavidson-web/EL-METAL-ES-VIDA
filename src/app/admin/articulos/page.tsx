@@ -149,7 +149,13 @@ export default function ArticulosPage() {
         body: formData,
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data: any;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        data = { error: `Servidor retornó código ${response.status}: ${responseText.slice(0, 100)}` };
+      }
 
       if (response.ok) {
         setMessage(editArticle ? '¡Artículo actualizado con éxito!' : '¡Artículo subido con éxito!');
@@ -162,8 +168,8 @@ export default function ArticulosPage() {
       } else {
         setMessage(`Error: ${data.error}`);
       }
-    } catch (err) {
-      setMessage('Error de conexión.');
+    } catch (err: any) {
+      setMessage(`Error de conexión: ${err.message || err}`);
     } finally {
       setUploading(false);
     }
