@@ -5,6 +5,7 @@ import Link from 'next/link';
 export default function Home() {
   const [articles, setArticles] = useState<any[]>([]);
   const [plugins, setPlugins] = useState<any[]>([]);
+  const [gear, setGear] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubscribing, setIsSubscribing] = useState(false);
 
@@ -23,6 +24,10 @@ export default function Home() {
           const filteredPlugins = data.filter((a: any) => a.type === 'plugin' && !a.is_hidden);
           const sortedPlugins = [...filteredPlugins].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
           setPlugins(sortedPlugins.slice(0, 3));
+
+          const filteredGear = data.filter((a: any) => a.type === 'gear' && !a.is_hidden);
+          const sortedGear = [...filteredGear].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setGear(sortedGear.slice(0, 3));
         }
       })
       .catch(console.error)
@@ -176,7 +181,7 @@ export default function Home() {
         <div className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
           <div className="border-l-4 border-primary-container pl-6 mb-12">
             <div className="flex items-center gap-3 mb-2">
-              <span className="material-symbols-outlined text-primary">build</span>
+              <span className="material-symbols-outlined text-primary">electric_bolt</span>
               <span className="font-label-technical text-label-technical text-on-surface-variant">SECCIÓN 02</span>
             </div>
             <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface">Taller de Distorsión</h2>
@@ -187,7 +192,7 @@ export default function Home() {
               plugins.map((plugin) => (
                 <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} key={plugin.id} className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
                   <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0">
-                    <span className="material-symbols-outlined text-on-surface">extension</span>
+                    <span className="material-symbols-outlined text-on-surface">electric_bolt</span>
                   </div>
                   <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors">{plugin.title}</h3>
                   <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3" dangerouslySetInnerHTML={{__html: plugin.desc}} />
@@ -200,6 +205,41 @@ export default function Home() {
               <div className="col-span-1 md:col-span-3 text-center py-12 border border-dashed border-outline-variant/30">
                 <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">extension_off</span>
                 <p className="font-mono-technical text-xs text-on-surface-variant uppercase">Ningún plugin ha sido cargado en el taller.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Arsenal */}
+      <section id="arsenal" className="py-24 bg-background relative overflow-hidden">
+        <div className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+          <div className="border-l-4 border-error pl-6 mb-12">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="material-symbols-outlined text-error">hardware</span>
+              <span className="font-label-technical text-label-technical text-on-surface-variant">SECCIÓN 03</span>
+            </div>
+            <h2 className="text-headline-xl font-headline-xl uppercase text-on-surface">El Arsenal</h2>
+            <p className="font-body-md text-on-surface-variant mt-4 max-w-xl">Equipamiento, hardware y enlaces de afiliados cuidadosamente seleccionados para llevar tu sonido al extremo.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {gear.length > 0 ? (
+              gear.map((item) => (
+                <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} key={item.id} className="bg-surface-dim border border-outline-variant p-6 hover:border-error transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
+                  <div className="w-12 h-12 bg-surface border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-error/20 transition-colors shrink-0">
+                    <span className="material-symbols-outlined text-on-surface">hardware</span>
+                  </div>
+                  <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors">{item.title}</h3>
+                  <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3" dangerouslySetInnerHTML={{__html: item.desc}} />
+                  <button className="w-full mt-auto border border-outline-variant py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-error group-hover:text-white group-hover:border-error">
+                    Ver Equipamiento
+                  </button>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-1 md:col-span-3 text-center py-12 border border-dashed border-outline-variant/30">
+                <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">production_quantity_limits</span>
+                <p className="font-mono-technical text-xs text-on-surface-variant uppercase">El arsenal está vacío por el momento.</p>
               </div>
             )}
           </div>

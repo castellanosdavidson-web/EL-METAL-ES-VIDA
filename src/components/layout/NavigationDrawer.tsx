@@ -43,20 +43,20 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
         <ul className="flex-grow flex flex-col gap-6">
           <li>
             <Link onClick={onClose} href="/archivo" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-primary border-l-4 border-primary pl-4 opacity-80 hover:opacity-100 hover:translate-x-2 transition-all duration-300 glitch-hover">
-              <span className="material-symbols-outlined text-[32px]">auto_stories</span>
+              <span className="material-symbols-outlined text-[32px]">album</span>
               <span>Archivo</span>
             </Link>
           </li>
           <li>
             <Link onClick={onClose} href="/taller" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
-              <span className="material-symbols-outlined">build</span>
+              <span className="material-symbols-outlined">electric_bolt</span>
               <span>Taller</span>
             </Link>
           </li>
           <li>
             <Link onClick={onClose} href="/tienda" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
-              <span className="material-symbols-outlined text-[32px] text-primary">shopping_cart</span>
-              <span>Arsenal</span>
+              <span className="material-symbols-outlined text-[32px] text-error">hardware</span>
+              <span className="group-hover:text-error">Arsenal</span>
             </Link>
           </li>
         </ul>
