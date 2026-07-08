@@ -475,10 +475,13 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
 
             {/* Share section */}
             <div className="my-8 p-6 bg-surface-container/30 border border-outline-variant/20 rounded">
-              <h3 className="font-label-technical text-label-technical uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+              <h3 className="font-label-technical text-label-technical uppercase tracking-widest text-primary mb-2 flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">share</span>
-                Compartir Documento
+                ¡Riega la voz del Metal!
               </h3>
+              <p className="font-body-md text-xs text-on-surface-variant/80 mb-4 italic">
+                Si este artículo te voló la cabeza, compártelo con tu comunidad para que la legión siga creciendo y coméntanos en redes sociales. ¡El metal es vida!
+              </p>
               <div className="flex flex-wrap gap-4">
                 <a 
                   href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
