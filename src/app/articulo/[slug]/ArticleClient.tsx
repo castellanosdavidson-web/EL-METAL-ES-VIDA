@@ -512,10 +512,11 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                   <span className="material-symbols-outlined text-[200px]">audio_file</span>
                 </div>
                 
-                <h3 className="font-headline-md text-headline-md uppercase text-on-surface mb-2">Archivo Técnico Desclasificado</h3>
-                <p className="font-body-md text-on-surface-variant/90 mb-6 max-w-2xl">
-                  {initialArticle.title}: El archivo técnico definitivo para la legión. Desglosamos la agresión sonora, documentamos el equipo y forjamos acero. 
-                </p>
+                <h3 className="font-headline-md text-headline-md uppercase text-on-surface mb-2">Archivo Sonoro Desclasificado</h3>
+                <div className="font-body-md text-on-surface-variant/90 mb-8 max-w-2xl space-y-2">
+                  <p>Cada investigación desbloquea un nuevo registro de audio.</p>
+                  <p>Empieza hoy a construir tu colección personal de Metal y crea una biblioteca para escuchar incluso cuando no tengas conexión.</p>
+                </div>
 
                 {leadStatus === 'unlocked' ? (
                   <div className="bg-primary-container/10 border border-primary p-6 animate-fade-in">
@@ -532,33 +533,44 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                     </a>
                   </div>
                 ) : (
-                  <form onSubmit={handleLeadSubmit} className="flex flex-col md:flex-row gap-4 relative z-10">
-                    <div className="flex-1">
-                      <input 
-                        type="email" 
-                        placeholder="INGRESAR COMUNICADOR (CORREO ELECTRÓNICO)" 
-                        value={leadEmail}
-                        onChange={(e) => setLeadEmail(e.target.value)}
-                        required
-                        className="w-full bg-surface-container border border-outline-variant/40 p-4 text-on-surface font-mono-technical focus:border-primary outline-none focus:bg-surface-container-high transition-colors"
-                      />
-                      {leadError && <p className="text-error font-mono-technical text-[10px] mt-2 uppercase">{leadError}</p>}
+                  <div className="bg-surface-container-high/20 border border-outline-variant/30 p-6 relative z-10">
+                    <h4 className="font-label-technical text-label-technical text-primary uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <span className="material-symbols-outlined">lock_open</span>
+                      ACCESO AUTORIZADO
+                    </h4>
+                    <div className="font-body-md text-on-surface-variant/80 mb-6 space-y-1 text-sm md:text-base">
+                      <p>Has encontrado un archivo clasificado.</p>
+                      <p>Introduce tu correo y el sistema liberará un nuevo Registro Sonoro para tu colección.</p>
+                      <p>No sabes cuál recibirás. Cada descarga es diferente.</p>
                     </div>
-                    <button 
-                      type="submit"
-                      disabled={leadStatus === 'loading'}
-                      className="bg-surface-variant text-on-surface px-8 py-4 border border-outline-variant/50 uppercase font-bold tracking-widest hover:bg-primary-container hover:text-on-surface hover:border-primary transition-all disabled:opacity-50 whitespace-nowrap flex items-center gap-2 justify-center"
-                    >
-                      {leadStatus === 'loading' ? (
-                        'VERIFICANDO...'
-                      ) : (
-                        <>
-                          <span className="material-symbols-outlined text-sm">settings_power</span>
-                          HABILITAR ARCHIVO
-                        </>
-                      )}
-                    </button>
-                  </form>
+                    <form onSubmit={handleLeadSubmit} className="flex flex-col md:flex-row gap-4">
+                      <div className="flex-1">
+                        <input 
+                          type="email" 
+                          placeholder="INGRESAR COMUNICADOR (CORREO ELECTRÓNICO)" 
+                          value={leadEmail}
+                          onChange={(e) => setLeadEmail(e.target.value)}
+                          required
+                          className="w-full bg-surface-container border border-outline-variant/40 p-4 text-on-surface font-mono-technical focus:border-primary outline-none focus:bg-surface-container-high transition-colors"
+                        />
+                        {leadError && <p className="text-error font-mono-technical text-[10px] mt-2 uppercase">{leadError}</p>}
+                      </div>
+                      <button 
+                        type="submit"
+                        disabled={leadStatus === 'loading'}
+                        className="bg-surface-variant text-on-surface px-8 py-4 border border-outline-variant/50 uppercase font-bold tracking-widest hover:bg-primary-container hover:text-on-surface hover:border-primary transition-all disabled:opacity-50 whitespace-nowrap flex items-center gap-2 justify-center"
+                      >
+                        {leadStatus === 'loading' ? (
+                          'VERIFICANDO...'
+                        ) : (
+                          <>
+                            <span className="material-symbols-outlined text-sm">settings_power</span>
+                            DESBLOQUEAR ARCHIVO
+                          </>
+                        )}
+                      </button>
+                    </form>
+                  </div>
                 )}
               </div>
             )}
