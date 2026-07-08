@@ -479,7 +479,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                 <span className="material-symbols-outlined text-sm">share</span>
                 ¡Riega la voz del Metal!
               </h3>
-              <p className="font-body-md text-xs text-on-surface-variant/80 mb-4 italic">
+              <p className="font-body-md text-sm md:text-base text-on-surface-variant/90 mb-4 italic">
                 Si este artículo te voló la cabeza, compártelo con tu comunidad para que la legión siga creciendo y coméntanos en redes sociales. ¡El metal es vida!
               </p>
               <div className="flex flex-wrap gap-4">
