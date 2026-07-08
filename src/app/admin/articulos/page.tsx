@@ -153,8 +153,10 @@ export default function ArticulosPage() {
       const audioFile = formData.get('audio') as File | null;
       if (audioFile && audioFile.size > 0) {
         setMessage('SUBIENDO AUDIO (ESPERE POR FAVOR)...');
+        const originalNameWithoutExt = audioFile.name.substring(0, audioFile.name.lastIndexOf('.'));
         const fileExt = audioFile.name.split('.').pop();
-        const fileName = `audio_${Date.now()}.${fileExt}`;
+        const sanitizedOriginal = originalNameWithoutExt.replace(/[^a-zA-Z0-9 -_]/g, '').trim();
+        const fileName = `Elmetalesvida - ${sanitizedOriginal} - ${Date.now()}.${fileExt}`;
 
         // Get signed URL
         const signedRes = await fetch('/api/upload/signed-url', {

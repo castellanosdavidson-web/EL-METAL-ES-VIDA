@@ -524,9 +524,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                       ACCESO CONCEDIDO
                     </p>
                     <a 
-                      href={initialArticle.audioUrl} 
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={`${initialArticle.audioUrl}?download=`} 
                       className="inline-flex items-center gap-3 bg-primary text-on-primary px-8 py-4 uppercase font-bold tracking-widest hover:bg-inverse-primary hover:text-primary-container transition-all active:scale-95 shadow-[0_0_15px_rgba(var(--md-sys-color-primary),0.3)]"
                     >
                       <span className="material-symbols-outlined">download</span>
