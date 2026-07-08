@@ -145,4 +145,13 @@ body {
     --text-body-lg: 14px;
     --text-body-md: 13px;
   }
+  }
+}
+
+/* Quill Toolbar Sticky */
+.ql-toolbar.ql-snow {
+  position: sticky !important;
+  top: 0;
+  z-index: 50;
+  background-color: var(--md-sys-color-surface, #131313);
 }

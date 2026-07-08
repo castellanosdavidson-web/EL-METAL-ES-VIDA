@@ -449,7 +449,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
           />
           <div className="article-hero__overlay" />
 
-          <div className="relative z-10 w-full max-w-4xl mx-auto px-6 md:px-12 lg:px-16">
+          <div className="relative z-10 w-full max-w-6xl mx-auto px-6 md:px-12 lg:px-16">
             {/* Category badges */}
             <div className="flex flex-wrap gap-3 mb-5">
               <span className="bg-primary-container/80 text-white px-4 py-1.5 font-mono-technical text-[10px] md:text-xs uppercase tracking-widest backdrop-blur-sm">
