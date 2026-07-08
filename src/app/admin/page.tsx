@@ -6,13 +6,38 @@ export default function AdminDashboard() {
   const [articles, setArticles] = useState<any[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
   
+  const [analyticsData, setAnalyticsData] = useState<any>({
+    activeUsers: '--',
+    newUsers: '--',
+    views: '--',
+    avgEngagementMins: '--',
+  });
+  const [loadingAnalytics, setLoadingAnalytics] = useState(true);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     fetchArticles();
+    fetchAnalytics();
   }, []);
+
+  const fetchAnalytics = async () => {
+    try {
+      const res = await fetch('/api/analytics');
+      const data = await res.json();
+      if (!data.error) {
+        setAnalyticsData(data);
+      } else {
+        console.error('Analytics Error:', data.error);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingAnalytics(false);
+    }
+  };
 
   const fetchArticles = () => {
     setLoadingArticles(true);
@@ -33,7 +58,6 @@ export default function AdminDashboard() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Validar el tamaño del archivo en el cliente para evitar el error 413 de Vercel (4.5 MB límite)
     const imageFile = formData.get('image') as File | null;
     if (imageFile && imageFile.name && imageFile.size > 4 * 1024 * 1024) {
       setMessage('Error: La imagen de portada supera el límite de 4 MB de Vercel. Por favor, comprímela o usa una imagen más ligera.');
@@ -63,7 +87,7 @@ export default function AdminDashboard() {
       if (response.ok) {
         setMessage('¡Artículo subido con éxito!');
         form.reset();
-        fetchArticles(); // Refrescar lista
+        fetchArticles(); 
         setTimeout(() => {
           setIsModalOpen(false);
           setMessage('');
@@ -89,27 +113,28 @@ export default function AdminDashboard() {
             <span className="text-primary-container material-symbols-outlined">article</span>
           </div>
         </div>
-        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Visitas Mensuales</span>
+        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low relative overflow-hidden">
+          {loadingAnalytics && <div className="absolute top-0 left-0 w-full h-1 bg-primary animate-pulse"></div>}
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Visitas a Páginas (30d)</span>
           <div className="flex items-baseline justify-between mt-base">
-            <span className="font-display-lg text-display-lg text-tertiary">--</span>
-            <span className="text-primary-container material-symbols-outlined">monitoring</span>
+            <span className="font-display-lg text-display-lg text-tertiary">{analyticsData.views}</span>
+            <span className="text-primary-container material-symbols-outlined">visibility</span>
           </div>
-          <span className="text-[10px] text-on-surface-variant mt-2">* Req. Conexión a Analytics API</span>
         </div>
-        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Tiempo Reprod.</span>
+        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low relative overflow-hidden">
+          {loadingAnalytics && <div className="absolute top-0 left-0 w-full h-1 bg-primary animate-pulse"></div>}
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Tiempo Prom. (Minutos)</span>
           <div className="flex items-baseline justify-between mt-base">
-            <span className="font-display-lg text-display-lg text-tertiary">--:--</span>
+            <span className="font-display-lg text-display-lg text-tertiary">{analyticsData.avgEngagementMins}</span>
             <span className="text-primary-container material-symbols-outlined">timer</span>
           </div>
-          <span className="text-[10px] text-on-surface-variant mt-2">* Req. Conexión a Analytics API</span>
         </div>
-        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low">
-          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Nuevos Miembros</span>
+        <div className="technical-border p-gutter flex flex-col justify-between hover:bg-surface-container-low transition-colors group p-4 bg-surface-container-low relative overflow-hidden">
+          {loadingAnalytics && <div className="absolute top-0 left-0 w-full h-1 bg-primary animate-pulse"></div>}
+          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase">Usuarios Activos (30d)</span>
           <div className="flex items-baseline justify-between mt-base">
-            <span className="font-display-lg text-display-lg text-primary">0</span>
-            <span className="text-primary-container material-symbols-outlined">person_add</span>
+            <span className="font-display-lg text-display-lg text-primary">{analyticsData.activeUsers}</span>
+            <span className="text-primary-container material-symbols-outlined">group</span>
           </div>
         </div>
       </section>
