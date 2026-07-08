@@ -520,10 +520,14 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
 
                 {leadStatus === 'unlocked' ? (
                   <div className="bg-primary-container/10 border border-primary p-6 animate-fade-in">
-                    <p className="font-label-technical text-label-technical text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <span className="material-symbols-outlined">lock_open</span>
+                    <p className="font-label-technical text-label-technical text-primary uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <span className="material-symbols-outlined">check_circle</span>
                       ACCESO CONCEDIDO
                     </p>
+                    <div className="font-body-md text-on-surface-variant/90 mb-6 space-y-1 text-sm md:text-base">
+                      <p>Nuevo Registro Sonoro agregado a tu colección.</p>
+                      <p>Descárgalo y guárdalo para siempre.</p>
+                    </div>
                     <a 
                       href={`${initialArticle.audioUrl}?download=`} 
                       className="inline-flex items-center gap-3 bg-primary text-on-primary px-8 py-4 uppercase font-bold tracking-widest hover:bg-inverse-primary hover:text-primary-container transition-all active:scale-95 shadow-[0_0_15px_rgba(var(--md-sys-color-primary),0.3)]"
