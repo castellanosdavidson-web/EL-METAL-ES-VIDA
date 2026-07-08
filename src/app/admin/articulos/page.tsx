@@ -468,13 +468,12 @@ export default function ArticulosPage() {
                 <div className="flex flex-col gap-2">
                   <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Categoría</label>
                   <select name="category" defaultValue={editArticle?.category || 'Documental Histórico'} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical">
-                    <option value="Ciencia del Sonido">Ciencia del Sonido</option>
-                    <option value="Historia">Historia</option>
-                    <option value="Anatomía">Anatomía</option>
-                    <option value="Equipamiento">Equipamiento</option>
-                    <option value="Símbolos">Símbolos</option>
+                    <option value="Noticias">Noticias</option>
                     <option value="Documental Histórico">Documental Histórico</option>
                     <option value="Análisis Técnico">Análisis Técnico</option>
+                    <option value="Ciencia Sonora">Ciencia Sonora</option>
+                    <option value="Equipamiento">Equipamiento</option>
+                    <option value="Historia">Historia</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">

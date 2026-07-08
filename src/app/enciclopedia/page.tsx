@@ -42,7 +42,7 @@ export default function EnciclopediaPage() {
           <span className="material-symbols-outlined text-[16px]">auto_stories</span>
           <span className="font-mono-technical text-mono-technical uppercase">Archivo Técnico</span>
         </div>
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">La Bóveda Histórica.</h1>
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">La historia se conserva. El Metal también.</h1>
         <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-2">
           Datos, líneas de tiempo y la ciencia que el 95% de la gente desconoce. Un registro quirúrgico de la evolución sónica y cultural. Catálogo completo de expedientes desclasificados.
         </p>

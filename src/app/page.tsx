@@ -58,11 +58,11 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50"></div>
           <div className="absolute inset-0 opacity-20 mix-blend-soft-light" style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgc3Ryb2tlPSIjMjIyIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiPjxwb2x5Z29uIHBvaW50cz0iMCwwIDQwLDAgNDAsNDAgMCw0MCIvPjwvZz48L3N2Zz4=')" }}></div>
         </div>
-        <div className="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center">
+        <div className="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center pb-24">
           <div className="inline-block border border-outline-variant bg-surface-container/50 px-4 py-1 mb-6">
             <span className="font-label-technical text-label-technical text-primary tracking-[0.2em] uppercase">Inicializando Sistema. v2.4</span>
           </div>
-          <h1 className="text-headline-xl md:text-display-lg font-display-lg uppercase text-on-surface leading-tight mb-8 drop-shadow-2xl max-w-5xl mx-auto glitch-target">
+          <h1 className="text-headline-xl md:text-display-lg font-display-lg uppercase text-on-surface leading-tight mb-6 drop-shadow-2xl max-w-5xl mx-auto glitch-target">
             NO ES RUIDO.<br/>
             <span className="text-primary-container inline-block transform hover:scale-105 transition-transform duration-300">ES HISTORIA,</span><br/>
             CIENCIA Y HERMANDAD.
@@ -71,15 +71,11 @@ export default function Home() {
             El archivo técnico definitivo para la legión. Desglosamos la agresión sonora, documentamos el equipo y forjamos acero. 
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="#expedientes" className="bg-primary-container text-white border-2 border-primary-container hover:bg-background hover:text-primary transition-all duration-300 px-8 py-4 font-headline-lg text-headline-lg text-[18px] uppercase flex items-center gap-3 group relative overflow-hidden">
+            <Link href="/enciclopedia" className="bg-primary-container text-white border-2 border-primary-container hover:bg-background hover:text-primary transition-all duration-300 px-8 py-4 font-headline-lg text-headline-lg text-[18px] uppercase flex items-center gap-3 group relative overflow-hidden">
               <span className="relative z-10">Ingresar al Archivo</span>
               <span className="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">arrow_forward</span>
               <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity"></div>
             </Link>
-            <button className="bg-transparent text-on-surface border-2 border-secondary-container hover:border-primary-container hover:text-primary-container transition-all duration-300 px-8 py-4 font-label-technical text-label-technical uppercase flex items-center gap-3">
-              <span className="material-symbols-outlined text-[20px]">equalizer</span>
-              Calibrar Tono
-            </button>
           </div>
         </div>
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
