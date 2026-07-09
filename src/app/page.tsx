@@ -39,12 +39,18 @@ export default function Home() {
           setArticles(shuffledArticles.slice(0, 3));
 
           const filteredPlugins = data.filter((a: any) => a.type === 'plugin' && !a.is_hidden);
-          const sortedPlugins = [...filteredPlugins].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-          setPlugins(sortedPlugins.slice(0, 3));
+          const shuffledPlugins = filteredPlugins
+            .map((value: any) => ({ value, sort: Math.random() }))
+            .sort((a: any, b: any) => a.sort - b.sort)
+            .map(({ value }: any) => value);
+          setPlugins(shuffledPlugins.slice(0, 3));
 
           const filteredGear = data.filter((a: any) => a.type === 'gear' && !a.is_hidden);
-          const sortedGear = [...filteredGear].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-          setGear(sortedGear.slice(0, 3));
+          const shuffledGear = filteredGear
+            .map((value: any) => ({ value, sort: Math.random() }))
+            .sort((a: any, b: any) => a.sort - b.sort)
+            .map(({ value }: any) => value);
+          setGear(shuffledGear.slice(0, 3));
         }
       })
       .catch(console.error)
@@ -233,35 +239,43 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {plugins.length > 0 ? (
               plugins.map((plugin) => (
-                <a href={plugin.externalUrl || '#'} target="_blank" rel="noopener noreferrer" key={plugin.id} className="bg-surface border border-outline-variant hover:border-primary transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
-                  {plugin.imageUrl && (
-                    <div className="w-full aspect-[16/9] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
-                      <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm text-primary">{getCategoryIcon(plugin.category)}</span>
-                        <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{plugin.category || 'TALLER'}</span>
+                <div key={plugin.id} className="bg-surface border border-outline-variant hover:border-primary transition-colors group flex flex-col h-full relative overflow-hidden">
+                  <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} className="flex flex-col flex-grow">
+                    {plugin.imageUrl && (
+                      <div className="w-full aspect-[16/9] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
+                        <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
+                          <span className="material-symbols-outlined text-sm text-primary">{getCategoryIcon(plugin.category)}</span>
+                          <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{plugin.category || 'TALLER'}</span>
+                        </div>
+                        <img src={plugin.imageUrl} alt={plugin.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                       </div>
-                      <img src={plugin.imageUrl} alt={plugin.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
-                    </div>
-                  )}
-                  <div className={`flex flex-col flex-grow relative p-6`}>
-                    {!plugin.imageUrl && (
-                      <>
-                        <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
-                          <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(plugin.category)}</span>
-                        </div>
-                        <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0 relative z-10">
-                          <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(plugin.category)}</span>
-                        </div>
-                      </>
                     )}
-                    <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10">{plugin.title}</h3>
-                    <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: plugin.desc}} />
-                    <button className="w-full mt-auto border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-primary-container group-hover:text-white group-hover:border-primary-container relative z-10 flex items-center justify-center gap-2">
-                      <span className="material-symbols-outlined text-[16px]">exit_to_app</span>
-                      Ir al Enlace
-                    </button>
+                    <div className="flex flex-col flex-grow relative p-6 pb-0">
+                      {!plugin.imageUrl && (
+                        <>
+                          <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
+                            <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(plugin.category)}</span>
+                          </div>
+                          <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0 relative z-10">
+                            <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(plugin.category)}</span>
+                          </div>
+                        </>
+                      )}
+                      <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10">{plugin.title}</h3>
+                      <div className="font-body-md text-on-surface-variant text-sm flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: plugin.desc}} />
+                    </div>
+                  </Link>
+                  <div className="p-6 pt-4 mt-auto flex items-center justify-between gap-4 border-t border-transparent group-hover:border-outline-variant/30 transition-colors">
+                    <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} className="text-on-surface-variant hover:text-primary transition-colors font-label-technical text-[11px] uppercase tracking-widest flex items-center gap-1 group/link">
+                      VER HERRAMIENTA
+                      <span className="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+                    </Link>
+                    <a href={plugin.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="border border-outline-variant hover:border-primary text-on-surface hover:text-primary transition-colors font-label-technical text-[10px] uppercase tracking-widest px-3 py-2 flex items-center gap-2 bg-surface-container-lowest hover:bg-primary/10">
+                      ENLACE
+                      <span className="material-symbols-outlined text-[14px]">exit_to_app</span>
+                    </a>
                   </div>
-                </a>
+                </div>
               ))
             ) : (
               <div className="col-span-1 md:col-span-3 text-center py-12 border border-dashed border-outline-variant/30">
@@ -313,35 +327,43 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {gear.length > 0 ? (
               gear.map((item) => (
-                <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" key={item.id} className="bg-surface-dim border border-outline-variant hover:border-error transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
-                  {item.imageUrl && (
-                    <div className="w-full aspect-[16/9] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
-                      <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm text-error">{getCategoryIcon(item.category)}</span>
-                        <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{item.category || 'EQUIPAMIENTO'}</span>
+                <div key={item.id} className="bg-surface-dim border border-outline-variant hover:border-error transition-colors group flex flex-col h-full relative overflow-hidden">
+                  <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} className="flex flex-col flex-grow">
+                    {item.imageUrl && (
+                      <div className="w-full aspect-[16/9] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
+                        <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
+                          <span className="material-symbols-outlined text-sm text-error">{getCategoryIcon(item.category)}</span>
+                          <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{item.category || 'EQUIPAMIENTO'}</span>
+                        </div>
+                        <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                       </div>
-                      <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
-                    </div>
-                  )}
-                  <div className={`flex flex-col flex-grow relative p-6`}>
-                    {!item.imageUrl && (
-                      <>
-                        <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
-                          <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(item.category)}</span>
-                        </div>
-                        <div className="w-12 h-12 bg-surface border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-error/20 transition-colors shrink-0 relative z-10">
-                          <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(item.category)}</span>
-                        </div>
-                      </>
                     )}
-                    <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors relative z-10">{item.title}</h3>
-                    <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: item.desc}} />
-                    <button className="w-full mt-auto border border-outline-variant py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-error group-hover:text-white group-hover:border-error relative z-10 flex items-center justify-center gap-2">
-                      <span className="material-symbols-outlined text-[16px]">exit_to_app</span>
-                      Ir al Enlace
-                    </button>
+                    <div className="flex flex-col flex-grow relative p-6 pb-0">
+                      {!item.imageUrl && (
+                        <>
+                          <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
+                            <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(item.category)}</span>
+                          </div>
+                          <div className="w-12 h-12 bg-surface border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-error/20 transition-colors shrink-0 relative z-10">
+                            <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(item.category)}</span>
+                          </div>
+                        </>
+                      )}
+                      <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors relative z-10">{item.title}</h3>
+                      <div className="font-body-md text-on-surface-variant text-sm flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: item.desc}} />
+                    </div>
+                  </Link>
+                  <div className="p-6 pt-4 mt-auto flex items-center justify-between gap-4 border-t border-transparent group-hover:border-outline-variant/30 transition-colors">
+                    <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} className="text-on-surface-variant hover:text-error transition-colors font-label-technical text-[11px] uppercase tracking-widest flex items-center gap-1 group/link">
+                      VER HERRAMIENTA
+                      <span className="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+                    </Link>
+                    <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="border border-outline-variant hover:border-error text-on-surface hover:text-error transition-colors font-label-technical text-[10px] uppercase tracking-widest px-3 py-2 flex items-center gap-2 bg-surface-container-lowest hover:bg-error/10">
+                      ENLACE
+                      <span className="material-symbols-outlined text-[14px]">exit_to_app</span>
+                    </a>
                   </div>
-                </a>
+                </div>
               ))
             ) : (
               <div className="col-span-1 md:col-span-3 text-center py-12 border border-dashed border-outline-variant/30">
