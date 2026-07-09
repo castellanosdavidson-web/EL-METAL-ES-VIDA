@@ -7,6 +7,23 @@ export default function TallerPage() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('Todos');
 
+  const getCategoryIcon = (category?: string) => {
+    if (!category) return 'extension';
+    const cat = category.toLowerCase();
+    if (cat.includes('guitar')) return 'music_note';
+    if (cat.includes('bater') || cat.includes('percu')) return 'album';
+    if (cat.includes('piano') || cat.includes('teclad')) return 'piano';
+    if (cat.includes('distorsion') || cat.includes('distorsión')) return 'graphic_eq';
+    if (cat.includes('compres')) return 'compress';
+    if (cat.includes('eq')) return 'tune';
+    if (cat.includes('vocal') || cat.includes('voz')) return 'mic';
+    if (cat.includes('sint')) return 'piano';
+    if (cat.includes('bajo')) return 'speaker';
+    if (cat.includes('hardware') || cat.includes('arsenal')) return 'hardware';
+    if (cat.includes('pedal')) return 'settings_input_component';
+    return 'extension';
+  };
+
   useEffect(() => {
     fetch('/api/articles')
       .then(res => res.json())
@@ -105,7 +122,7 @@ export default function TallerPage() {
                   className="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
                 />
                 <div className="absolute top-2 left-2 bg-surface border border-outline-variant px-2 py-1 flex items-center gap-1 z-10 shadow-md">
-                  <span className="material-symbols-outlined text-[14px] text-primary">extension</span>
+                  <span className="material-symbols-outlined text-[14px] text-primary">{getCategoryIcon(plugin.category)}</span>
                   <span className="font-label-sm text-label-sm uppercase text-on-surface">{plugin.category}</span>
                 </div>
               </div>

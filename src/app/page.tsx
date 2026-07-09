@@ -9,6 +9,23 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [isSubscribing, setIsSubscribing] = useState(false);
 
+  const getCategoryIcon = (category?: string) => {
+    if (!category) return 'extension';
+    const cat = category.toLowerCase();
+    if (cat.includes('guitar')) return 'music_note';
+    if (cat.includes('bater') || cat.includes('percu')) return 'album';
+    if (cat.includes('piano') || cat.includes('teclad')) return 'piano';
+    if (cat.includes('distorsion') || cat.includes('distorsión')) return 'graphic_eq';
+    if (cat.includes('compres')) return 'compress';
+    if (cat.includes('eq')) return 'tune';
+    if (cat.includes('vocal') || cat.includes('voz')) return 'mic';
+    if (cat.includes('sint')) return 'piano';
+    if (cat.includes('bajo')) return 'speaker';
+    if (cat.includes('hardware') || cat.includes('arsenal')) return 'hardware';
+    if (cat.includes('pedal')) return 'settings_input_component';
+    return 'extension';
+  };
+
   useEffect(() => {
     fetch('/api/articles')
       .then(res => res.json())
@@ -177,7 +194,7 @@ export default function Home() {
       </section>
 
       {/* Animated Marquee Transition 1 */}
-      <div className="relative w-full py-4 md:py-6 bg-surface-container-highest border-y-2 border-primary overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-primary),0.15)] -skew-y-2 my-12 md:my-24">
+      <div className="relative w-full py-4 md:py-6 bg-surface-container-highest border-y-2 border-primary overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-primary),0.15)] -skew-y-2 my-6 md:my-12">
         <div className="flex w-[200%] animate-[marquee_25s_linear_infinite]">
           <div className="flex-1 flex justify-around items-center opacity-30">
             <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">⛧ TALLER ⛧</span>
@@ -195,7 +212,7 @@ export default function Home() {
       </div>
 
       {/* Taller de Distorsión */}
-      <section id="taller" className="py-24 bg-surface-dim relative overflow-hidden">
+      <section id="taller" className="py-12 md:py-16 bg-surface-dim relative overflow-hidden">
         <div className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
           <div className="border-l-4 border-primary-container pl-6 mb-12">
             <div className="flex items-center gap-3 mb-2">
@@ -216,19 +233,34 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {plugins.length > 0 ? (
               plugins.map((plugin) => (
-                <a href={plugin.externalUrl || '#'} target="_blank" rel="noopener noreferrer" key={plugin.id} className="bg-surface border border-outline-variant p-6 hover:border-primary transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
-                  <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
-                    <span className="material-symbols-outlined text-[120px]">electric_bolt</span>
+                <a href={plugin.externalUrl || '#'} target="_blank" rel="noopener noreferrer" key={plugin.id} className="bg-surface border border-outline-variant hover:border-primary transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
+                  {plugin.imageUrl && (
+                    <div className="w-full aspect-[16/9] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
+                      <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-sm text-primary">{getCategoryIcon(plugin.category)}</span>
+                        <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{plugin.category || 'TALLER'}</span>
+                      </div>
+                      <img src={plugin.imageUrl} alt={plugin.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                    </div>
+                  )}
+                  <div className={`flex flex-col flex-grow relative p-6`}>
+                    {!plugin.imageUrl && (
+                      <>
+                        <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
+                          <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(plugin.category)}</span>
+                        </div>
+                        <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0 relative z-10">
+                          <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(plugin.category)}</span>
+                        </div>
+                      </>
+                    )}
+                    <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10">{plugin.title}</h3>
+                    <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: plugin.desc}} />
+                    <button className="w-full mt-auto border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-primary-container group-hover:text-white group-hover:border-primary-container relative z-10 flex items-center justify-center gap-2">
+                      <span className="material-symbols-outlined text-[16px]">exit_to_app</span>
+                      Ir al Enlace
+                    </button>
                   </div>
-                  <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0 relative z-10">
-                    <span className="material-symbols-outlined text-on-surface">electric_bolt</span>
-                  </div>
-                  <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10">{plugin.title}</h3>
-                  <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: plugin.desc}} />
-                  <button className="w-full mt-auto border border-secondary-container py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-primary-container group-hover:text-white group-hover:border-primary-container relative z-10 flex items-center justify-center gap-2">
-                    <span className="material-symbols-outlined text-[16px]">exit_to_app</span>
-                    Ir al Enlace
-                  </button>
                 </a>
               ))
             ) : (
@@ -242,7 +274,7 @@ export default function Home() {
       </section>
 
       {/* Animated Marquee Transition 2 */}
-      <div className="relative w-full py-4 md:py-6 bg-surface-container-highest border-y-2 border-error overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-error),0.15)] skew-y-2 my-12 md:my-24">
+      <div className="relative w-full py-4 md:py-6 bg-surface-container-highest border-y-2 border-error overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-error),0.15)] skew-y-2 my-6 md:my-12">
         <div className="flex w-[200%] animate-[marquee_20s_linear_infinite_reverse]">
           <div className="flex-1 flex justify-around items-center opacity-30">
             <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">X ARSENAL X</span>
@@ -260,7 +292,7 @@ export default function Home() {
       </div>
 
       {/* Arsenal */}
-      <section id="arsenal" className="py-24 bg-background relative overflow-hidden">
+      <section id="arsenal" className="py-12 md:py-16 bg-background relative overflow-hidden">
         <div className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
           <div className="border-l-4 border-error pl-6 mb-12">
             <div className="flex items-center gap-3 mb-2">
@@ -281,19 +313,34 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {gear.length > 0 ? (
               gear.map((item) => (
-                <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" key={item.id} className="bg-surface-dim border border-outline-variant p-6 hover:border-error transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
-                  <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
-                    <span className="material-symbols-outlined text-[120px]">hardware</span>
+                <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" key={item.id} className="bg-surface-dim border border-outline-variant hover:border-error transition-colors group flex flex-col cursor-pointer block h-full relative overflow-hidden">
+                  {item.imageUrl && (
+                    <div className="w-full aspect-[16/9] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
+                      <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-sm text-error">{getCategoryIcon(item.category)}</span>
+                        <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{item.category || 'EQUIPAMIENTO'}</span>
+                      </div>
+                      <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                    </div>
+                  )}
+                  <div className={`flex flex-col flex-grow relative p-6`}>
+                    {!item.imageUrl && (
+                      <>
+                        <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
+                          <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(item.category)}</span>
+                        </div>
+                        <div className="w-12 h-12 bg-surface border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-error/20 transition-colors shrink-0 relative z-10">
+                          <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(item.category)}</span>
+                        </div>
+                      </>
+                    )}
+                    <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors relative z-10">{item.title}</h3>
+                    <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: item.desc}} />
+                    <button className="w-full mt-auto border border-outline-variant py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-error group-hover:text-white group-hover:border-error relative z-10 flex items-center justify-center gap-2">
+                      <span className="material-symbols-outlined text-[16px]">exit_to_app</span>
+                      Ir al Enlace
+                    </button>
                   </div>
-                  <div className="w-12 h-12 bg-surface border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-error/20 transition-colors shrink-0 relative z-10">
-                    <span className="material-symbols-outlined text-on-surface">hardware</span>
-                  </div>
-                  <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors relative z-10">{item.title}</h3>
-                  <div className="font-body-md text-on-surface-variant text-sm mb-6 flex-grow line-clamp-3 relative z-10" dangerouslySetInnerHTML={{__html: item.desc}} />
-                  <button className="w-full mt-auto border border-outline-variant py-3 font-label-technical text-label-technical uppercase hover:bg-surface-container-high transition-colors text-on-surface group-hover:bg-error group-hover:text-white group-hover:border-error relative z-10 flex items-center justify-center gap-2">
-                    <span className="material-symbols-outlined text-[16px]">exit_to_app</span>
-                    Ir al Enlace
-                  </button>
                 </a>
               ))
             ) : (

@@ -7,6 +7,23 @@ export default function TiendaPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const getCategoryIcon = (category?: string) => {
+    if (!category) return 'extension';
+    const cat = category.toLowerCase();
+    if (cat.includes('guitar')) return 'music_note';
+    if (cat.includes('bater') || cat.includes('percu')) return 'album';
+    if (cat.includes('piano') || cat.includes('teclad')) return 'piano';
+    if (cat.includes('distorsion') || cat.includes('distorsión')) return 'graphic_eq';
+    if (cat.includes('compres')) return 'compress';
+    if (cat.includes('eq')) return 'tune';
+    if (cat.includes('vocal') || cat.includes('voz')) return 'mic';
+    if (cat.includes('sint')) return 'piano';
+    if (cat.includes('bajo')) return 'speaker';
+    if (cat.includes('hardware') || cat.includes('arsenal')) return 'hardware';
+    if (cat.includes('pedal')) return 'settings_input_component';
+    return 'extension';
+  };
+
   useEffect(() => {
     fetch('/api/articles')
       .then(res => res.json())
@@ -102,6 +119,7 @@ export default function TiendaPage() {
           filteredGear.map((product) => (
             <article key={product.id} className="break-inside-avoid flex flex-col border border-outline-variant/20 bg-[#0D0D0D] relative group hover:border-primary transition-colors">
               <div className="absolute top-2 left-2 z-10 border border-outline bg-[#0D0D0D] px-2 py-1 flex items-center gap-1">
+                <span className="material-symbols-outlined text-[14px] text-primary">{getCategoryIcon(product.category)}</span>
                 <span className="font-mono-technical text-mono-technical text-primary uppercase">{product.category}</span>
               </div>
               
