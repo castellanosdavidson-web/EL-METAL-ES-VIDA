@@ -489,8 +489,8 @@ export default function GlobalRadio() {
         </div>
 
         {/* 2. PLAYBACK CONTROLS (CENTER SECTION) */}
-        <div className="flex flex-col items-center justify-center w-[50%] md:w-1/3">
-          <div className="grid grid-cols-3 items-center justify-items-center w-full max-w-[180px] md:max-w-[220px] relative" ref={dropdownRef}>
+        <div className="flex flex-col items-center justify-center w-[50%] md:w-1/3 pr-5 md:pr-0">
+          <div className="grid grid-cols-3 items-center justify-items-center w-full max-w-[170px] md:max-w-[220px] relative" ref={dropdownRef}>
             {/* Left Col: Previous Station */}
             <div className="flex justify-end w-full pr-2">
               <button 
