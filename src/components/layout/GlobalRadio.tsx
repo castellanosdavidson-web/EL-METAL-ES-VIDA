@@ -341,6 +341,7 @@ export default function GlobalRadio() {
                           key={station.id}
                           onClick={() => {
                             setCurrentStationIdx(idx);
+                            setIsPlaying(true);
                             setIsDropdownOpen(false);
                           }}
                           className={`w-full text-left px-3 py-2 flex flex-col gap-0.5 hover:bg-primary-container/20 transition-colors ${active ? 'bg-primary-container/10 border-l-2 border-primary' : ''}`}
@@ -455,7 +456,7 @@ export default function GlobalRadio() {
         `}</style>
 
         {/* 1. NOW PLAYING INFO (LEFT SECTION) */}
-        <div className="flex items-center gap-3.5 w-[55%] md:w-1/3 min-w-0">
+        <div className="flex items-center gap-3.5 w-[50%] md:w-1/3 min-w-0">
           <div className="relative w-12 h-12 md:w-14 md:h-14 flex-shrink-0 border border-outline-variant bg-surface-container-lowest overflow-hidden rounded shadow-sm">
             <img 
               src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/cover.png`}
@@ -488,12 +489,16 @@ export default function GlobalRadio() {
         </div>
 
         {/* 2. PLAYBACK CONTROLS (CENTER SECTION) */}
-        <div className="flex flex-col items-center justify-center w-[45%] md:w-1/3">
+        <div className="flex flex-col items-center justify-center w-[50%] md:w-1/3">
           <div className="grid grid-cols-3 items-center justify-items-center w-full max-w-[180px] md:max-w-[220px] relative" ref={dropdownRef}>
             {/* Left Col: Previous Station */}
             <div className="flex justify-end w-full pr-2">
               <button 
-                onClick={(e) => { e.stopPropagation(); setCurrentStationIdx(prev => (prev - 1 + STATIONS.length) % STATIONS.length); }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setCurrentStationIdx(prev => (prev - 1 + STATIONS.length) % STATIONS.length); 
+                  setIsPlaying(true);
+                }}
                 className="text-on-surface-variant hover:text-primary active:scale-90 transition-all flex items-center justify-center p-1.5"
                 title="Emisora Anterior"
               >
@@ -530,7 +535,11 @@ export default function GlobalRadio() {
             {/* Right Col: Next Station & Selector */}
             <div className="flex justify-start items-center gap-1 w-full pl-2">
               <button 
-                onClick={(e) => { e.stopPropagation(); setCurrentStationIdx(prev => (prev + 1) % STATIONS.length); }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setCurrentStationIdx(prev => (prev + 1) % STATIONS.length); 
+                  setIsPlaying(true);
+                }}
                 className="text-on-surface-variant hover:text-primary active:scale-90 transition-all flex items-center justify-center p-1.5"
                 title="Siguiente Emisora"
               >
@@ -548,7 +557,7 @@ export default function GlobalRadio() {
 
             {/* Dropdown Menu floating upward */}
             {isDropdownOpen && (
-              <div className="absolute bottom-[55px] left-1/2 -translate-x-1/2 z-50 bg-background/98 border border-outline-variant/80 p-2 w-64 max-h-64 overflow-y-auto rounded shadow-[0_-8px_30px_rgba(0,0,0,0.8)] backdrop-blur-md">
+              <div className="fixed md:absolute bottom-[75px] md:bottom-[55px] left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:right-auto md:w-64 z-50 bg-background/98 border border-outline-variant/80 p-2 max-h-64 overflow-y-auto rounded shadow-[0_-8px_30px_rgba(0,0,0,0.8)] backdrop-blur-md">
                 <div className="font-mono-technical text-[9px] text-primary/80 uppercase tracking-wider font-extrabold px-3 py-1.5 border-b border-outline-variant/30 text-center">
                   {currentTrans.header}
                 </div>
@@ -563,6 +572,7 @@ export default function GlobalRadio() {
                         onClick={(e) => {
                           e.stopPropagation();
                           setCurrentStationIdx(idx);
+                          setIsPlaying(true);
                           setIsDropdownOpen(false);
                         }}
                         className={`w-full text-left px-3 py-2 flex flex-col gap-0.5 hover:bg-primary-container/20 transition-colors ${active ? 'bg-primary-container/10 border-l-2 border-primary' : ''}`}
