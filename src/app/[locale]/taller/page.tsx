@@ -1,11 +1,29 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
+import { useLocale, useTranslations } from 'next-intl';
+import Image from 'next/image';
 
 export default function TallerPage() {
+  const locale = useLocale();
+  const t = useTranslations('Taller');
   const [plugins, setPlugins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('Todos');
+
+  const getPlainText = (html: string) => {
+    if (!html) return '';
+    return html
+      .replace(/<[^>]+>/g, ' ')  // strip HTML tags
+      .replace(/&nbsp;/g, ' ')   // decode &nbsp;
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/\r?\n/g, ' ')    // strip newlines
+      .replace(/\s+/g, ' ')      // collapse whitespace
+      .trim();
+  };
 
   const getCategoryIcon = (category?: string) => {
     if (!category) return 'extension';
@@ -58,15 +76,15 @@ export default function TallerPage() {
           <div>
             <div className="flex items-center gap-2 text-primary">
               <span className="material-symbols-outlined text-[16px]">build</span>
-              <span className="font-mono-technical text-mono-technical uppercase">Taller Técnico</span>
+              <span className="font-mono-technical text-mono-technical uppercase">{t('tag')}</span>
             </div>
-            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface leading-normal pb-2">Herramientas y Plugins</h1>
+            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface leading-normal pb-2">{t('title')}</h1>
             <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-2">
-              Librería de efectos, instrumentos virtuales y procesadores para la creación de audio extremo.
+              {t('desc')}
             </p>
           </div>
           <div className="bg-surface-variant/40 border border-outline-variant/30 px-4 py-2 font-mono-technical text-[10px] text-on-surface-variant uppercase tracking-widest">
-            ESTADO: DIRECTORIO_ACTIVO
+            {t('status')}
           </div>
         </div>
         
@@ -74,7 +92,7 @@ export default function TallerPage() {
         <div className="mt-4 p-4 border border-error/50 bg-error/10 flex items-start gap-3">
           <span className="material-symbols-outlined text-error mt-0.5">warning</span>
           <p className="font-mono-technical text-xs text-on-surface-variant leading-relaxed">
-            <strong className="text-error uppercase">IMPORTANTE:</strong> El metal es vida, no aloja ningún software para su descarga. Los contenidos enlazan con los sitios oficiales de descarga de los programas originales proporcionados por sus desarrolladores.
+            <strong className="text-error uppercase">{t('important')}</strong> {t('disclaimer')}
           </p>
         </div>
       </section>
@@ -99,26 +117,29 @@ export default function TallerPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="font-mono-technical text-primary animate-pulse tracking-widest text-xs uppercase">Decodificando Plugins...</span>
+          <span className="font-mono-technical text-primary animate-pulse tracking-widest text-xs uppercase">{t('loading')}</span>
         </div>
       ) : filteredPlugins.length === 0 ? (
         <div className="text-center py-20 border border-dashed border-outline-variant/20 rounded">
           <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">extension_off</span>
-          <p className="font-mono-technical text-xs text-on-surface-variant uppercase">Ningún plugin hallado bajo esta clasificación.</p>
+          <p className="font-mono-technical text-xs text-on-surface-variant uppercase">{t('empty')}</p>
         </div>
       ) : (
         /* Encyclopedic Masonry Grid */
         <section className="columns-1 md:columns-2 lg:columns-3 gap-masonry-gap space-y-masonry-gap">
-          {filteredPlugins.map((plugin) => (
+          {filteredPlugins.map((plugin, idx) => (
             <Link 
               href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} 
               key={plugin.id} 
               className="break-inside-avoid border border-outline-variant/30 flex flex-col bg-surface-container-low group cursor-pointer relative overflow-hidden block"
             >
               <div className="w-full relative pt-[75%] bg-surface-variant">
-                <img 
+                <Image 
                   src={plugin.imageUrl || '/posts/placeholder.png'} 
                   alt={plugin.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority={idx < 3}
                   className="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
                 />
                 <div className="absolute top-2 left-2 bg-surface border border-outline-variant px-2 py-1 flex items-center gap-1 z-10 shadow-md">
@@ -127,10 +148,12 @@ export default function TallerPage() {
                 </div>
               </div>
               <div className="p-4 flex flex-col gap-2 border-t border-outline-variant/30 bg-surface-container-lowest relative z-20">
-                <h2 className="font-headline-md text-headline-md text-on-surface leading-tight group-hover:text-primary transition-colors uppercase">{plugin.title}</h2>
-                <div className="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-3" dangerouslySetInnerHTML={{__html: plugin.desc}} />
+                  <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10">{locale === 'en' ? (plugin.title_en || plugin.title) : locale === 'pt' ? (plugin.title_pt || plugin.title) : plugin.title}</h3>
+                  <p className="font-body-md text-on-surface-variant text-sm overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    {getPlainText(locale === 'en' ? (plugin.desc_en || plugin.desc) : locale === 'pt' ? (plugin.desc_pt || plugin.desc) : plugin.desc)}
+                  </p>
                 <div className="mt-2 flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase opacity-80 group-hover:opacity-100 cursor-pointer">
-                  <span>Ver Herramienta</span>
+                  <span>{t('viewTool')}</span>
                   <span className="material-symbols-outlined text-[16px] transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </div>
               </div>

@@ -1,11 +1,29 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
+import { useLocale, useTranslations } from 'next-intl';
+import Image from 'next/image';
 
 export default function EnciclopediaPage() {
+  const locale = useLocale();
+  const t = useTranslations('Archive');
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('Todos');
+  const [selectedCategory, setSelectedCategory] = useState(t('catTodos'));
+
+  const getPlainText = (html: string) => {
+    if (!html) return '';
+    return html
+      .replace(/<[^>]+>/g, ' ')  // strip HTML tags
+      .replace(/&nbsp;/g, ' ')   // decode &nbsp;
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/\r?\n/g, ' ')    // strip newlines
+      .replace(/\s+/g, ' ')      // collapse whitespace
+      .trim();
+  };
 
   useEffect(() => {
     fetch('/api/articles')
@@ -20,19 +38,29 @@ export default function EnciclopediaPage() {
   }, []);
 
   const categories = [
-    'Todos',
-    'Noticias',
-    'Documental Histórico',
-    'Análisis Técnico',
-    'Ciencia Sonora',
-    'Equipamiento'
+    t('catTodos'),
+    t('catNoticias'),
+    t('catDocumental'),
+    t('catAnalisis'),
+    t('catCiencia'),
+    t('catEquipamiento')
   ];
 
   const sortedPosts = [...posts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  const filteredPosts = selectedCategory === 'Todos' 
+  const filteredPosts = selectedCategory === t('catTodos') 
     ? sortedPosts 
-    : sortedPosts.filter(p => p.category === selectedCategory);
+    : sortedPosts.filter(p => {
+        // Map category names back to Spanish for filtering since DB saves them in Spanish
+        const esCategories: any = {
+          [t('catNoticias')]: 'Noticias',
+          [t('catDocumental')]: 'Documental Histórico',
+          [t('catAnalisis')]: 'Análisis Técnico',
+          [t('catCiencia')]: 'Ciencia Sonora',
+          [t('catEquipamiento')]: 'Equipamiento'
+        };
+        return p.category === esCategories[selectedCategory];
+      });
 
   return (
     <main className="flex-grow pt-[160px] pb-stack-loose px-margin-mobile flex flex-col gap-stack-loose w-full max-w-7xl mx-auto">
@@ -40,11 +68,11 @@ export default function EnciclopediaPage() {
       <section className="flex flex-col gap-stack-tight border-b border-outline-variant/20 pb-6">
         <div className="flex items-center gap-2 text-primary">
           <span className="material-symbols-outlined text-[16px]">auto_stories</span>
-          <span className="font-mono-technical text-mono-technical uppercase">Archivo Técnico</span>
+          <span className="font-mono-technical text-mono-technical uppercase">{t('tag')}</span>
         </div>
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">La historia se conserva. El Metal también.</h1>
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">{t('title')}</h1>
         <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-2">
-          Datos, líneas de tiempo y la ciencia que el 95% de la gente desconoce. Un registro quirúrgico de la evolución sónica y cultural. Catálogo completo de expedientes desclasificados.
+          {t('desc')}
         </p>
       </section>
 
@@ -68,26 +96,29 @@ export default function EnciclopediaPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="font-mono-technical text-primary animate-pulse tracking-widest text-xs uppercase">Decodificando Registros...</span>
+          <span className="font-mono-technical text-primary animate-pulse tracking-widest text-xs uppercase">{t('loading')}</span>
         </div>
       ) : filteredPosts.length === 0 ? (
         <div className="text-center py-20 border border-dashed border-outline-variant/20 rounded">
           <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">folder_open</span>
-          <p className="font-mono-technical text-xs text-on-surface-variant uppercase">Ningún expediente hallado bajo esta clasificación.</p>
+          <p className="font-mono-technical text-xs text-on-surface-variant uppercase">{t('empty')}</p>
         </div>
       ) : (
         /* Encyclopedic Masonry Grid */
         <section className="columns-1 md:columns-2 lg:columns-3 gap-masonry-gap space-y-masonry-gap">
-          {filteredPosts.map((post) => (
+          {filteredPosts.map((post, idx) => (
             <Link 
               href={post.slug ? `/articulo/${post.slug}` : `/articulo/${post.id}`} 
               key={post.id} 
               className="break-inside-avoid border border-outline-variant/30 flex flex-col bg-surface-container-low group cursor-pointer relative overflow-hidden block"
             >
               <div className="w-full relative pt-[75%] bg-surface-variant">
-                <img 
+                <Image 
                   src={post.imageUrl || '/posts/placeholder.png'} 
                   alt={post.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority={idx < 3}
                   className="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
                 />
                 <div className="absolute top-2 left-2 bg-surface border border-outline-variant px-2 py-1 flex items-center gap-1 z-10 shadow-md">
@@ -96,10 +127,12 @@ export default function EnciclopediaPage() {
                 </div>
               </div>
               <div className="p-4 flex flex-col gap-2 border-t border-outline-variant/30 bg-surface-container-lowest relative z-20">
-                <h2 className="font-headline-md text-headline-md text-on-surface leading-tight group-hover:text-primary transition-colors uppercase">{post.title}</h2>
-                <div className="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-3" dangerouslySetInnerHTML={{__html: post.desc}} />
+                <h2 className="font-headline-md text-headline-md text-on-surface leading-tight group-hover:text-primary transition-colors uppercase">{locale === 'en' && post.title_en ? post.title_en : locale === 'pt' && post.title_pt ? post.title_pt : post.title}</h2>
+                <p className="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-3 overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {getPlainText(locale === 'en' && post.desc_en ? post.desc_en : locale === 'pt' && post.desc_pt ? post.desc_pt : post.desc)}
+                </p>
                 <div className="mt-2 flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase opacity-80 group-hover:opacity-100 cursor-pointer">
-                  <span>Ver Registro</span>
+                  <span>{t('viewRecord')}</span>
                   <span className="material-symbols-outlined text-[16px] transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </div>
               </div>
@@ -113,11 +146,11 @@ export default function EnciclopediaPage() {
         <div className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px)" }}></div>
         <div className="p-6 md:p-8 flex flex-col gap-6 relative z-10">
           <div className="flex flex-col gap-2 border-b border-outline-variant/50 pb-4">
-            <span className="font-mono-technical text-mono-technical text-primary tracking-widest uppercase">Expediente Regional</span>
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase">Legado Colombiano</h2>
+            <span className="font-mono-technical text-mono-technical text-primary tracking-widest uppercase">{t('regionalTag')}</span>
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase">{t('regionalTitle')}</h2>
           </div>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
-            La génesis del sonido extremo en las montañas y ciudades de Colombia. Bandas que forjaron metal en medio del fuego cruzado.
+            {t('regionalDesc')}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <div className="border border-outline-variant/30 p-4 bg-surface flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">

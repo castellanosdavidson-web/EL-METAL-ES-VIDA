@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Syne, JetBrains_Mono, Hanken_Grotesk } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
@@ -68,16 +68,34 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({
+import {NextIntlClientProvider} from 'next-intl';
+import {getMessages} from 'next-intl/server';
+import {notFound} from 'next/navigation';
+
+import {routing} from '@/i18n/routing';
+
+export default async function RootLayout({
   children,
+  params
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{locale: string}>;
 }>) {
+  const { locale } = await params;
+  
+  // Ensure that the incoming `locale` is valid
+  if (!routing.locales.includes(locale as any)) {
+    notFound();
+  }
+
+  // Providing all messages to the client
+  // side is the easiest way to get started
+  const messages = await getMessages();
+
   return (
     <html
-      lang="es"
-      translate="no"
-      className={`${syne.variable} ${jetbrains.variable} ${hanken.variable} dark notranslate`}
+      lang={locale}
+      className={`${syne.variable} ${jetbrains.variable} ${hanken.variable} dark`}
     >
       <head>
         {/* Google Tag Manager */}
@@ -102,7 +120,6 @@ export default function RootLayout({
             `
           }}
         />
-        <meta name="google" content="notranslate" />
         <link rel="icon" href={logoUrl} />
         <link rel="apple-touch-icon" href={logoUrl} />
         <link
@@ -120,9 +137,11 @@ export default function RootLayout({
             style={{ display: 'none', visibility: 'hidden' }}
           />
         </noscript>
-        <LayoutWrapper>
-          {children}
-        </LayoutWrapper>
+        <NextIntlClientProvider messages={messages}>
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

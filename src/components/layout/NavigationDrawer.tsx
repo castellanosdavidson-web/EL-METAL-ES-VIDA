@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 
 interface NavigationDrawerProps {
   isOpen: boolean;
@@ -8,6 +9,9 @@ interface NavigationDrawerProps {
 }
 
 export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerProps) {
+  const tNav = useTranslations('Navigation');
+  const tDrawer = useTranslations('NavigationDrawer');
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -32,8 +36,8 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
         
         <div className="flex justify-between items-start mb-12 border-b-2 border-surface-container-highest pb-6">
           <div>
-            <h2 className="text-headline-lg font-headline-lg text-primary uppercase">ARCHIVO</h2>
-            <p className="font-label-technical text-label-technical text-on-surface-variant mt-2">LEGIÓN METALERA</p>
+            <h2 className="text-headline-lg font-headline-lg text-primary uppercase">{tDrawer('sections') || 'Secciones'}</h2>
+            <p className="font-label-technical text-label-technical text-on-surface-variant mt-2">{tDrawer('legion')}</p>
           </div>
           <button onClick={onClose} className="text-on-surface-variant hover:text-primary transition-colors">
             <span className="material-symbols-outlined text-3xl">close</span>
@@ -44,19 +48,19 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
           <li>
             <Link onClick={onClose} href="/archivo" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-primary border-l-4 border-primary pl-4 opacity-80 hover:opacity-100 hover:translate-x-2 transition-all duration-300 glitch-hover">
               <span className="material-symbols-outlined text-[32px]">album</span>
-              <span>Archivo</span>
+              <span>{tNav('archivo')}</span>
             </Link>
           </li>
           <li>
             <Link onClick={onClose} href="/taller" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
               <span className="material-symbols-outlined">electric_bolt</span>
-              <span>Taller</span>
+              <span>{tNav('taller')}</span>
             </Link>
           </li>
           <li>
             <Link onClick={onClose} href="/tienda" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
               <span className="material-symbols-outlined text-[32px] text-error">hardware</span>
-              <span className="group-hover:text-error">Arsenal</span>
+              <span className="group-hover:text-error">{tDrawer('arsenal')}</span>
             </Link>
           </li>
         </ul>
@@ -64,17 +68,8 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
         <div className="mt-auto border-t-2 border-surface-container-highest pt-6">
           <Link href="/admin" target="_blank" rel="noopener noreferrer" onClick={onClose} className="w-full bg-primary-container text-on-primary hover:bg-primary-container/80 transition-colors py-4 px-6 border border-primary-container font-label-technical text-label-technical uppercase flex items-center justify-center gap-2">
             <span className="material-symbols-outlined text-sm">lock</span>
-            ACCESO RESTRINGIDO
+            {tDrawer('restrictedAccess')}
           </Link>
-          
-          <div className="flex gap-4 mt-6">
-            <button className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-label-technical text-label-technical">
-              <span className="material-symbols-outlined text-sm">settings</span> Ajustes
-            </button>
-            <button className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-label-technical text-label-technical">
-              <span className="material-symbols-outlined text-sm">logout</span> Cerrar Sesión
-            </button>
-          </div>
         </div>
       </nav>
     </div>

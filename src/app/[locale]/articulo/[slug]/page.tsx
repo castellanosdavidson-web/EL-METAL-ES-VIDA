@@ -43,9 +43,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? article.desc.replace(/<[^>]*>/g, '').slice(0, 160) 
     : '';
 
+  const keywordsList = article.seoKeywords 
+    ? article.seoKeywords.split(',').map((k: string) => k.trim()) 
+    : [];
+
   return {
     title: `${article.title} - EL METAL ES VIDA`,
     description: plainTextDesc,
+    keywords: keywordsList,
     alternates: {
       canonical: `/articulo/${slug}`,
     },
@@ -75,5 +80,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const { article, others } = await getArticleData(slug);
-  return <ArticleClient initialArticle={article} initialOthers={others} />;
+  
+  // Generar esquema FAQ JSON-LD si existen FAQs
+  let jsonLd = null;
+  if (article && article.faqs && article.faqs.length > 0) {
+    jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: article.faqs.map((faq: any) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer
+        }
+      }))
+    };
+  }
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <ArticleClient initialArticle={article} initialOthers={others} />
+    </>
+  );
 }

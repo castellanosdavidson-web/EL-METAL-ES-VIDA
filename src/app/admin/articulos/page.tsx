@@ -17,6 +17,11 @@ export default function ArticulosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [desc, setDesc] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [seoKeywords, setSeoKeywords] = useState('');
+  const [faqsRaw, setFaqsRaw] = useState('');
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
+  const [loadingCopies, setLoadingCopies] = useState(false);
+  const [socialCopies, setSocialCopies] = useState<{ facebook_reel: string, facebook_post: string, tiktok: string } | null>(null);
 
   const quillModules = React.useMemo(() => ({
     toolbar: {
@@ -104,6 +109,8 @@ export default function ArticulosPage() {
     setEditArticle(article);
     setDesc(article.desc || '');
     setYoutubeUrl(article.youtubeUrl || '');
+    setSeoKeywords(article.seoKeywords || '');
+    setFaqsRaw(article.faqsRaw || '');
     setMessage('');
     setIsModalOpen(true);
   };
@@ -112,8 +119,42 @@ export default function ArticulosPage() {
     setEditArticle(null);
     setDesc('');
     setYoutubeUrl('');
+    setSeoKeywords('');
+    setFaqsRaw('');
     setMessage('');
     setIsModalOpen(true);
+  };
+
+  const handleGenerateCopies = async (article: any) => {
+    setIsCopyModalOpen(true);
+    setLoadingCopies(true);
+    setSocialCopies(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      
+      const res = await fetch('/api/admin/generate-copys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ title: article.title, desc: article.desc })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al generar los copys');
+      setSocialCopies({
+        facebook_reel: data.facebook_reel,
+        facebook_post: data.facebook_post,
+        tiktok: data.tiktok
+      });
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+      setIsCopyModalOpen(false);
+    } finally {
+      setLoadingCopies(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -359,28 +400,29 @@ export default function ArticulosPage() {
                             )}
                           </div>
                           <div>
-                            <p onClick={() => handleOpenEdit(article)} className="font-body-lg text-on-surface font-bold group-hover:text-primary transition-colors cursor-pointer">{article.title}</p>
+                            <p onClick={() => handleOpenEdit(article)} className="font-body-md text-sm text-on-surface font-bold group-hover:text-primary transition-colors cursor-pointer">{article.title}</p>
                             <p className="font-mono-technical text-[10px] text-on-surface-variant uppercase">ID: ART-{article.id.toString().slice(-4)}-X</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 font-mono-technical text-mono-technical text-on-surface">ADMIN_01</td>
-                      <td className="px-6 py-5">
-                        <span className="px-3 py-1 border border-outline-variant/40 text-[10px] font-label-sm uppercase tracking-wider text-on-surface-variant">{article.category}</span>
+                      <td className="px-4 py-4 font-mono-technical text-[10px] text-on-surface whitespace-nowrap">DAVIDSON SCJ</td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-0.5 border border-outline-variant/40 text-[9px] font-label-sm uppercase tracking-wider text-on-surface-variant">{article.category}</span>
                       </td>
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-1.5 h-1.5 rounded-full ${article.is_hidden ? 'bg-error' : 'bg-primary-container animate-pulse'}`}></span>
-                          <span className="font-label-sm text-label-sm text-on-surface uppercase">{article.is_hidden ? 'Oculto' : 'Publicado'}</span>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`w-1 h-1 rounded-full ${article.is_hidden ? 'bg-error' : 'bg-primary-container animate-pulse'}`}></span>
+                          <span className="text-[10px] text-on-surface uppercase font-bold tracking-wide">{article.is_hidden ? 'Oculto' : 'Publicado'}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-5 font-mono-technical text-mono-technical text-on-surface-variant">
+                      <td className="px-4 py-3 font-mono-technical text-[10px] text-on-surface-variant">
                         {new Date(article.createdAt || Date.now()).toISOString().split('T')[0]}
                       </td>
-                      <td className="px-6 py-5 text-right space-x-2">
-                        <button onClick={() => handleToggleVisibility(article)} className="p-2 hover:text-primary transition-colors" title={article.is_hidden ? "Mostrar" : "Ocultar"}><span className="material-symbols-outlined text-sm">{article.is_hidden ? 'visibility_off' : 'visibility'}</span></button>
-                        <button onClick={() => handleOpenEdit(article)} className="p-2 hover:text-primary transition-colors" title="Editar"><span className="material-symbols-outlined text-sm">edit</span></button>
-                        <button onClick={() => handleDelete(article.id)} className="p-2 hover:text-error transition-colors" title="Eliminar"><span className="material-symbols-outlined text-sm">delete</span></button>
+                      <td className="px-4 py-3 text-right space-x-1 whitespace-nowrap">
+                        <button onClick={() => handleGenerateCopies(article)} className="p-1 hover:text-primary transition-colors" title="Generar Copys RRSS"><span className="material-symbols-outlined text-[15px]">campaign</span></button>
+                        <button onClick={() => handleToggleVisibility(article)} className="p-1 hover:text-primary transition-colors" title={article.is_hidden ? "Mostrar" : "Ocultar"}><span className="material-symbols-outlined text-[15px]">{article.is_hidden ? 'visibility_off' : 'visibility'}</span></button>
+                        <button onClick={() => handleOpenEdit(article)} className="p-1 hover:text-primary transition-colors" title="Editar"><span className="material-symbols-outlined text-[15px]">edit</span></button>
+                        <button onClick={() => handleDelete(article.id)} className="p-1 hover:text-error transition-colors" title="Eliminar"><span className="material-symbols-outlined text-[15px]">delete</span></button>
                       </td>
                     </tr>
                   ))
@@ -489,6 +531,38 @@ export default function ArticulosPage() {
 
               <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-primary">search</span>
+                  Palabras Clave SEO (Opcional)
+                </label>
+                <input 
+                  type="text" 
+                  name="seoKeywords" 
+                  value={seoKeywords} 
+                  onChange={(e) => setSeoKeywords(e.target.value)} 
+                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical text-sm" 
+                  placeholder="Ej: blast beat, distorsion metal, afinar guitarra, death metal" 
+                />
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Palabras clave separadas por comas para optimizar la visibilidad en motores de búsqueda e IAs.</p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-primary">quiz</span>
+                  Preguntas Frecuentes - FAQ (Opcional)
+                </label>
+                <textarea 
+                  name="faqsRaw" 
+                  value={faqsRaw} 
+                  onChange={(e) => setFaqsRaw(e.target.value)} 
+                  rows={4}
+                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical text-sm" 
+                  placeholder={"Q: ¿Pregunta 1?\nA: Respuesta 1.\nQ: ¿Pregunta 2?\nA: Respuesta 2."}
+                />
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Usa el formato Q: para la pregunta y A: para la respuesta. Esto creará marcado estructurado para Google automáticamente.</p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-primary">audio_file</span>
                   Archivo de Audio Descargable (MP3) {editArticle && '(Opcional)'}
                 </label>
@@ -508,6 +582,82 @@ export default function ArticulosPage() {
                 {uploading ? 'PROCESANDO...' : (editArticle ? 'GUARDAR CAMBIOS' : 'EJECUTAR INYECCIÓN')}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Copys RRSS */}
+      {isCopyModalOpen && (
+        <div className="fixed inset-0 bg-black/80 z-[110] flex items-center justify-center backdrop-blur-sm p-4">
+          <div className="border border-outline-variant bg-surface-container-low p-8 relative w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+            <button onClick={() => setIsCopyModalOpen(false)} className="absolute top-4 right-4 text-on-surface-variant hover:text-white">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase mb-2">GENERADOR DE COPYS RRSS</h2>
+            <p className="font-mono-technical text-mono-technical text-on-surface-variant mb-6">PROMOCIÓN BRUTAL GENERADA CON INTELIGENCIA ARTIFICIAL (GEMINI)</p>
+            
+            {loadingCopies ? (
+              <div className="py-12 text-center text-primary animate-pulse font-mono-technical uppercase">
+                CALIBRANDO COGNICIÓN ARTIFICIAL Y CANALIZANDO BRUTALIDAD...
+              </div>
+            ) : (
+              socialCopies && (
+                <div className="space-y-6">
+                  {/* Facebook Reel */}
+                  <div className="space-y-2 border border-outline-variant/20 p-4 bg-surface bg-surface-container-lowest rounded-sm">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-label-sm text-primary uppercase font-bold tracking-widest">Reel en Facebook</span>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(socialCopies.facebook_reel);
+                          alert('¡Copy de Facebook Reel copiado al portapapeles!');
+                        }}
+                        className="text-xs bg-primary-container text-on-surface px-3 py-1 font-mono-technical uppercase hover:bg-inverse-primary"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <pre className="text-xs text-on-surface font-body-md whitespace-pre-wrap select-all bg-surface p-3 border border-outline-variant/10 max-h-40 overflow-y-auto">{socialCopies.facebook_reel}</pre>
+                  </div>
+
+                  {/* Facebook Post */}
+                  <div className="space-y-2 border border-outline-variant/20 p-4 bg-surface bg-surface-container-lowest rounded-sm">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-label-sm text-primary uppercase font-bold tracking-widest">Post Facebook</span>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(socialCopies.facebook_post);
+                          alert('¡Copy de Facebook Post copiado al portapapeles!');
+                        }}
+                        className="text-xs bg-primary-container text-on-surface px-3 py-1 font-mono-technical uppercase hover:bg-inverse-primary"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <pre className="text-xs text-on-surface font-body-md whitespace-pre-wrap select-all bg-surface p-3 border border-outline-variant/10 max-h-40 overflow-y-auto">{socialCopies.facebook_post}</pre>
+                  </div>
+
+                  {/* TikTok */}
+                  <div className="space-y-2 border border-outline-variant/20 p-4 bg-surface bg-surface-container-lowest rounded-sm">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-label-sm text-primary uppercase font-bold tracking-widest">TikTok</span>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(socialCopies.tiktok);
+                          alert('¡Copy de TikTok copiado al portapapeles!');
+                        }}
+                        className="text-xs bg-primary-container text-on-surface px-3 py-1 font-mono-technical uppercase hover:bg-inverse-primary"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <pre className="text-xs text-on-surface font-body-md whitespace-pre-wrap select-all bg-surface p-3 border border-outline-variant/10 max-h-40 overflow-y-auto">{socialCopies.tiktok}</pre>
+                  </div>
+                </div>
+              )
+            )}
           </div>
         </div>
       )}

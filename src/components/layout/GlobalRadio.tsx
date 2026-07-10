@@ -1,16 +1,53 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
+import { useLocale } from 'next-intl';
 
 const STATIONS = [
   { id: 'rockantenne', name: 'Rock Antenne Heavy', url: 'https://stream.rockantenne.de/heavy-metal/stream/mp3', tagline: 'Clásicos y Heavy Metal 24/7' },
   { id: 'metalcore', name: 'Metalcore Radio', url: 'https://stream.laut.fm/metalcore', tagline: 'Metalcore, Deathcore & Hardcore extremo' },
   { id: 'brutaldeath', name: 'Brutal Death Radio', url: 'https://stream.laut.fm/deathmetal', tagline: 'Death Metal, Brutal Slam & Grindcore' },
-  { id: 'maximusrock', name: 'Maximus Rock FM', url: 'https://stream.laut.fm/maximusrockfm', tagline: 'Rock & Metal en Castellano' },
-  { id: 'metalcolombia', name: 'Metal Radio Colombia', url: 'https://stream.zeno.fm/qwnpbyb0c7vuv', tagline: 'Poder y Metal colombiano las 24 horas' },
+  { id: 'latinmetal', name: 'Metal Caravan', url: 'https://stream.laut.fm/metalcaravan', tagline: 'Metal Underground Internacional' },
   { id: 'wacken', name: 'Wacken Radio', url: 'https://stream.laut.fm/wacken', tagline: 'La radio oficial de la comunidad de Wacken' }
 ];
 
+const TRANSLATIONS: Record<string, { header: string; status: { connecting: string, live: string, offline: string }; list: Record<string, { name: string; tagline: string }> }> = {
+  es: {
+    header: 'EMISORAS DISPONIBLES',
+    status: { connecting: 'Conectando...', live: 'En línea', offline: 'Desconectado' },
+    list: {
+      rockantenne: { name: 'Rock Antenne Heavy', tagline: 'Clásicos y Heavy Metal 24/7' },
+      metalcore: { name: 'Metalcore Radio', tagline: 'Metalcore, Deathcore y Hardcore extremo' },
+      brutaldeath: { name: 'Brutal Death Radio', tagline: 'Death Metal, Brutal Slam y Grindcore' },
+      latinmetal: { name: 'Metal Caravan', tagline: 'Metal Underground Internacional' },
+      wacken: { name: 'Wacken Radio', tagline: 'La radio oficial de la comunidad de Wacken' }
+    }
+  },
+  en: {
+    header: 'AVAILABLE STATIONS',
+    status: { connecting: 'Connecting...', live: 'Online', offline: 'Offline' },
+    list: {
+      rockantenne: { name: 'Rock Antenne Heavy', tagline: 'Classics & Heavy Metal 24/7' },
+      metalcore: { name: 'Metalcore Radio', tagline: 'Extreme Metalcore, Deathcore & Hardcore' },
+      brutaldeath: { name: 'Brutal Death Radio', tagline: 'Death Metal, Brutal Slam & Grindcore' },
+      latinmetal: { name: 'Metal Caravan', tagline: 'International Underground Metal' },
+      wacken: { name: 'Wacken Radio', tagline: 'Official radio of the Wacken community' }
+    }
+  },
+  pt: {
+    header: 'ESTAÇÕES DISPONÍVEIS',
+    status: { connecting: 'Conectando...', live: 'Online', offline: 'Desconectado' },
+    list: {
+      rockantenne: { name: 'Rock Antenne Heavy', tagline: 'Clássicos e Heavy Metal 24/7' },
+      metalcore: { name: 'Metalcore Radio', tagline: 'Metalcore, Deathcore e Hardcore extremo' },
+      brutaldeath: { name: 'Brutal Death Radio', tagline: 'Death Metal, Brutal Slam e Grindcore' },
+      latinmetal: { name: 'Metal Caravan', tagline: 'Metal Underground Internacional' },
+      wacken: { name: 'Wacken Radio', tagline: 'A rádio oficial da comunidade de Wacken' }
+    }
+  }
+};
+
 export default function GlobalRadio() {
+  const locale = useLocale();
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [currentStationIdx, setCurrentStationIdx] = useState(0);
@@ -20,7 +57,32 @@ export default function GlobalRadio() {
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [trackInfo, setTrackInfo] = useState<{ title: string; artist: string } | null>(null);
   
+  // Dropdown states & refs
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const mobileDropdownRef = useRef<HTMLDivElement | null>(null);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Translated station variables
+  const currentTrans = TRANSLATIONS[locale] || TRANSLATIONS.es;
+  const currentStation = STATIONS[currentStationIdx];
+  const currentStationName = currentTrans.list[currentStation.id]?.name || currentStation.name;
+  const currentStationTagline = currentTrans.list[currentStation.id]?.tagline || currentStation.tagline;
 
   // Poll ICY Metadata
   useEffect(() => {
@@ -60,8 +122,8 @@ export default function GlobalRadio() {
       const logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/articles/logo.png`;
       
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: trackInfo ? trackInfo.title : STATIONS[currentStationIdx].name,
-        artist: trackInfo ? trackInfo.artist : STATIONS[currentStationIdx].tagline,
+        title: trackInfo ? trackInfo.title : currentStationName,
+        artist: trackInfo ? trackInfo.artist : currentStationTagline,
         album: 'EL METAL ES VIDA',
         artwork: [
           { src: coverUrl, sizes: '512x512', type: 'image/png' },
@@ -205,10 +267,10 @@ export default function GlobalRadio() {
           {/* Song Info */}
           <div className="px-2 mb-4">
             <span className="font-label-technical text-[10px] text-primary tracking-widest uppercase font-extrabold block mb-1">
-              {STATIONS[currentStationIdx].name}
+              {currentStationName}
             </span>
-            <h3 className="font-headline-lg text-lg font-bold text-on-surface leading-tight tracking-tight mt-1" title={trackInfo ? trackInfo.title : STATIONS[currentStationIdx].tagline}>
-              {trackInfo ? trackInfo.title : STATIONS[currentStationIdx].tagline}
+            <h3 className="font-headline-lg text-lg font-bold text-on-surface leading-tight tracking-tight mt-1" title={trackInfo ? trackInfo.title : currentStationTagline}>
+              {trackInfo ? trackInfo.title : currentStationTagline}
             </h3>
             {trackInfo && (
               <p className="font-mono-technical text-[11px] text-on-surface-variant/90 tracking-wider uppercase mt-1.5 truncate">
@@ -219,7 +281,7 @@ export default function GlobalRadio() {
 
           {/* Expanded Controls */}
           <div className="flex flex-col gap-6 items-center px-4 mb-6">
-            <div className="flex items-center justify-between w-full max-w-[280px]">
+            <div className="flex items-center justify-between w-full max-w-[280px] relative" ref={mobileDropdownRef}>
               <button 
                 onClick={() => setCurrentStationIdx(prev => (prev - 1 + STATIONS.length) % STATIONS.length)}
                 className="text-on-surface hover:text-primary active:scale-90 transition-all flex items-center justify-center p-3"
@@ -248,11 +310,54 @@ export default function GlobalRadio() {
 
               <button 
                 onClick={() => setCurrentStationIdx(prev => (prev + 1) % STATIONS.length)}
-                className="text-on-surface hover:text-primary active:scale-90 transition-all flex items-center justify-center p-3"
+                className="text-primary hover:text-white active:scale-90 transition-all flex items-center justify-center p-3 animate-pulse"
+                style={{ filter: 'drop-shadow(0 0 8px var(--primary))' }}
                 title="Siguiente Emisora"
               >
                 <span className="material-symbols-outlined text-[32px]">skip_next</span>
               </button>
+
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); }}
+                className={`text-on-surface hover:text-primary active:scale-90 transition-all flex items-center justify-center p-3 rounded-full ${isDropdownOpen ? 'text-primary bg-primary/10' : ''}`}
+                title="Seleccionar Emisora"
+              >
+                <span className="material-symbols-outlined text-[32px]">radio</span>
+              </button>
+
+              {/* Mobile Floating Dropdown */}
+              {isDropdownOpen && (
+                <div className="absolute bottom-[90px] left-1/2 -translate-x-1/2 z-50 bg-background/98 border border-outline-variant p-2 w-64 max-h-60 overflow-y-auto rounded shadow-2xl backdrop-blur-md">
+                  <div className="font-mono-technical text-[9px] text-primary/80 uppercase tracking-wider font-extrabold px-3 py-1.5 border-b border-outline-variant/30 text-center">
+                    {currentTrans.header}
+                  </div>
+                  <div className="mt-1 divide-y divide-outline-variant/10">
+                    {STATIONS.map((station, idx) => {
+                      const tName = currentTrans.list[station.id]?.name || station.name;
+                      const tTagline = currentTrans.list[station.id]?.tagline || station.tagline;
+                      const active = idx === currentStationIdx;
+                      return (
+                        <button
+                          key={station.id}
+                          onClick={() => {
+                            setCurrentStationIdx(idx);
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 flex flex-col gap-0.5 hover:bg-primary-container/20 transition-colors ${active ? 'bg-primary-container/10 border-l-2 border-primary' : ''}`}
+                        >
+                          <div className="flex justify-between items-center w-full">
+                            <span className={`font-body-md text-xs font-bold uppercase tracking-wide ${active ? 'text-primary' : 'text-on-surface'}`}>
+                              {tName}
+                            </span>
+                            {active && <span className="material-symbols-outlined text-[14px] text-primary align-middle">radio_button_checked</span>}
+                          </div>
+                          <span className="font-mono-technical text-[9px] text-on-surface-variant/70 leading-normal line-clamp-1">{tTagline}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Volume control in expanded view */}
@@ -287,14 +392,39 @@ export default function GlobalRadio() {
       >
         {/* HTML5 Audio Core */}
         <audio 
-          ref={audioRef} 
-          src={STATIONS[currentStationIdx].url} 
-          preload="none"
-          autoPlay={true}
-          onPlaying={() => { setIsPlaying(true); setIsBuffering(false); }}
+          ref={audioRef}
+          src={STATIONS[currentStationIdx].url}
+          onPlay={() => { setIsPlaying(true); setIsBuffering(false); }}
           onPause={() => setIsPlaying(false)}
           onWaiting={() => setIsBuffering(true)}
-          onError={() => { setIsPlaying(false); setIsBuffering(false); }}
+          onStalled={() => {
+            if (isPlaying && audioRef.current) {
+              // Si el buffer se estanca (común en background móvil), forzamos recarga y reproducción
+              audioRef.current.load();
+              audioRef.current.play().catch(console.error);
+            }
+          }}
+          onError={(e) => {
+            console.error("Audio player error:", e);
+            if (isPlaying && audioRef.current) {
+              setIsBuffering(true);
+              setTimeout(() => {
+                if (audioRef.current && isPlaying) {
+                  audioRef.current.load();
+                  audioRef.current.play()
+                    .then(() => setIsBuffering(false))
+                    .catch((err) => {
+                      console.error("Auto-reconnect failed:", err);
+                      setIsPlaying(false);
+                      setIsBuffering(false);
+                    });
+                }
+              }, 2500); // Intenta reconectar tras 2.5s
+            } else {
+              setIsPlaying(false);
+              setIsBuffering(false);
+            }
+          }}
         />
         
         {/* Estilos CSS del fuego inyectados localmente */}
@@ -314,6 +444,14 @@ export default function GlobalRadio() {
           .fire-glow-effect {
             animation: flame-glow 1.5s ease-in-out infinite;
           }
+           @keyframes radio-btn-glow {
+             0% { transform: scale(1); filter: drop-shadow(0 0 2px #ff0000); color: #d32f2f; }
+             50% { transform: scale(1.15); filter: drop-shadow(0 0 10px #ff0000); color: #ff1a1a; }
+             100% { transform: scale(1); filter: drop-shadow(0 0 2px #ff0000); color: #d32f2f; }
+           }
+           .animate-radio-glow {
+             animation: radio-btn-glow 1.2s ease-in-out infinite;
+           }
         `}</style>
 
         {/* 1. NOW PLAYING INFO (LEFT SECTION) */}
@@ -336,10 +474,10 @@ export default function GlobalRadio() {
           
           <div className="flex flex-col min-w-0">
             <span className="font-label-technical text-[8px] md:text-[9.5px] text-primary tracking-widest uppercase font-extrabold truncate">
-              {STATIONS[currentStationIdx].name}
+              {currentStationName}
             </span>
-            <span className="font-body-md text-xs md:text-sm font-extrabold text-on-surface truncate leading-tight mt-0.5" title={trackInfo ? trackInfo.title : STATIONS[currentStationIdx].tagline}>
-              {trackInfo ? trackInfo.title : STATIONS[currentStationIdx].tagline}
+            <span className="font-body-md text-xs md:text-sm font-extrabold text-on-surface truncate leading-tight mt-0.5" title={trackInfo ? trackInfo.title : currentStationTagline}>
+              {trackInfo ? trackInfo.title : currentStationTagline}
             </span>
             {trackInfo && (
               <span className="font-mono-technical text-[9px] md:text-[10px] text-on-surface-variant/70 truncate uppercase tracking-widest mt-0.5" title={trackInfo.artist}>
@@ -350,50 +488,99 @@ export default function GlobalRadio() {
         </div>
 
         {/* 2. PLAYBACK CONTROLS (CENTER SECTION) */}
-        <div className="flex flex-col items-center justify-center gap-1 w-[45%] md:w-1/3">
-          <div className="flex items-center gap-3.5 md:gap-6">
-            {/* Previous Station */}
-            <button 
-              onClick={(e) => { e.stopPropagation(); setCurrentStationIdx(prev => (prev - 1 + STATIONS.length) % STATIONS.length); }}
-              className="text-on-surface-variant hover:text-primary active:scale-90 transition-all flex items-center justify-center p-1.5"
-              title="Emisora Anterior"
-            >
-              <span className="material-symbols-outlined text-[22px] md:text-[26px]">skip_previous</span>
-            </button>
+        <div className="flex flex-col items-center justify-center w-[45%] md:w-1/3">
+          <div className="grid grid-cols-3 items-center justify-items-center w-full max-w-[180px] md:max-w-[220px] relative" ref={dropdownRef}>
+            {/* Left Col: Previous Station */}
+            <div className="flex justify-end w-full pr-2">
+              <button 
+                onClick={(e) => { e.stopPropagation(); setCurrentStationIdx(prev => (prev - 1 + STATIONS.length) % STATIONS.length); }}
+                className="text-on-surface-variant hover:text-primary active:scale-90 transition-all flex items-center justify-center p-1.5"
+                title="Emisora Anterior"
+              >
+                <span className="material-symbols-outlined text-[20px] md:text-[24px]">skip_previous</span>
+              </button>
+            </div>
 
-            {/* Circular Play Button */}
-            <button
-              onClick={(e) => togglePlay(e)}
-              disabled={isBuffering}
-              className={`w-11 h-11 md:w-13 md:h-13 rounded-full border-2 flex items-center justify-center transition-all duration-300 cursor-pointer active:scale-90 ${
-                isPlaying 
-                  ? 'fire-active-btn text-black shadow-md' 
-                  : 'bg-surface border-outline-variant text-primary hover:border-primary hover:text-white fire-glow-effect'
-              }`}
-            >
-              {isBuffering ? (
-                <span className="material-symbols-outlined animate-spin text-[20px] md:text-[22px]">sync</span>
-              ) : (
-                <span className="material-symbols-outlined text-[26px] md:text-[30px] select-none">
-                  {isPlaying ? 'pause' : 'play_arrow'}
-                </span>
-              )}
-            </button>
+            {/* Center Col: Play button and Status */}
+            <div className="flex flex-col items-center justify-center">
+              <button
+                onClick={(e) => togglePlay(e)}
+                disabled={isBuffering}
+                className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300 cursor-pointer active:scale-90 ${
+                  isPlaying 
+                    ? 'fire-active-btn text-black shadow-md' 
+                    : 'bg-surface border-outline-variant text-primary hover:border-primary hover:text-white fire-glow-effect'
+                }`}
+              >
+                {isBuffering ? (
+                  <span className="material-symbols-outlined animate-spin text-[18px] md:text-[20px]">sync</span>
+                ) : (
+                  <span className="material-symbols-outlined text-[24px] md:text-[28px] select-none">
+                    {isPlaying ? 'pause' : 'play_arrow'}
+                  </span>
+                )}
+              </button>
+              
+              {/* Connection status nested here under Play button */}
+              <span className="hidden sm:block whitespace-nowrap font-label-technical text-[7.5px] text-on-surface-variant/50 tracking-wider uppercase mt-1">
+                {isBuffering ? currentTrans.status.connecting : isPlaying ? currentTrans.status.live : currentTrans.status.offline}
+              </span>
+            </div>
 
-            {/* Next Station */}
-            <button 
-              onClick={(e) => { e.stopPropagation(); setCurrentStationIdx(prev => (prev + 1) % STATIONS.length); }}
-              className="text-on-surface-variant hover:text-primary active:scale-90 transition-all flex items-center justify-center p-1.5"
-              title="Siguiente Emisora"
-            >
-              <span className="material-symbols-outlined text-[22px] md:text-[26px]">skip_next</span>
-            </button>
+            {/* Right Col: Next Station & Selector */}
+            <div className="flex justify-start items-center gap-1 w-full pl-2">
+              <button 
+                onClick={(e) => { e.stopPropagation(); setCurrentStationIdx(prev => (prev + 1) % STATIONS.length); }}
+                className="text-on-surface-variant hover:text-primary active:scale-90 transition-all flex items-center justify-center p-1.5"
+                title="Siguiente Emisora"
+              >
+                <span className="material-symbols-outlined text-[20px] md:text-[24px]">skip_next</span>
+              </button>
+
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); }}
+                className={`active:scale-90 transition-all flex items-center justify-center p-1.5 rounded-full ${isDropdownOpen ? 'text-primary bg-primary/10' : 'animate-radio-glow'}`}
+                title="Seleccionar Emisora"
+              >
+                <span className="material-symbols-outlined text-[20px] md:text-[24px]">radio</span>
+              </button>
+            </div>
+
+            {/* Dropdown Menu floating upward */}
+            {isDropdownOpen && (
+              <div className="absolute bottom-[55px] left-1/2 -translate-x-1/2 z-50 bg-background/98 border border-outline-variant/80 p-2 w-64 max-h-64 overflow-y-auto rounded shadow-[0_-8px_30px_rgba(0,0,0,0.8)] backdrop-blur-md">
+                <div className="font-mono-technical text-[9px] text-primary/80 uppercase tracking-wider font-extrabold px-3 py-1.5 border-b border-outline-variant/30 text-center">
+                  {currentTrans.header}
+                </div>
+                <div className="mt-1 divide-y divide-outline-variant/10">
+                  {STATIONS.map((station, idx) => {
+                    const tName = currentTrans.list[station.id]?.name || station.name;
+                    const tTagline = currentTrans.list[station.id]?.tagline || station.tagline;
+                    const active = idx === currentStationIdx;
+                    return (
+                      <button
+                        key={station.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentStationIdx(idx);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 flex flex-col gap-0.5 hover:bg-primary-container/20 transition-colors ${active ? 'bg-primary-container/10 border-l-2 border-primary' : ''}`}
+                      >
+                        <div className="flex justify-between items-center w-full">
+                          <span className={`font-body-md text-xs font-bold uppercase tracking-wide ${active ? 'text-primary' : 'text-on-surface'}`}>
+                            {tName}
+                          </span>
+                          {active && <span className="material-symbols-outlined text-[14px] text-primary align-middle">radio_button_checked</span>}
+                        </div>
+                        <span className="font-mono-technical text-[9px] text-on-surface-variant/70 leading-normal line-clamp-1">{tTagline}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
-          
-          {/* Connection status */}
-          <span className="hidden sm:inline-block font-label-technical text-[7.5px] text-on-surface-variant/50 tracking-wider uppercase mt-0.5">
-            {isBuffering ? 'Conectando...' : isPlaying ? 'En vivo' : 'Desconectado'}
-          </span>
         </div>
 
         {/* 3. UTILITY CONTROLS (RIGHT SECTION) - Hidden on Mobile */}

@@ -12,9 +12,15 @@ export default function AjustesPage() {
   const [coverUrl, setCoverUrl] = useState('');
   const [uploadingCover, setUploadingCover] = useState(false);
 
-  const [adminName, setAdminName] = useState('OPERATOR_01');
+  const [adminName, setAdminName] = useState('DAVIDSON SCJ');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
+  // Hero texts
+  const [heroTitle, setHeroTitle] = useState('NO ES RUIDO.');
+  const [heroTitle2, setHeroTitle2] = useState('ES HISTORIA, CIENCIA Y HERMANDAD.');
+  const [heroSubtitle, setHeroSubtitle] = useState('El archivo técnico definitivo para la legión. Desglosamos la agresión sonora, documentamos el equipo y forjamos acero.');
+  const [heroSaved, setHeroSaved] = useState(false);
 
   useEffect(() => {
     // Check if logo exists
@@ -40,9 +46,15 @@ export default function AjustesPage() {
     };
     
     const storedName = localStorage.getItem('admin_name');
-    if (storedName) {
-      setAdminName(storedName);
-    }
+    if (storedName) setAdminName(storedName);
+
+    // Load stored hero texts
+    const storedHeroTitle = localStorage.getItem('hero_title');
+    const storedHeroTitle2 = localStorage.getItem('hero_title2');
+    const storedHeroSubtitle = localStorage.getItem('hero_subtitle');
+    if (storedHeroTitle) setHeroTitle(storedHeroTitle);
+    if (storedHeroTitle2) setHeroTitle2(storedHeroTitle2);
+    if (storedHeroSubtitle) setHeroSubtitle(storedHeroSubtitle);
     
     checkLogo();
     checkCover();
@@ -137,6 +149,14 @@ export default function AjustesPage() {
     } finally {
       setUploadingAvatar(false);
     }
+  };
+
+  const handleSaveHero = () => {
+    localStorage.setItem('hero_title', heroTitle);
+    localStorage.setItem('hero_title2', heroTitle2);
+    localStorage.setItem('hero_subtitle', heroSubtitle);
+    setHeroSaved(true);
+    setTimeout(() => setHeroSaved(false), 2500);
   };
 
   const handleCommit = () => {
@@ -286,10 +306,65 @@ export default function AjustesPage() {
                   onChange={(e) => setAdminName(e.target.value)} 
                   className="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary-container p-4 font-mono-technical outline-none text-on-surface transition-all" 
                   type="text" 
-                  placeholder="Ej: OPERATOR_01" 
+                  placeholder="Ej: DAVIDSON SCJ" 
                 />
                 <p className="text-[10px] text-on-surface-variant/60 uppercase">Nombre visible en la barra lateral del panel de control.</p>
               </div>
+            </div>
+          </section>
+
+          {/* Hero Texts Editor */}
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b border-outline-variant/10 pb-2">
+              <h3 className="font-headline-md text-headline-md text-primary uppercase">05_Textos_Home</h3>
+              <span className="font-mono-technical text-mono-technical text-on-surface-variant/50">[ CONTENIDO_HERO ]</span>
+            </div>
+            <p className="font-mono-technical text-[10px] text-on-surface-variant uppercase">Edita los textos principales del hero de la página de inicio. Los cambios se aplican inmediatamente al guardar.</p>
+            <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-3">
+                <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Título Principal (Línea 1)</label>
+                <input 
+                  value={heroTitle} 
+                  onChange={(e) => setHeroTitle(e.target.value)}
+                  className="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary-container p-4 font-mono-technical outline-none text-on-surface transition-all text-xl uppercase" 
+                  type="text" 
+                  placeholder="Ej: NO ES RUIDO."
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Título Principal (Línea 2 — en rojo)</label>
+                <input 
+                  value={heroTitle2}
+                  onChange={(e) => setHeroTitle2(e.target.value)}
+                  className="w-full bg-surface-container-low border-b-2 border-primary-container focus:border-primary p-4 font-mono-technical outline-none text-primary transition-all text-xl uppercase" 
+                  type="text" 
+                  placeholder="Ej: ES HISTORIA, CIENCIA Y HERMANDAD."
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Descripción / Subtítulo del Hero</label>
+                <textarea 
+                  value={heroSubtitle}
+                  onChange={(e) => setHeroSubtitle(e.target.value)}
+                  rows={3}
+                  className="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary-container p-4 font-mono-technical outline-none text-on-surface transition-all resize-none"
+                  placeholder="Ej: El archivo técnico definitivo para la legión..."
+                />
+              </div>
+              <div className="p-4 border border-outline-variant/20 bg-surface-dim">
+                <p className="font-mono-technical text-[9px] text-on-surface-variant uppercase tracking-widest mb-2">Vista previa</p>
+                <p className="font-headline-lg text-on-surface uppercase text-lg">{heroTitle}</p>
+                <p className="font-headline-lg text-primary uppercase text-lg">{heroTitle2}</p>
+                <p className="font-body-md text-on-surface-variant text-sm mt-2 border-l-2 border-primary pl-3">{heroSubtitle}</p>
+              </div>
+              <button
+                onClick={handleSaveHero}
+                className={`px-8 py-3 font-label-sm text-label-sm uppercase font-bold tracking-widest transition-all w-full md:w-auto ${
+                  heroSaved ? 'bg-green-800 text-white' : 'bg-primary-container text-on-surface hover:bg-inverse-primary'
+                }`}
+              >
+                {heroSaved ? '✔ TEXTOS GUARDADOS' : 'GUARDAR TEXTOS DEL HERO'}
+              </button>
             </div>
           </section>
 

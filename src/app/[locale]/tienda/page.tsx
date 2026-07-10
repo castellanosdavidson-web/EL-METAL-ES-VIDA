@@ -1,7 +1,35 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import Image from 'next/image';
+
+const TiendaProductImage = ({ src, alt, priority }: { src: string; alt: string; priority: boolean }) => {
+  const [hasError, setHasError] = useState(false);
+  
+  if (hasError || !src) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-surface-container">
+        <span className="material-symbols-outlined text-on-surface-variant text-4xl">image</span>
+      </div>
+    );
+  }
+
+  return (
+    <Image 
+      src={src} 
+      alt={alt} 
+      fill 
+      sizes="(max-width: 768px) 100vw, 33vw"
+      priority={priority}
+      onError={() => setHasError(true)}
+      className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700 ease-out" 
+    />
+  );
+};
 
 export default function TiendaPage() {
+  const locale = useLocale();
+  const t = useTranslations('Tienda');
   const [gear, setGear] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
@@ -54,10 +82,10 @@ export default function TiendaPage() {
           <span className="material-symbols-outlined text-primary text-[32px]">shopping_cart</span>
         </div>
         <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg mb-stack-tight text-on-surface uppercase">
-          Arsenal Recomendado
+          {t('title')}
         </h2>
         <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto mb-6">
-          Selección curada de equipo, instrumentos y herramientas de audio para forjar tu propio sonido extremo. 
+          {t('desc')} 
         </p>
         
         {/* Amazon Affiliate Disclaimer */}
@@ -65,7 +93,7 @@ export default function TiendaPage() {
           <p className="font-mono-technical text-[10px] text-on-surface-variant uppercase tracking-widest flex items-start gap-2">
             <span className="material-symbols-outlined text-[14px] text-primary">info</span>
             <span>
-              <strong>Divulgación de Afiliados:</strong> Al hacer clic en los enlaces de los productos, serás redirigido a Amazon. Si realizas una compra, "El Metal es Vida" puede recibir una pequeña comisión sin costo adicional para ti. Esto ayuda a mantener vivo el proyecto.
+              <strong>{t('affiliateTitle')}</strong> {t('affiliateDesc')}
             </span>
           </p>
         </div>
@@ -79,7 +107,7 @@ export default function TiendaPage() {
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
           <input 
             type="text" 
-            placeholder="Buscar por equipo, marca o descripción..." 
+            placeholder={t('searchPlaceholder')} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-surface border border-outline-variant py-3 pl-12 pr-4 text-on-surface focus:border-primary outline-none font-body-md"
@@ -113,10 +141,10 @@ export default function TiendaPage() {
         ) : filteredGear.length === 0 ? (
           <div className="break-inside-avoid col-span-full text-center py-12 border border-dashed border-outline-variant/30">
             <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">inventory_2</span>
-            <p className="font-mono-technical text-xs text-on-surface-variant uppercase">El arsenal está vacío por el momento.</p>
+            <p className="font-mono-technical text-xs text-on-surface-variant uppercase">{t('empty')}</p>
           </div>
         ) : (
-          filteredGear.map((product) => (
+          filteredGear.map((product, idx) => (
             <article key={product.id} className="break-inside-avoid flex flex-col border border-outline-variant/20 bg-[#0D0D0D] relative group hover:border-primary transition-colors">
               <div className="absolute top-2 left-2 z-10 border border-outline bg-[#0D0D0D] px-2 py-1 flex items-center gap-1">
                 <span className="material-symbols-outlined text-[14px] text-primary">{getCategoryIcon(product.category)}</span>
@@ -124,35 +152,15 @@ export default function TiendaPage() {
               </div>
               
               <div className="relative w-full pt-[100%] overflow-hidden border-b border-outline-variant/20 bg-white">
-                {product.imageUrl ? (
-                  <>
-                    <img 
-                      src={product.imageUrl} 
-                      alt={product.title} 
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        const fallback = e.currentTarget.nextElementSibling;
-                        if (fallback) fallback.classList.remove('hidden');
-                      }}
-                      className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700 ease-out" 
-                    />
-                    <div className="hidden absolute inset-0 flex items-center justify-center bg-surface-container">
-                      <span className="material-symbols-outlined text-on-surface-variant text-4xl">image</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-surface-container">
-                    <span className="material-symbols-outlined text-on-surface-variant text-4xl">image</span>
-                  </div>
-                )}
+                <TiendaProductImage src={product.imageUrl} alt={product.title} priority={idx < 3} />
               </div>
               
               <div className="p-6 flex flex-col gap-4 flex-grow">
-                <h3 className="font-headline-lg text-headline-lg text-on-surface leading-tight group-hover:text-primary transition-colors pb-2">{product.title}</h3>
+                <h3 className="font-headline-lg text-headline-lg text-on-surface leading-tight group-hover:text-primary transition-colors pb-2">{locale === 'en' ? (product.title_en || product.title) : locale === 'pt' ? (product.title_pt || product.title) : product.title}</h3>
                 
                 <div 
                   className="font-body-md text-body-md text-on-surface-variant text-sm break-words overflow-hidden w-full [&_p]:mb-2 [&_p:last-child]:mb-0" 
-                  dangerouslySetInnerHTML={{ __html: product.desc }}
+                  dangerouslySetInnerHTML={{ __html: locale === 'en' ? (product.desc_en || product.desc) : locale === 'pt' ? (product.desc_pt || product.desc) : product.desc }}
                 />
                 
                 <a 
@@ -162,7 +170,7 @@ export default function TiendaPage() {
                   className="mt-4 w-full font-label-sm text-label-sm uppercase py-4 border transition-all flex items-center justify-center gap-2 bg-primary-container hover:bg-inverse-primary text-on-surface border-transparent hover:border-primary"
                 >
                   <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
-                  VER EN AMAZON
+                  {t('viewAmazon')}
                 </a>
               </div>
             </article>
