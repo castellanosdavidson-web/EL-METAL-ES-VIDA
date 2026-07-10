@@ -4,6 +4,7 @@ import "../globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
+import PwaInstallPrompt from "@/components/layout/PwaInstallPrompt";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -122,6 +123,10 @@ export default async function RootLayout({
         />
         <link rel="icon" href={logoUrl} />
         <link rel="apple-touch-icon" href={logoUrl} />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="theme-color" content="#0d0d0d" />
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
@@ -141,6 +146,7 @@ export default async function RootLayout({
           <LayoutWrapper>
             {children}
           </LayoutWrapper>
+          <PwaInstallPrompt />
         </NextIntlClientProvider>
       </body>
     </html>
