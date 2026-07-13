@@ -4,7 +4,6 @@ import "../globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
-import PwaInstallPrompt from "@/components/layout/PwaInstallPrompt";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -96,6 +95,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
+      suppressHydrationWarning
       className={`${syne.variable} ${jetbrains.variable} ${hanken.variable} dark`}
     >
       <head>
@@ -146,7 +146,6 @@ export default async function RootLayout({
           <LayoutWrapper>
             {children}
           </LayoutWrapper>
-          <PwaInstallPrompt />
         </NextIntlClientProvider>
       </body>
     </html>

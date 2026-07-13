@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
+import BibliotecaCDs from '@/components/ui/BibliotecaCDs';
 
 function processYouTubeEmbeds(html: string): string {
   if (!html) return '';
@@ -121,6 +122,10 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
   const similarBands = locale === 'en' && initialArticle.similarBands_en?.length ? initialArticle.similarBands_en :
                        locale === 'pt' && initialArticle.similarBands_pt?.length ? initialArticle.similarBands_pt :
                        initialArticle.similarBands || [];
+
+  const bandCds = initialArticle.category === 'Bandas' && initialOthers
+    ? initialOthers.filter((a: any) => a.type === 'cd' && a.artist && a.artist.toLowerCase() === initialArticle.title.toLowerCase())
+    : [];
 
   return (
     <>
@@ -744,6 +749,16 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {/* CD Library for Bands */}
+            {initialArticle.category === 'Bandas' && bandCds.length > 0 && (
+              <div className="my-12">
+                <h3 className="font-headline-md text-headline-md text-primary uppercase text-center mb-8">
+                  DISCOGRAFÍA SELECCIONADA
+                </h3>
+                <BibliotecaCDs cds={bandCds} />
               </div>
             )}
 

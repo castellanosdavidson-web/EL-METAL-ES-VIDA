@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }
 
 async function getArticleData(slug: string) {
@@ -31,7 +31,7 @@ async function getArticleData(slug: string) {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const { article } = await getArticleData(slug);
   if (!article) {
     return {
@@ -52,12 +52,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: plainTextDesc,
     keywords: keywordsList,
     alternates: {
-      canonical: `/articulo/${slug}`,
+      canonical: `/${locale}/articulo/${slug}`,
     },
     openGraph: {
       title: `${article.title} - EL METAL ES VIDA`,
       description: plainTextDesc,
-      url: `/articulo/${slug}`,
+      url: `/${locale}/articulo/${slug}`,
       images: [
         {
           url: article.imageUrl || 'https://elmetalesvida.com/LOGO%202.png',

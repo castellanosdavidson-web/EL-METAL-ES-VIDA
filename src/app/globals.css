@@ -112,6 +112,14 @@
       80% { transform: skew(5deg); }
       100% { transform: skew(0deg); }
   }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Custom scrollbar for raw brutalist feel */

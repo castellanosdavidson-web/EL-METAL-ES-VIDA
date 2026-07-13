@@ -3,6 +3,88 @@ import React, { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
+import BibliotecaCDs from '@/components/ui/BibliotecaCDs';
+
+const MOCK_ARTICLES = [
+  {
+    id: 'mock-1',
+    title: 'LOS FESTIVALES DE HEAVY METAL MÁS IMPORTANTES DEL MUNDO',
+    title_en: 'THE MOST IMPORTANT HEAVY METAL FESTIVALS IN THE WORLD',
+    title_pt: 'OS FESTIVAIS DE HEAVY METAL MAIS IMPORTANTES DO MUNDO',
+    slug: 'festivales',
+    desc: 'El calendario definitivo para todo metalero. Cada año, millones de personas viajan...',
+    desc_en: 'The definitive calendar for every metalhead...',
+    desc_pt: 'O calendário definitivo para todo headbanger...',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCLFAmwPfd1JptEwRrFyPW45HazQyL3Lytz87oUxEMPHcnNj5KSC_eWlmGPGlbyMfQspNmmCmmQ3tDHbPPb-uG7oizSxvLlprfT6KYbsCWdfTxm_SG82GBAacMw4UgKO_WHSfyH7CvjdBA3oWwXdY7f_slUfnk38CWHv6d34xHjlBhTRl5Yc5xpxDV9yRgdsBnFy1jNHw1k1rffvXJCXAdsF4LZcpMF92aR1iqK0noMlh2QWIQyYOgSfAkc2Sf5zKpHYPaLDtTt4g',
+    category: 'Historia',
+    type: 'article'
+  },
+  {
+    id: 'mock-2',
+    title: 'ANATOMÍA DE UNA GUITARRA DE METAL',
+    title_en: 'ANATOMY OF A METAL GUITAR',
+    title_pt: 'ANATOMIA DE UMA GUITARRA DE METAL',
+    slug: 'anatomia-guitarra',
+    desc: 'Conoce cada parte y por qué el puente flotante revolucionó el género para siempre.',
+    desc_en: 'Know every part and why the floating bridge revolutionized the genre.',
+    desc_pt: 'Conheça cada parte e por que a ponte flutuante revolucionou o gênero.',
+    imageUrl: 'https://dxmaslijicgzrwfmzkuv.supabase.co/storage/v1/object/public/articles/1783486070494.png',
+    category: 'Reseña Técnica',
+    type: 'article'
+  },
+  {
+    id: 'mock-3',
+    title: 'CÓMO EL METAL SINFÓNICO CAMBIÓ LAS REGLAS',
+    title_en: 'HOW SYMPHONIC METAL CHANGED THE RULES',
+    title_pt: 'COMO O METAL SINFÔNICO MUDOU AS REGRAS',
+    slug: 'metal-sinfonico',
+    desc: 'Una inmersión profunda en la mezcla de orquestas clásicas y guitarras distorsionadas.',
+    desc_en: 'A deep dive into the mix of classical orchestras and distorted guitars.',
+    desc_pt: 'Um mergulho profundo na mistura de orquestras clássicas e guitarras distorcidas.',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCLFAmwPfd1JptEwRrFyPW45HazQyL3Lytz87oUxEMPHcnNj5KSC_eWlmGPGlbyMfQspNmmCmmQ3tDHbPPb-uG7oizSxvLlprfT6KYbsCWdfTxm_SG82GBAacMw4UgKO_WHSfyH7CvjdBA3oWwXdY7f_slUfnk38CWHv6d34xHjlBhTRl5Yc5xpxDV9yRgdsBnFy1jNHw1k1rffvXJCXAdsF4LZcpMF92aR1iqK0noMlh2QWIQyYOgSfAkc2Sf5zKpHYPaLDtTt4g',
+    category: 'Ciencia',
+    type: 'article'
+  },
+  {
+    id: 'mock-4',
+    title: 'EL IMPACTO DEL THRASH EN LA CULTURA',
+    title_en: 'THE IMPACT OF THRASH ON CULTURE',
+    title_pt: 'O IMPACTO DO THRASH NA CULTURA',
+    slug: 'impacto-thrash',
+    desc: 'Cómo la velocidad y agresividad del thrash redefinieron la música pesada de los años 80.',
+    desc_en: 'How the speed and aggression of thrash redefined heavy music in the 80s.',
+    desc_pt: 'Como a velocidade e a agressividade do thrash redefiniram a música pesada nos anos 80.',
+    imageUrl: 'https://dxmaslijicgzrwfmzkuv.supabase.co/storage/v1/object/public/articles/1783486070494.png',
+    category: 'Historia',
+    type: 'article'
+  },
+  {
+    id: 'mock-5',
+    title: 'EL ARTE OSCURO: LAS PORTADAS QUE DEFINIERON EL GÉNERO',
+    title_en: 'DARK ART: THE COVERS THAT DEFINED THE GENRE',
+    title_pt: 'A ARTE NEGRA: AS CAPAS QUE DEFINIRAM O GÊNERO',
+    slug: 'arte-oscuro',
+    desc: 'Un recorrido visual por las portadas de discos más emblemáticas del metal.',
+    desc_en: 'A visual journey through the most iconic album covers of metal.',
+    desc_pt: 'Uma jornada visual pelas capas de álbuns mais icônicas do metal.',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCLFAmwPfd1JptEwRrFyPW45HazQyL3Lytz87oUxEMPHcnNj5KSC_eWlmGPGlbyMfQspNmmCmmQ3tDHbPPb-uG7oizSxvLlprfT6KYbsCWdfTxm_SG82GBAacMw4UgKO_WHSfyH7CvjdBA3oWwXdY7f_slUfnk38CWHv6d34xHjlBhTRl5Yc5xpxDV9yRgdsBnFy1jNHw1k1rffvXJCXAdsF4LZcpMF92aR1iqK0noMlh2QWIQyYOgSfAkc2Sf5zKpHYPaLDtTt4g',
+    category: 'Ciencia',
+    type: 'article'
+  },
+  {
+    id: 'mock-6',
+    title: 'GUITARRAS DE 7 Y 8 CUERDAS: LA EVOLUCIÓN DEL SONIDO',
+    title_en: '7 AND 8 STRING GUITARS: THE EVOLUTION OF SOUND',
+    title_pt: 'GUITARRAS DE 7 E 8 CORDAS: A EVOLUÇÃO DO SOM',
+    slug: 'guitarras-extendidas',
+    desc: 'Cómo el metal progresivo y el djent obligaron a expandir el rango del instrumento principal.',
+    desc_en: 'How progressive metal and djent forced the expansion of the main instrument range.',
+    desc_pt: 'Como o metal progressivo e o djent forçaram a expansão do alcance do instrumento principal.',
+    imageUrl: 'https://dxmaslijicgzrwfmzkuv.supabase.co/storage/v1/object/public/articles/1783486070494.png',
+    category: 'Reseña Técnica',
+    type: 'article'
+  }
+];
 
 export default function Home() {
   const t = useTranslations('Home');
@@ -10,6 +92,7 @@ export default function Home() {
   const [articles, setArticles] = useState<any[]>([]);
   const [plugins, setPlugins] = useState<any[]>([]);
   const [gear, setGear] = useState<any[]>([]);
+  const [cds, setCds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubscribing, setIsSubscribing] = useState(false);
   // Hero overrides from admin settings
@@ -65,26 +148,36 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
-          const filteredArticles = data.filter((a: any) => a.type !== 'plugin' && a.type !== 'gear' && !a.is_hidden);
+          const filteredArticles = data.filter((a: any) => a.type !== 'plugin' && a.type !== 'gear' && !a.is_hidden && a.type !== 'cd');
           const shuffledArticles = filteredArticles
             .map((value: any) => ({ value, sort: Math.random() }))
             .sort((a: any, b: any) => a.sort - b.sort)
             .map(({ value }: any) => value);
-          setArticles(shuffledArticles.slice(0, 3));
+          
+          let topArticles = shuffledArticles.slice(0, 4);
+          if (topArticles.length < 4) {
+            const needed = 4 - topArticles.length;
+            const dynamicMocks = [...MOCK_ARTICLES].sort(() => Math.random() - 0.5);
+            topArticles = [...topArticles, ...dynamicMocks.slice(0, needed)];
+          }
+          setArticles(topArticles);
 
           const filteredPlugins = data.filter((a: any) => a.type === 'plugin' && !a.is_hidden);
           const shuffledPlugins = filteredPlugins
             .map((value: any) => ({ value, sort: Math.random() }))
             .sort((a: any, b: any) => a.sort - b.sort)
             .map(({ value }: any) => value);
-          setPlugins(shuffledPlugins.slice(0, 3));
+          setPlugins(shuffledPlugins);
 
           const filteredGear = data.filter((a: any) => a.type === 'gear' && !a.is_hidden);
           const shuffledGear = filteredGear
             .map((value: any) => ({ value, sort: Math.random() }))
             .sort((a: any, b: any) => a.sort - b.sort)
             .map(({ value }: any) => value);
-          setGear(shuffledGear.slice(0, 3));
+          setGear(shuffledGear);
+
+          const filteredCds = data.filter((a: any) => a.type === 'cd' && !a.is_hidden && a.isNewRelease === true);
+          setCds(filteredCds);
         }
       })
       .catch(console.error)
@@ -151,8 +244,11 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Biblioteca de CDs (Colección) */}
+      <BibliotecaCDs cds={cds} />
+
       {/* Expedientes Destacados (Blog) - Bento Grid */}
-      <section id="expedientes" className="py-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto border-b-2 border-outline-variant">
+      <section id="expedientes" className="py-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
         <div className="flex justify-between items-end mb-12 border-b-2 border-surface-container-highest pb-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -175,14 +271,14 @@ export default function Home() {
             {/* Main Feature */}
             {articles[0] && (
               <Link href={articles[0].slug ? `/articulo/${articles[0].slug}` : `/articulo/${articles[0].id}`} className="md:col-span-8 bg-surface-dim relative group overflow-hidden border-t-4 border-primary-container hover:border-primary transition-colors duration-300 flex flex-col h-[500px] cursor-pointer block">
-                <div className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-500 mix-blend-luminosity" style={{ backgroundImage: `url('${articles[0].imageUrl}')` }}></div>
+                <div className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[0].imageUrl}')` }}></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
                 <div className="relative z-10 mt-auto p-8 border-t border-surface-container-highest/50 bg-background/80 backdrop-blur-sm">
                   <div className="flex gap-2 mb-4">
                     <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary">{t('historia')}</span>
                     <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-on-surface-variant">{t('doc094')}</span>
                   </div>
-                  <h3 className="text-headline-lg font-headline-lg uppercase text-on-surface mb-3 group-hover:text-primary transition-colors">{locale === 'en' ? (articles[0].title_en || articles[0].title) : locale === 'pt' ? (articles[0].title_pt || articles[0].title) : articles[0].title}</h3>
+                  <h3 className="text-headline-lg font-headline-lg uppercase text-on-surface mb-3 group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[0].title_en || articles[0].title) : locale === 'pt' ? (articles[0].title_pt || articles[0].title) : articles[0].title}</h3>
                   <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {getPlainText(locale === 'en' ? (articles[0].desc_en || articles[0].desc) : locale === 'pt' ? (articles[0].desc_pt || articles[0].desc) : articles[0].desc)}
                   </p>
@@ -193,10 +289,10 @@ export default function Home() {
             {/* Secondary Features */}
             {articles[1] && (
               <Link href={articles[1].slug ? `/articulo/${articles[1].slug}` : `/articulo/${articles[1].id}`} className="md:col-span-4 bg-surface relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto cursor-pointer block">
-                <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-50 transition-opacity duration-500 mix-blend-luminosity" style={{ backgroundImage: `url('${articles[1].imageUrl}')` }}></div>
+                <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[1].imageUrl}')` }}></div>
                 <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-background to-background/20 h-full flex flex-col justify-end">
                   <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3">{t('ciencia')}</span>
-                  <h3 className="text-headline-lg-mobile font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors">{locale === 'en' ? (articles[1].title_en || articles[1].title) : locale === 'pt' ? (articles[1].title_pt || articles[1].title) : articles[1].title}</h3>
+                  <h3 className="text-headline-lg-mobile font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[1].title_en || articles[1].title) : locale === 'pt' ? (articles[1].title_pt || articles[1].title) : articles[1].title}</h3>
                 </div>
               </Link>
             )}
@@ -205,7 +301,7 @@ export default function Home() {
               <Link href={articles[2].slug ? `/articulo/${articles[2].slug}` : `/articulo/${articles[2].id}`} className="md:col-span-4 bg-surface p-6 border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col justify-between group cursor-pointer block">
                 <div>
                   <span className="font-label-technical text-label-technical text-on-surface-variant mb-4 block">{t('resenaTecnica')}</span>
-                  <h3 className="font-headline-lg text-headline-lg-mobile text-on-surface mb-3 uppercase group-hover:text-primary transition-colors">{locale === 'en' ? (articles[2].title_en || articles[2].title) : locale === 'pt' ? (articles[2].title_pt || articles[2].title) : articles[2].title}</h3>
+                  <h3 className="font-headline-lg text-headline-lg-mobile text-on-surface mb-3 uppercase group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[2].title_en || articles[2].title) : locale === 'pt' ? (articles[2].title_pt || articles[2].title) : articles[2].title}</h3>
                   <p className="font-body-md text-on-surface-variant overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {getPlainText(locale === 'en' ? (articles[2].desc_en || articles[2].desc) : locale === 'pt' ? (articles[2].desc_pt || articles[2].desc) : articles[2].desc)}
                   </p>
@@ -217,39 +313,34 @@ export default function Home() {
               </Link>
             )}
 
-            {/* Default bottom span if we don't have enough articles or just as a static banner */}
-            <article className="md:col-span-8 bg-surface-dim p-8 border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col md:flex-row gap-8 items-center group">
-              <div className="w-full md:w-1/3 aspect-square relative border border-outline-variant">
-                <div className="absolute inset-0 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDiChJ3mMBD4wJmL7K2REU5uWXax2AN6U8ddF7VK4O8AIHqoIMxmkUN-wLOqH_9xeQv49ybYPTUEVdn-FHFujKXIoiZG71o6SfJF2jlmc64qzHWB61kxMs_qoy-J9ARmXft9sCWZTM-BoZwpAhUarkOS3MSZNUSR3EF-I_DWzD_ishN7kqLpKhvj6YYUekZkgpY9rMBv_IwMXYuZ38T1T3pmyj9DolRDIwyGhSVJ5Onjc9DYRsCtsuU3GBdwrGDgZIEgPYWiVKJNQ')" }}></div>
-              </div>
-              <div className="w-full md:w-2/3">
-                <span className="bg-primary-container text-white px-2 py-1 font-label-technical text-label-technical mb-4 inline-block">{t('hermandad')}</span>
-                <h3 className="font-headline-lg text-headline-lg uppercase text-on-surface mb-3 group-hover:text-primary transition-colors">{t('entrevistaTitle')}</h3>
-                <p className="font-body-md text-body-md text-on-surface-variant mb-6">{t('entrevistaDesc')}</p>
-                <button className="text-primary font-label-technical text-label-technical uppercase flex items-center gap-2 hover:text-white transition-colors">
-                  {t('accederRegistro')} <span className="material-symbols-outlined text-sm">terminal</span>
-                </button>
-              </div>
-            </article>
+            {articles[3] && (
+              <Link href={articles[3].slug ? `/articulo/${articles[3].slug}` : `/articulo/${articles[3].id}`} className="md:col-span-8 bg-surface-dim relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto cursor-pointer block">
+                <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[3].imageUrl || articles[1].imageUrl}')` }}></div>
+                <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-background to-background/20 h-full flex flex-col justify-end">
+                  <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3">{t('historia')}</span>
+                  <h3 className="text-headline-lg font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[3].title_en || articles[3].title) : locale === 'pt' ? (articles[3].title_pt || articles[3].title) : articles[3].title}</h3>
+                </div>
+              </Link>
+            )}
 
           </div>
         )}
       </section>
 
       {/* Animated Marquee Transition 1 */}
-      <div className="relative w-full py-4 md:py-6 bg-surface-container-highest border-y-2 border-primary overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-primary),0.15)] -skew-y-2 my-6 md:my-12">
-        <div className="flex w-[200%] animate-[marquee_25s_linear_infinite]">
+      <div className="relative w-full py-2 md:py-3 bg-surface-container-highest overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-primary),0.15)] -skew-y-2 my-6 md:my-12">
+        <div className="flex w-[200%] animate-[marquee_20s_linear_infinite]">
           <div className="flex-1 flex justify-around items-center opacity-30">
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
           </div>
           <div className="flex-1 flex justify-around items-center opacity-30">
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-primary font-black whitespace-nowrap px-4">{t('marqueeTaller')}</span>
           </div>
         </div>
       </div>
@@ -273,51 +364,53 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="overflow-hidden group/carousel relative">
             {plugins.length > 0 ? (
-              plugins.map((plugin, idx) => (
-                <div key={plugin.id} className="bg-surface border border-outline-variant hover:border-primary transition-colors group flex flex-col h-full relative overflow-hidden">
-                  <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} className="flex flex-col flex-grow">
-                    {plugin.imageUrl && (
-                      <div className="w-full aspect-[16/9] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
-                        <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
-                          <span className="material-symbols-outlined text-sm text-primary">{getCategoryIcon(plugin.category)}</span>
-                          <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{plugin.category || 'TALLER'}</span>
+              <div className="flex gap-6 animate-[marquee_10s_linear_infinite] hover:[animation-play-state:paused] w-max" style={{ animationDuration: `${Math.max(20, plugins.length * 10)}s` }}>
+                {[...plugins, ...plugins, ...plugins, ...plugins].map((plugin, idx) => (
+                  <div key={`${plugin.id}-${idx}`} className="w-[85vw] md:w-[350px] shrink-0 bg-surface border border-outline-variant hover:border-primary transition-colors group flex flex-col relative overflow-hidden h-[480px]">
+                    <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} className="flex flex-col flex-grow">
+                      {plugin.imageUrl && (
+                        <div className="w-full h-[180px] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
+                          <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm text-primary">{getCategoryIcon(plugin.category)}</span>
+                            <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{plugin.category || 'TALLER'}</span>
+                          </div>
+                          <Image src={plugin.imageUrl} alt={plugin.title} fill sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                         </div>
-                        <Image src={plugin.imageUrl} alt={plugin.title} fill sizes="(max-width: 768px) 100vw, 33vw" priority={idx < 3} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
-                      </div>
-                    )}
-                    <div className="flex flex-col flex-grow relative p-6 pb-0">
-                      {!plugin.imageUrl && (
-                        <>
-                          <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
-                            <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(plugin.category)}</span>
-                          </div>
-                          <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0 relative z-10">
-                            <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(plugin.category)}</span>
-                          </div>
-                        </>
                       )}
-                      <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10">{locale === 'en' ? (plugin.title_en || plugin.title) : locale === 'pt' ? (plugin.title_pt || plugin.title) : plugin.title}</h3>
-                      <p className="font-body-md text-on-surface-variant text-sm overflow-hidden relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        {getPlainText(locale === 'en' ? (plugin.desc_en || plugin.desc) : locale === 'pt' ? (plugin.desc_pt || plugin.desc) : plugin.desc)}
-                      </p>
-                    </div>
-                  </Link>
-                  <div className="p-6 pt-4 mt-auto flex items-center justify-between gap-4 border-t border-transparent group-hover:border-outline-variant/30 transition-colors">
-                    <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} className="text-on-surface-variant hover:text-primary transition-colors font-label-technical text-[11px] uppercase tracking-widest flex items-center gap-1 group/link">
-                      {t('verHerramienta')}
-                      <span className="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+                      <div className="flex flex-col flex-grow relative p-6 pb-0">
+                        {!plugin.imageUrl && (
+                          <>
+                            <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
+                              <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(plugin.category)}</span>
+                            </div>
+                            <div className="w-12 h-12 bg-surface-container-high border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-primary-container transition-colors shrink-0 relative z-10">
+                              <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(plugin.category)}</span>
+                            </div>
+                          </>
+                        )}
+                        <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (plugin.title_en || plugin.title) : locale === 'pt' ? (plugin.title_pt || plugin.title) : plugin.title}</h3>
+                        <p className="font-body-md text-on-surface-variant text-sm overflow-hidden relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {getPlainText(locale === 'en' ? (plugin.desc_en || plugin.desc) : locale === 'pt' ? (plugin.desc_pt || plugin.desc) : plugin.desc)}
+                        </p>
+                      </div>
                     </Link>
-                    <a href={plugin.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="border border-outline-variant hover:border-primary text-on-surface hover:text-primary transition-colors font-label-technical text-[10px] uppercase tracking-widest px-3 py-2 flex items-center gap-2 bg-surface-container-lowest hover:bg-primary/10">
-                      {t('enlace')}
-                      <span className="material-symbols-outlined text-[14px]">exit_to_app</span>
-                    </a>
+                    <div className="p-6 pt-4 mt-auto flex items-center justify-between gap-4 border-t border-transparent group-hover:border-outline-variant/30 transition-colors shrink-0">
+                      <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} className="text-on-surface-variant hover:text-primary transition-colors font-label-technical text-[11px] uppercase tracking-widest flex items-center gap-1 group/link">
+                        {t('verHerramienta')}
+                        <span className="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+                      </Link>
+                      <a href={plugin.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="border border-outline-variant hover:border-primary text-on-surface hover:text-primary transition-colors font-label-technical text-[10px] uppercase tracking-widest px-3 py-2 flex items-center gap-2 bg-surface-container-lowest hover:bg-primary/10">
+                        {t('enlace')}
+                        <span className="material-symbols-outlined text-[14px]">exit_to_app</span>
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))}
+              </div>
             ) : (
-              <div className="col-span-1 md:col-span-3 text-center py-12 border border-dashed border-outline-variant/30">
+              <div className="w-full text-center py-12 border border-dashed border-outline-variant/30">
                 <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">extension_off</span>
                 <p className="font-mono-technical text-xs text-on-surface-variant uppercase">{t('ningunPlugin')}</p>
               </div>
@@ -327,19 +420,19 @@ export default function Home() {
       </section>
 
       {/* Animated Marquee Transition 2 */}
-      <div className="relative w-full py-4 md:py-6 bg-surface-container-highest border-y-2 border-error overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-error),0.15)] skew-y-2 my-6 md:my-12">
+      <div className="relative w-full py-2 md:py-3 bg-surface-container-highest overflow-hidden z-20 shadow-[0_0_30px_rgba(var(--md-sys-color-error),0.15)] skew-y-2 my-6 md:my-12">
         <div className="flex w-[200%] animate-[marquee_20s_linear_infinite_reverse]">
           <div className="flex-1 flex justify-around items-center opacity-30">
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
           </div>
           <div className="flex-1 flex justify-around items-center opacity-30">
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
-            <span className="font-headline-xl text-3xl md:text-5xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
+            <span className="font-headline-xl text-xl md:text-2xl uppercase tracking-widest text-error font-black whitespace-nowrap px-4">{t('marqueeArsenal')}</span>
           </div>
         </div>
       </div>
@@ -363,51 +456,53 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="overflow-hidden group/carousel relative">
             {gear.length > 0 ? (
-              gear.map((item, idx) => (
-                <div key={item.id} className="bg-surface-dim border border-outline-variant hover:border-error transition-colors group flex flex-col h-full relative overflow-hidden">
-                  <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} className="flex flex-col flex-grow">
-                    {item.imageUrl && (
-                      <div className="w-full aspect-[16/9] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
-                        <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
-                          <span className="material-symbols-outlined text-sm text-error">{getCategoryIcon(item.category)}</span>
-                          <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{item.category || 'EQUIPAMIENTO'}</span>
+              <div className="flex gap-6 animate-[marquee_10s_linear_infinite] hover:[animation-play-state:paused] w-max" style={{ animationDuration: `${Math.max(20, gear.length * 10)}s` }}>
+                {[...gear, ...gear, ...gear, ...gear].map((item, idx) => (
+                  <div key={`${item.id}-${idx}`} className="w-[85vw] md:w-[350px] shrink-0 bg-surface-dim border border-outline-variant hover:border-error transition-colors group flex flex-col relative overflow-hidden h-[480px]">
+                    <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} className="flex flex-col flex-grow">
+                      {item.imageUrl && (
+                        <div className="w-full h-[180px] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
+                          <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm text-error">{getCategoryIcon(item.category)}</span>
+                            <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{item.category || 'EQUIPAMIENTO'}</span>
+                          </div>
+                          <Image src={item.imageUrl} alt={item.title} fill sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                         </div>
-                        <Image src={item.imageUrl} alt={item.title} fill sizes="(max-width: 768px) 100vw, 33vw" priority={idx < 3} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
-                      </div>
-                    )}
-                    <div className="flex flex-col flex-grow relative p-6 pb-0">
-                      {!item.imageUrl && (
-                        <>
-                          <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
-                            <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(item.category)}</span>
-                          </div>
-                          <div className="w-12 h-12 bg-surface border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-error/20 transition-colors shrink-0 relative z-10">
-                            <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(item.category)}</span>
-                          </div>
-                        </>
                       )}
-                      <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors relative z-10">{locale === 'en' ? (item.title_en || item.title) : locale === 'pt' ? (item.title_pt || item.title) : item.title}</h3>
-                      <p className="font-body-md text-on-surface-variant text-sm overflow-hidden relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        {getPlainText(locale === 'en' ? (item.desc_en || item.desc) : locale === 'pt' ? (item.desc_pt || item.desc) : item.desc)}
-                      </p>
-                    </div>
-                  </Link>
-                  <div className="p-6 pt-4 mt-auto flex items-center justify-between gap-4 border-t border-transparent group-hover:border-outline-variant/30 transition-colors">
-                    <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} className="text-on-surface-variant hover:text-error transition-colors font-label-technical text-[11px] uppercase tracking-widest flex items-center gap-1 group/link">
-                      {t('verHerramienta')}
-                      <span className="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+                      <div className="flex flex-col flex-grow relative p-6 pb-0">
+                        {!item.imageUrl && (
+                          <>
+                            <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-10 group-hover:scale-150 transition-all duration-700 pointer-events-none">
+                              <span className="material-symbols-outlined text-[120px]">{getCategoryIcon(item.category)}</span>
+                            </div>
+                            <div className="w-12 h-12 bg-surface border border-outline-variant flex items-center justify-center mb-6 group-hover:bg-error/20 transition-colors shrink-0 relative z-10">
+                              <span className="material-symbols-outlined text-on-surface">{getCategoryIcon(item.category)}</span>
+                            </div>
+                          </>
+                        )}
+                        <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (item.title_en || item.title) : locale === 'pt' ? (item.title_pt || item.title) : item.title}</h3>
+                        <p className="font-body-md text-on-surface-variant text-sm overflow-hidden relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {getPlainText(locale === 'en' ? (item.desc_en || item.desc) : locale === 'pt' ? (item.desc_pt || item.desc) : item.desc)}
+                        </p>
+                      </div>
                     </Link>
-                    <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="border border-outline-variant hover:border-error text-on-surface hover:text-error transition-colors font-label-technical text-[10px] uppercase tracking-widest px-3 py-2 flex items-center gap-2 bg-surface-container-lowest hover:bg-error/10">
-                      {t('enlace')}
-                      <span className="material-symbols-outlined text-[14px]">exit_to_app</span>
-                    </a>
+                    <div className="p-6 pt-4 mt-auto flex items-center justify-between gap-4 border-t border-transparent group-hover:border-outline-variant/30 transition-colors shrink-0">
+                      <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} className="text-on-surface-variant hover:text-error transition-colors font-label-technical text-[11px] uppercase tracking-widest flex items-center gap-1 group/link">
+                        {t('verHerramienta')}
+                        <span className="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+                      </Link>
+                      <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="border border-outline-variant hover:border-error text-on-surface hover:text-error transition-colors font-label-technical text-[10px] uppercase tracking-widest px-3 py-2 flex items-center gap-2 bg-surface-container-lowest hover:bg-error/10">
+                        {t('enlace')}
+                        <span className="material-symbols-outlined text-[14px]">exit_to_app</span>
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))}
+              </div>
             ) : (
-              <div className="col-span-1 md:col-span-3 text-center py-12 border border-dashed border-outline-variant/30">
+              <div className="w-full text-center py-12 border border-dashed border-outline-variant/30">
                 <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">production_quantity_limits</span>
                 <p className="font-mono-technical text-xs text-on-surface-variant uppercase">{t('ningunEquipo')}</p>
               </div>

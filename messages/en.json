@@ -27,6 +27,9 @@
     "marqueeArsenal": "X ARSENAL X",
     "marqueeRadio": "+++ RADIO ++",
     "verHerramienta": "VIEW TOOL",
+    "nuevosLanzamientos": "New Releases",
+    "coleccionLabel": "COLLECTION",
+    "tocaParaLeer": "Tap to read the article",
     "enlace": "LINK",
     "ningunPlugin": "No plugins have been loaded in the workshop.",
     "ningunEquipo": "The arsenal is empty at the moment.",
@@ -120,7 +123,8 @@
     "catDocumental": "Historical Documentary",
     "catAnalisis": "Technical Analysis",
     "catCiencia": "Sonic Science",
-    "catEquipamiento": "Gear"
+    "catEquipamiento": "Gear",
+    "catBandas": "Bands"
   },
   "Taller": {
     "tag": "Technical Workshop",

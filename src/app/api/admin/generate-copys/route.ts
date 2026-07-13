@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { title, desc } = body;
+    const { title, desc, url } = body;
 
     if (!title) {
       return NextResponse.json({ error: 'Título requerido' }, { status: 400 });
@@ -33,6 +33,10 @@ export async function POST(request: Request) {
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     const cleanDesc = desc ? desc.replace(/<[^>]*>/g, '').slice(0, 1000) : '';
+
+    let reelUrl = url ? `${url}?utm_source=facebook&utm_medium=reel&utm_campaign=org` : '';
+    let postUrl = url ? `${url}?utm_source=facebook&utm_medium=social&utm_campaign=org` : '';
+    let tiktokUrl = url ? `${url}?utm_source=tiktok&utm_medium=video&utm_campaign=org` : '';
 
     const prompt = `Actúas como un estratega experto en Redes Sociales y Copywriting de alto impacto enfocado en la escena del Metal y la música extrema para el portal "EL METAL ES VIDA". Tu objetivo es crear copys altamente optimizados para maximizar la retención, los comentarios y las compartidas, alineados con los algoritmos actuales. El tono debe ser brutal, agresivo, técnico y apasionado, pero adaptado al formato de cada red social.
 
@@ -48,18 +52,20 @@ Genera exactamente 3 copys con los siguientes requerimientos específicos:
    - Explicación de qué verán en el video.
    - Llamado a la acción (CTA) claro para comentar o compartir.
    - Usa emojis potentes (🔥, 🎸, 💀) y hashtags del nicho.
+   ${url ? `- IMPORTANTE: Al final del copy, debes incluir obligatoriamente este enlace con UTM para el rastreo: ${reelUrl}` : ''}
 
 2. "facebook_post": Copy clásico para un POST de Facebook.
    - Enfoque en Storytelling o debate técnico para incentivar la discusión (el algoritmo prioriza los hilos de comentarios largos).
    - Estructura limpia con espacios en blanco.
    - Debe retar o motivar al lector a dar su opinión técnica (ej: "¿Cuál es tu afinación favorita?", "¿Has probado este circuito?").
-   - Llamado a la acción para leer la nota completa en el sitio.
+   ${url ? `- IMPORTANTE: Llamado a la acción para leer la nota completa en el sitio, incluyendo obligatoriamente este enlace con UTM: ${postUrl}` : '- Llamado a la acción para leer la nota completa en el sitio.'}
 
 3. "tiktok": Copy optimizado para TIKTOK.
    - Gancho inicial cortísimo en MAYÚSCULAS para capturar la atención en menos de 2 segundos.
    - Texto directo, dinámico, usando lenguaje coloquial/técnico de la escena.
    - Pregunta clave para fomentar que comenten el video (relevancia algorítmica).
    - Bloque de hashtags estratégicos y trending del metal (ej: #metalero #guitartok #metalcolombiano).
+   ${url ? `- IMPORTANTE: Menciona que el enlace está en la bio y escribe este enlace al final para que lo referencien: ${tiktokUrl}` : ''}
 
 Debes responder estrictamente en formato JSON con la siguiente estructura de claves (no agregues bloques de markdown como \`\`\`json, solo devuelve el objeto crudo):
 {
@@ -78,11 +84,20 @@ Debes responder estrictamente en formato JSON con la siguiente estructura de cla
 
     const result = JSON.parse(response.text || '{}');
     
+    // Fallback: Si la IA omite el enlace, se lo anexamos manualmente.
+    let finalReel = result.facebook_reel || '';
+    let finalPost = result.facebook_post || '';
+    let finalTiktok = result.tiktok || '';
+
+    if (url && reelUrl && !finalReel.includes(reelUrl)) finalReel += `\n\n👇 Entra aquí:\n${reelUrl}`;
+    if (url && postUrl && !finalPost.includes(postUrl)) finalPost += `\n\n👇 Entra aquí:\n${postUrl}`;
+    if (url && tiktokUrl && !finalTiktok.includes(tiktokUrl)) finalTiktok += `\n\n🔗 ${tiktokUrl}`;
+
     return NextResponse.json({
       success: true,
-      facebook_reel: result.facebook_reel || '',
-      facebook_post: result.facebook_post || '',
-      tiktok: result.tiktok || ''
+      facebook_reel: finalReel,
+      facebook_post: finalPost,
+      tiktok: finalTiktok
     });
   } catch (error: any) {
     console.error('Error generating social copies:', error);

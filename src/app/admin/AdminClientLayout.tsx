@@ -94,6 +94,14 @@ export default function AdminClientLayout({ children }: { children: React.ReactN
             <span className="material-symbols-outlined" style={pathname.includes('/articulos') ? { fontVariationSettings: "'FILL' 1" } : {}}>article</span>
             <span className="font-label-sm text-label-sm uppercase tracking-widest">Artículos</span>
           </Link>
+          <Link className={getLinkClass('/admin/bandas')} href="/admin/bandas">
+            <span className="material-symbols-outlined" style={pathname.includes('/bandas') ? { fontVariationSettings: "'FILL' 1" } : {}}>groups</span>
+            <span className="font-label-sm text-label-sm uppercase tracking-widest">Bandas</span>
+          </Link>
+          <Link className={getLinkClass('/admin/coleccion')} href="/admin/coleccion">
+            <span className="material-symbols-outlined" style={pathname.includes('/coleccion') ? { fontVariationSettings: "'FILL' 1" } : {}}>album</span>
+            <span className="font-label-sm text-label-sm uppercase tracking-widest">Lanzamientos</span>
+          </Link>
           <Link className={getLinkClass('/admin/taller')} href="/admin/taller">
             <span className="material-symbols-outlined" style={pathname.includes('/taller') ? { fontVariationSettings: "'FILL' 1" } : {}}>build</span>
             <span className="font-label-sm text-label-sm uppercase tracking-widest">Taller</span>

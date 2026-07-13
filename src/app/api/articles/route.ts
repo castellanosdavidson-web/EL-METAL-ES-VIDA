@@ -159,11 +159,15 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     const title = formData.get('title') as string;
+    const artist = formData.get('artist') as string | null;
+    const spineColor = formData.get('spineColor') as string | null;
+    const textColor = formData.get('textColor') as string | null;
     const desc = formData.get('desc') as string;
     const category = formData.get('category') as string;
     const readTime = formData.get('readTime') as string;
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File;
+    const cdImage = formData.get('cdImage') as File;
     const clientAudioUrl = formData.get('audioUrl') as string | null;
     const clientImageUrl = formData.get('imageUrl') as string | null;
     const type = (formData.get('type') as string) || 'article';
@@ -172,6 +176,8 @@ export async function POST(request: Request) {
     const seoKeywords = formData.get('seoKeywords') as string || '';
     const faqsRaw = formData.get('faqsRaw') as string || '';
     const faqs = parseFAQs(faqsRaw);
+    const isColombianLegacy = formData.get('isColombianLegacy') === 'on';
+    const isNewRelease = formData.get('isNewRelease') === 'on';
 
     const serviceSupabase = getServiceSupabase();
 
@@ -195,6 +201,25 @@ export async function POST(request: Request) {
       imageUrl = publicUrlData.publicUrl;
     }
 
+    let cdImageUrl = '';
+    if (cdImage && cdImage.name) {
+      const fileExt = cdImage.name.split('.').pop();
+      const fileName = `cd_${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await serviceSupabase.storage
+        .from('articles')
+        .upload(fileName, cdImage, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (!uploadError) {
+        const { data: publicUrlData } = serviceSupabase.storage
+          .from('articles')
+          .getPublicUrl(fileName);
+        cdImageUrl = publicUrlData.publicUrl;
+      }
+    }
+
     let audioUrl = clientAudioUrl || '';
 
     // Download existing posts
@@ -216,6 +241,9 @@ export async function POST(request: Request) {
     const newPost = {
       id: Date.now().toString(),
       title,
+      artist: artist || '',
+      spineColor: spineColor || '',
+      textColor: textColor || '',
       title_en,
       title_pt,
       slug: slug + '-' + Date.now().toString().slice(-4),
@@ -226,12 +254,15 @@ export async function POST(request: Request) {
       category,
       readTime: readTime || '',
       imageUrl,
+      cdImageUrl,
       audioUrl,
       type,
       externalUrl: externalUrl || '',
       seoKeywords,
       faqsRaw,
       faqs,
+      isColombianLegacy,
+      isNewRelease,
       faqs_en,
       faqs_pt,
       similarBands,
@@ -277,11 +308,15 @@ export async function PUT(request: Request) {
     const formData = await request.formData();
     const id = formData.get('id') as string;
     const title = formData.get('title') as string;
+    const artist = formData.get('artist') as string | null;
+    const spineColor = formData.get('spineColor') as string | null;
+    const textColor = formData.get('textColor') as string | null;
     const desc = formData.get('desc') as string;
     const category = formData.get('category') as string;
     const readTime = formData.get('readTime') as string;
     const youtubeUrl = formData.get('youtubeUrl') as string;
     const image = formData.get('image') as File | null;
+    const cdImage = formData.get('cdImage') as File | null;
     const clientAudioUrl = formData.get('audioUrl') as string | null;
     const clientImageUrl = formData.get('imageUrl') as string | null;
     const type = formData.get('type') as string | null;
@@ -289,6 +324,8 @@ export async function PUT(request: Request) {
     const publishDate = formData.get('publishDate') as string | null;
     const seoKeywords = formData.get('seoKeywords') as string | null;
     const faqsRaw = formData.get('faqsRaw') as string | null;
+    const isColombianLegacy = formData.get('isColombianLegacy') === 'on';
+    const isNewRelease = formData.get('isNewRelease') === 'on';
 
     const serviceSupabase = getServiceSupabase();
 
@@ -328,6 +365,25 @@ export async function PUT(request: Request) {
         .getPublicUrl(fileName);
         
       imageUrl = publicUrlData.publicUrl;
+    }
+
+    let cdImageUrl = posts[postIndex].cdImageUrl || '';
+    if (cdImage && cdImage.name && cdImage.size > 0) {
+      const fileExt = cdImage.name.split('.').pop();
+      const fileName = `cd_${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await serviceSupabase.storage
+        .from('articles')
+        .upload(fileName, cdImage, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (!uploadError) {
+        const { data: publicUrlData } = serviceSupabase.storage
+          .from('articles')
+          .getPublicUrl(fileName);
+        cdImageUrl = publicUrlData.publicUrl;
+      }
     }
 
     let audioUrl = clientAudioUrl || posts[postIndex].audioUrl || '';
@@ -370,6 +426,9 @@ export async function PUT(request: Request) {
     posts[postIndex] = {
       ...posts[postIndex],
       title: finalTitle,
+      artist: artist !== null ? artist : posts[postIndex].artist,
+      spineColor: spineColor !== null ? spineColor : posts[postIndex].spineColor,
+      textColor: textColor !== null ? textColor : posts[postIndex].textColor,
       title_en,
       title_pt,
       slug: slug,
@@ -380,12 +439,15 @@ export async function PUT(request: Request) {
       category: category || posts[postIndex].category,
       readTime: readTime !== null ? readTime : posts[postIndex].readTime,
       imageUrl: imageUrl,
+      cdImageUrl: cdImageUrl,
       audioUrl: audioUrl,
       type: type || posts[postIndex].type || 'article',
       externalUrl: externalUrl !== null ? externalUrl : (posts[postIndex].externalUrl || ''),
       seoKeywords: seoKeywords !== null ? seoKeywords : (posts[postIndex].seoKeywords || ''),
-      faqsRaw: faqsRaw !== null ? faqsRaw : (posts[postIndex].faqsRaw || ''),
-      faqs: faqsRaw !== null ? parseFAQs(faqsRaw) : (posts[postIndex].faqs || []),
+      faqsRaw: faqsRaw !== null ? faqsRaw : posts[postIndex].faqsRaw,
+      faqs: faqsRaw !== null ? parseFAQs(faqsRaw) : posts[postIndex].faqs,
+      isColombianLegacy: formData.has('isColombianLegacy') ? isColombianLegacy : posts[postIndex].isColombianLegacy,
+      isNewRelease: formData.has('isNewRelease') ? isNewRelease : posts[postIndex].isNewRelease,
       faqs_en: faqs_en,
       faqs_pt: faqs_pt,
       similarBands: similarBands,

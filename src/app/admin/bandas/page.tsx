@@ -6,7 +6,7 @@ import { supabase } from '@/utils/supabase';
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
-export default function GearPage() {
+export default function BandasPage() {
   const [articles, setArticles] = useState<any[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
   
@@ -16,11 +16,12 @@ export default function GearPage() {
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [desc, setDesc] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [seoKeywords, setSeoKeywords] = useState('');
   const [faqsRaw, setFaqsRaw] = useState('');
-
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
-  const [socialCopies, setSocialCopies] = useState<{facebook_reel: string, facebook_post: string, tiktok: string} | null>(null);
   const [loadingCopies, setLoadingCopies] = useState(false);
+  const [socialCopies, setSocialCopies] = useState<{ facebook_reel: string, facebook_post: string, tiktok: string } | null>(null);
 
   const quillModules = React.useMemo(() => ({
     toolbar: {
@@ -30,7 +31,62 @@ export default function GearPage() {
         [{'list': 'ordered'}, {'list': 'bullet'}],
         ['link', 'image', 'video'],
         ['clean']
-      ]
+      ],
+      handlers: {
+        image: function(this: any) {
+          const quill = this.quill;
+          
+          const choice = confirm(
+            "¿Deseas SUBIR una imagen desde tu PC?\n\n- Presiona 'Aceptar' para subir desde tu PC.\n- Presiona 'Cancelar' para ingresar una URL de Internet."
+          );
+          
+          if (choice) {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.onchange = async () => {
+              const file = input.files?.[0];
+              if (file) {
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  const token = session?.access_token;
+                  
+                  const uploadFormData = new FormData();
+                  uploadFormData.append('file', file);
+                  
+                  const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`
+                    },
+                    body: uploadFormData
+                  });
+                  
+                  const data = await res.json();
+                  if (!res.ok) throw new Error(data.error || 'Error en el servidor');
+                  
+                  const range = quill.getSelection();
+                  if (range && data.url) {
+                    quill.insertEmbed(range.index, 'image', data.url);
+                  }
+                } catch (err: any) {
+                  alert(`Error al subir la imagen: ${err.message}`);
+                }
+              }
+            };
+          } else {
+            const url = prompt("Ingresa la URL de la imagen (debe iniciar con http:// o https://):");
+            if (url) {
+              const range = quill.getSelection();
+              if (range) {
+                quill.insertEmbed(range.index, 'image', url);
+              }
+            }
+          }
+        }
+      }
     }
   }), []);
 
@@ -43,7 +99,7 @@ export default function GearPage() {
     fetch('/api/articles')
       .then(res => res.json())
       .then(data => {
-        if (!data.error) setArticles(data.filter((a: any) => a.type === 'gear'));
+        if (!data.error) setArticles(data.filter((a: any) => a.category === 'Bandas'));
       })
       .catch(console.error)
       .finally(() => setLoadingArticles(false));
@@ -52,6 +108,8 @@ export default function GearPage() {
   const handleOpenEdit = (article: any) => {
     setEditArticle(article);
     setDesc(article.desc || '');
+    setYoutubeUrl(article.youtubeUrl || '');
+    setSeoKeywords(article.seoKeywords || '');
     setFaqsRaw(article.faqsRaw || '');
     setMessage('');
     setIsModalOpen(true);
@@ -60,12 +118,14 @@ export default function GearPage() {
   const handleOpenNew = () => {
     setEditArticle(null);
     setDesc('');
+    setYoutubeUrl('');
+    setSeoKeywords('');
     setFaqsRaw('');
     setMessage('');
     setIsModalOpen(true);
   };
 
-  const handleOpenCopyGenerator = async (article: any) => {
+  const handleGenerateCopies = async (article: any) => {
     setIsCopyModalOpen(true);
     setLoadingCopies(true);
     setSocialCopies(null);
@@ -109,6 +169,7 @@ export default function GearPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    // Validar el tamaño del archivo en el cliente para evitar el error 413 de Vercel (4.5 MB límite)
     const imageFile = formData.get('image') as File | null;
     if (imageFile && imageFile.name && imageFile.size > 4 * 1024 * 1024) {
       setMessage('Error: La imagen de portada supera el límite de 4 MB de Vercel. Por favor, comprímela o usa una imagen más ligera.');
@@ -116,18 +177,66 @@ export default function GearPage() {
       return;
     }
 
-    formData.set('desc', desc);
-    setMessage('INICIANDO CARGA...');
+    // Override the description with the ReactQuill state
+    // Si hay URL de YouTube, añadirla al final del contenido
+    let finalDesc = desc;
+    if (youtubeUrl.trim()) {
+      finalDesc += `\n<p>${youtubeUrl.trim()}</p>`;
+    }
+    formData.set('desc', finalDesc);
+    formData.set('youtubeUrl', youtubeUrl.trim());
+    formData.append('type', 'article');
+    formData.set('category', 'Bandas');
+
+    if (editArticle) {
+      formData.append('id', editArticle.id);
+    }
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
-      if (!token) throw new Error('No autorizado');
+      // Handle Audio Upload via Signed URL (Bypass Vercel 4.5MB limit)
+      const audioFile = formData.get('audio') as File | null;
+      if (audioFile && audioFile.size > 0) {
+        setMessage('SUBIENDO AUDIO (ESPERE POR FAVOR)...');
+        const originalNameWithoutExt = audioFile.name.substring(0, audioFile.name.lastIndexOf('.'));
+        const fileExt = audioFile.name.split('.').pop();
+        const sanitizedOriginal = originalNameWithoutExt.replace(/[^a-zA-Z0-9 -_]/g, '').trim();
+        const fileName = `Elmetalesvida - ${sanitizedOriginal} - ${Date.now()}.${fileExt}`;
 
-      formData.append('type', 'gear');
-      if (editArticle) {
-        formData.append('id', editArticle.id);
+        // Get signed URL
+        const signedRes = await fetch('/api/upload/signed-url', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ fileName })
+        });
+        
+        const signedData = await signedRes.json();
+        if (!signedRes.ok) throw new Error(signedData.error || 'Error al obtener enlace de subida seguro');
+
+        // Upload directly to Supabase using signed URL
+        const uploadRes = await fetch(signedData.signedUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': audioFile.type || 'audio/mpeg'
+          },
+          body: audioFile
+        });
+
+        if (!uploadRes.ok) throw new Error('Error al subir archivo MP3 a Supabase');
+
+        // Get the public URL for the uploaded file
+        const { data: publicUrlData } = supabase.storage
+          .from('articles')
+          .getPublicUrl(signedData.path);
+          
+        formData.set('audioUrl', publicUrlData.publicUrl);
+        // Remove the audio file from formData to avoid Vercel 4.5MB limit in API route
+        formData.delete('audio');
       }
 
       setMessage('EJECUTANDO INYECCIÓN AL SERVIDOR...');
@@ -149,8 +258,8 @@ export default function GearPage() {
       }
 
       if (response.ok) {
-        setMessage(editArticle ? '¡Producto actualizado con éxito!' : '¡Producto subido con éxito!');
-        fetchArticles();
+        setMessage(editArticle ? '¡Artículo actualizado con éxito!' : '¡Artículo subido con éxito!');
+        fetchArticles(); // Refrescar lista
         setTimeout(() => {
           setIsModalOpen(false);
           setEditArticle(null);
@@ -167,7 +276,7 @@ export default function GearPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar este producto definitivamente?')) return;
+    if (!confirm('¿Estás seguro de eliminar este artículo definitivamente?')) return;
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
@@ -216,20 +325,22 @@ export default function GearPage() {
   return (
     <main className="p-8 flex-1 flex flex-col h-full">
       <div className="space-y-8 max-w-7xl mx-auto w-full">
+        {/* Page Header */}
         <div className="flex justify-between items-end">
           <div>
-            <h2 className="font-headline-lg text-headline-lg text-on-surface uppercase tracking-tight">Afiliados Amazon</h2>
-            <p className="font-mono-technical text-mono-technical text-on-surface-variant">DIRECTORIO: /SISTEMA/TIENDA/PRODUCTOS</p>
+            <h2 className="font-headline-lg text-headline-lg text-on-surface uppercase tracking-tight">Directorio de Bandas</h2>
+            <p className="font-mono-technical text-mono-technical text-on-surface-variant">DIRECTORIO: /SISTEMA/CONTENIDO/BANDAS</p>
           </div>
           <button 
             onClick={handleOpenNew}
             className="bg-primary-container text-on-surface font-label-sm text-label-sm uppercase tracking-widest px-8 py-4 border border-primary-container hover:bg-transparent hover:text-primary transition-all duration-200 active:scale-95 flex items-center gap-2"
           >
             <span className="material-symbols-outlined text-sm">add</span>
-            Añadir Producto
+            Nueva Banda
           </button>
         </div>
 
+        {/* Stats Bar (Bento style) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-masonry-gap">
           <div className="p-6 border border-outline-variant/20 bg-surface-container-lowest">
             <p className="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Total Entradas</p>
@@ -244,38 +355,41 @@ export default function GearPage() {
             <p className="font-headline-md text-headline-md text-on-surface">{articles.filter((a:any) => a.is_hidden).length}</p>
           </div>
           <div className="p-6 border border-outline-variant/20 bg-surface-container-lowest">
-            <p className="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Estado API</p>
-            <p className="font-headline-md text-headline-md text-tertiary">ACTIVO</p>
+            <p className="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Crecimiento Mensual</p>
+            <p className="font-headline-md text-headline-md text-tertiary">+14.2%</p>
           </div>
         </div>
 
+        {/* Search & Filter */}
         <div className="flex gap-4 mb-4">
             <input 
               type="text" 
-              placeholder="BUSCAR PRODUCTO..." 
+              placeholder="BUSCAR ARTÍCULO..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="bg-surface-container-lowest border border-outline-variant/20 px-4 py-2 flex-1 text-on-surface focus:border-primary outline-none font-mono-technical"
             />
         </div>
 
+        {/* Main List Table */}
         <div className="border border-outline-variant/20 bg-surface-container-lowest overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
                 <tr className="bg-surface-container border-b border-outline-variant/40">
-                  <th className="px-6 py-4 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Producto</th>
+                  <th className="px-6 py-4 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Título</th>
                   <th className="px-6 py-4 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Autor</th>
                   <th className="px-6 py-4 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Categoría</th>
                   <th className="px-6 py-4 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Estado</th>
+                  <th className="px-6 py-4 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Fecha</th>
                   <th className="px-6 py-4 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/10">
                 {loadingArticles ? (
-                  <tr><td colSpan={5} className="px-6 py-8 text-center text-primary animate-pulse font-mono-technical uppercase">CARGANDO INVENTARIO...</td></tr>
+                  <tr><td colSpan={6} className="px-6 py-8 text-center text-primary animate-pulse font-mono-technical uppercase">CARGANDO ARCHIVOS DEL NÚCLEO...</td></tr>
                 ) : filteredArticles.length === 0 ? (
-                  <tr><td colSpan={5} className="px-6 py-8 text-center text-on-surface-variant font-mono-technical uppercase">NO HAY REGISTROS COINCIDENTES</td></tr>
+                  <tr><td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant font-mono-technical uppercase">NO HAY REGISTROS COINCIDENTES</td></tr>
                 ) : (
                   filteredArticles.map((article, idx) => (
                     <tr key={article.id} className={`hover:bg-surface-variant/10 transition-colors group ${article.is_hidden ? 'opacity-50' : ''}`}>
@@ -292,7 +406,7 @@ export default function GearPage() {
                           </div>
                           <div>
                             <p onClick={() => handleOpenEdit(article)} className="font-body-md text-sm text-on-surface font-bold group-hover:text-primary transition-colors cursor-pointer">{article.title}</p>
-                            <p className="font-mono-technical text-[10px] text-on-surface-variant uppercase">SKU: GEAR-{article.id.toString().slice(-4)}</p>
+                            <p className="font-mono-technical text-[10px] text-on-surface-variant uppercase">ID: ART-{article.id.toString().slice(-4)}-X</p>
                           </div>
                         </div>
                       </td>
@@ -306,9 +420,13 @@ export default function GearPage() {
                           <span className="text-[10px] text-on-surface uppercase font-bold tracking-wide">{article.is_hidden ? 'Oculto' : 'Publicado'}</span>
                         </div>
                       </td>
+                      <td className="px-4 py-3 font-mono-technical text-[10px] text-on-surface-variant">
+                        {new Date(article.createdAt || Date.now()).toISOString().split('T')[0]}
+                      </td>
                       <td className="px-4 py-3 text-right space-x-1 whitespace-nowrap">
+                        <button onClick={() => window.open('/admin/coleccion?banda=' + encodeURIComponent(article.title), '_blank')} className="p-1 hover:text-tertiary transition-colors" title="Añadir Disco a la Colección"><span className="material-symbols-outlined text-[15px]">album</span></button>
+                        <button onClick={() => handleGenerateCopies(article)} className="p-1 hover:text-primary transition-colors" title="Generar Copys RRSS"><span className="material-symbols-outlined text-[15px]">campaign</span></button>
                         <button onClick={() => handleToggleVisibility(article)} className="p-1 hover:text-primary transition-colors" title={article.is_hidden ? "Mostrar" : "Ocultar"}><span className="material-symbols-outlined text-[15px]">{article.is_hidden ? 'visibility_off' : 'visibility'}</span></button>
-                        <button onClick={() => handleOpenCopyGenerator(article)} className="p-1 hover:text-primary transition-colors" title="Generar Copies"><span className="material-symbols-outlined text-[15px]">smart_toy</span></button>
                         <button onClick={() => handleOpenEdit(article)} className="p-1 hover:text-primary transition-colors" title="Editar"><span className="material-symbols-outlined text-[15px]">edit</span></button>
                         <button onClick={() => handleDelete(article.id)} className="p-1 hover:text-error transition-colors" title="Eliminar"><span className="material-symbols-outlined text-[15px]">delete</span></button>
                       </td>
@@ -318,9 +436,24 @@ export default function GearPage() {
               </tbody>
             </table>
           </div>
+          
+          {/* Pagination / Footer */}
+          <div className="px-6 py-4 bg-surface-container flex justify-between items-center border-t border-outline-variant/20">
+            <p className="font-mono-technical text-[11px] text-on-surface-variant uppercase">Mostrando {filteredArticles.length} entradas</p>
+            <div className="flex gap-2">
+              <button className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90">
+                <span className="material-symbols-outlined text-xs">chevron_left</span>
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center bg-primary-container text-on-surface font-mono-technical text-xs">1</button>
+              <button className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90">
+                <span className="material-symbols-outlined text-xs">chevron_right</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Modal / Formulario */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center backdrop-blur-sm p-4">
           <div className="border border-outline-variant bg-surface-container-low p-8 relative w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -330,10 +463,10 @@ export default function GearPage() {
             </button>
             
             <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase mb-2">
-              {editArticle ? 'EDITAR PRODUCTO' : 'AÑADIR PRODUCTO (AFILIADO)'}
+              {editArticle ? 'EDITAR ARTÍCULO' : 'INYECTAR ARTÍCULO'}
             </h2>
             <p className="font-mono-technical text-mono-technical text-on-surface-variant mb-6">
-              SISTEMA DE MONETIZACIÓN AMAZON
+              PROTOCOLO DE {editArticle ? 'ACTUALIZACIÓN' : 'SUBIDA'} A SUPABASE
             </p>
             
             {message && (
@@ -343,16 +476,15 @@ export default function GearPage() {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              {/* Clave de acceso removida - ahora usa token seguro */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Nombre del Producto</label>
-                <input type="text" name="title" defaultValue={editArticle?.title || ''} required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-headline-md" placeholder="Ej: Focusrite Scarlett 2i2" />
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Título del Artículo</label>
+                <input type="text" name="title" defaultValue={editArticle?.title || ''} required className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-headline-md" placeholder="Ej: Mecánica del Blast Beat" />
               </div>
               
               <div className="flex flex-col gap-2">
-                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center justify-between">
-                  <span>Reseña / Descripción</span>
-                  <span className="text-[10px] text-primary lowercase">(Recomendado: Máx 200 caracteres)</span>
-                </label>
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Descripción / Contenido</label>
                 <div className="bg-surface border border-outline-variant text-on-surface">
                   <ReactQuill 
                     theme="snow" 
@@ -360,38 +492,35 @@ export default function GearPage() {
                     onChange={setDesc} 
                     modules={quillModules}
                     className="bg-background text-on-surface font-body-md" 
-                    placeholder="Descripción rápida y precisa del equipo para no saturar el diseño..." 
+                    placeholder="Extracto o contenido del artículo (soporta formato, enlaces, videos, etc)..." 
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm text-primary">quiz</span>
-                  Preguntas Frecuentes (Opcional)
+                  <span className="material-symbols-outlined text-sm text-error">play_circle</span>
+                  URL de Video de YouTube (Opcional)
                 </label>
-                <textarea 
-                  name="faqsRaw" 
-                  value={faqsRaw}
-                  onChange={(e) => setFaqsRaw(e.target.value)}
-                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical h-32" 
-                  placeholder="Ejemplo:&#10;Q: ¿Sirve para grabar bajo?&#10;A: Perfectamente, soporta frecuencias bajas.&#10;Q: ¿Viene con cable USB?&#10;A: Sí, en la caja se incluye." 
+                <input 
+                  type="url" 
+                  name="youtubeUrl" 
+                  value={youtubeUrl}
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical text-sm" 
+                  placeholder="Ej: https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
                 />
-                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Formato requerido: Inicia las preguntas con Q: y las respuestas con A:. Generará el acordeón interactivo y su traducción.</p>
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Pega aquí el enlace de YouTube y se mostrará como video embebido en el artículo</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-2">
                   <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Categoría</label>
-                  <select name="category" defaultValue={editArticle?.category || 'Audio Pro'} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical">
-                    <option value="Guitarras">Guitarras</option>
-                    <option value="Amplificadores">Amplificadores</option>
-                    <option value="Pedales">Pedales</option>
-                    <option value="Audio Pro">Audio Pro</option>
-                    <option value="Accesorios">Accesorios</option>
-                    <option value="Batería">Batería</option>
-                    <option value="Bajo">Bajo</option>
-                  </select>
+                  <input type="text" readOnly value="Bandas (Automático)" className="bg-surface border border-outline-variant p-3 text-on-surface/50 outline-none font-mono-technical cursor-not-allowed" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Tiempo de Lectura</label>
+                  <input type="text" name="readTime" defaultValue={editArticle?.readTime || ''} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" placeholder="Ej: 12 Minutos" />
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Fecha de Publ. (Opcional)</label>
@@ -399,53 +528,79 @@ export default function GearPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm text-primary">shopping_cart</span>
-                  Enlace de Afiliado (Amazon)
-                </label>
+              <div className="flex items-center gap-3 bg-surface-container-low border border-outline-variant p-4">
                 <input 
-                  type="url" 
-                  name="externalUrl" 
-                  defaultValue={editArticle?.externalUrl || ''} 
-                  required 
-                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" 
-                  placeholder="Ej: https://amzn.to/..." 
+                  type="checkbox" 
+                  name="isColombianLegacy" 
+                  id="isColombianLegacy"
+                  defaultChecked={editArticle?.isColombianLegacy || false}
+                  className="w-5 h-5 accent-primary cursor-pointer"
                 />
-                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Enlace directo para generar comisión al hacer clic.</p>
+                <label htmlFor="isColombianLegacy" className="font-label-sm text-label-sm uppercase text-on-surface cursor-pointer select-none">
+                  Destacar en Expediente Regional (Legado Colombiano)
+                </label>
               </div>
 
               <div className="flex flex-col gap-2">
                 <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm text-primary">image</span>
-                  URL de la Imagen (Opción 1)
+                  <span className="material-symbols-outlined text-sm text-primary">search</span>
+                  Palabras Clave SEO (Opcional)
                 </label>
                 <input 
-                  type="url" 
-                  name="imageUrl" 
-                  defaultValue={editArticle?.imageUrl || ''} 
-                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" 
-                  placeholder="Ej: https://m.media-amazon.com/images/..." 
+                  type="text" 
+                  name="seoKeywords" 
+                  value={seoKeywords} 
+                  onChange={(e) => setSeoKeywords(e.target.value)} 
+                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical text-sm" 
+                  placeholder="Ej: blast beat, distorsion metal, afinar guitarra, death metal" 
                 />
-                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Pega aquí el enlace de la imagen de Amazon si no quieres descargarla.</p>
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Palabras clave separadas por comas para optimizar la visibilidad en motores de búsqueda e IAs.</p>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Imagen del Producto (Opción 2: Archivo local)</label>
-                <input type="file" name="image" accept="image/*" className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-primary">quiz</span>
+                  Preguntas Frecuentes - FAQ (Opcional)
+                </label>
+                <textarea 
+                  name="faqsRaw" 
+                  value={faqsRaw} 
+                  onChange={(e) => setFaqsRaw(e.target.value)} 
+                  rows={4}
+                  className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical text-sm" 
+                  placeholder={"Q: ¿Pregunta 1?\nA: Respuesta 1.\nQ: ¿Pregunta 2?\nA: Respuesta 2."}
+                />
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Usa el formato Q: para la pregunta y A: para la respuesta. Esto creará marcado estructurado para Google automáticamente.</p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-primary">audio_file</span>
+                  Archivo de Audio Descargable (MP3) {editArticle && '(Opcional)'}
+                </label>
+                <input type="file" name="audio" accept=".mp3,audio/*" className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Este archivo MP3 será ofrecido como descarga al lector a cambio de su correo (Lead Magnet).</p>
+                {editArticle?.audioUrl && (
+                  <p className="text-xs text-primary font-mono-technical mt-1 truncate">Archivo actual: {editArticle.audioUrl.split('/').pop()}</p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Imagen de Portada {editArticle && '(Opcional)'}</label>
+                <input type="file" name="image" accept="image/*" required={!editArticle} className="bg-surface border border-outline-variant p-3 text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-surface hover:file:bg-inverse-primary" />
               </div>
 
               <button type="submit" disabled={uploading} className="mt-4 bg-primary-container text-on-surface py-4 uppercase font-label-sm font-bold tracking-widest hover:bg-inverse-primary transition-colors disabled:opacity-50">
-                {uploading ? 'PROCESANDO...' : (editArticle ? 'GUARDAR CAMBIOS' : 'INYECTAR A BASE DE DATOS')}
+                {uploading ? 'PROCESANDO...' : (editArticle ? 'GUARDAR CAMBIOS' : 'EJECUTAR INYECCIÓN')}
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Copy Generator Modal */}
+      {/* Modal de Copys RRSS */}
       {isCopyModalOpen && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center backdrop-blur-sm p-4">
+        <div className="fixed inset-0 bg-black/80 z-[110] flex items-center justify-center backdrop-blur-sm p-4">
           <div className="border border-outline-variant bg-surface-container-low p-8 relative w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
             <button onClick={() => setIsCopyModalOpen(false)} className="absolute top-4 right-4 text-on-surface-variant hover:text-white">
@@ -473,10 +628,10 @@ export default function GearPage() {
                         }}
                         className="text-xs bg-primary-container text-on-surface px-3 py-1 font-mono-technical uppercase hover:bg-inverse-primary"
                       >
-                        COPIAR COPY
+                        Copiar
                       </button>
                     </div>
-                    <p className="font-body-md text-on-surface whitespace-pre-wrap">{socialCopies.facebook_reel}</p>
+                    <pre className="text-xs text-on-surface font-body-md whitespace-pre-wrap select-all bg-surface p-3 border border-outline-variant/10 max-h-40 overflow-y-auto">{socialCopies.facebook_reel}</pre>
                   </div>
 
                   {/* Facebook Post */}
@@ -486,14 +641,14 @@ export default function GearPage() {
                       <button 
                         onClick={() => {
                           navigator.clipboard.writeText(socialCopies.facebook_post);
-                          alert('¡Copy de Facebook copiado al portapapeles!');
+                          alert('¡Copy de Facebook Post copiado al portapapeles!');
                         }}
                         className="text-xs bg-primary-container text-on-surface px-3 py-1 font-mono-technical uppercase hover:bg-inverse-primary"
                       >
-                        COPIAR COPY
+                        Copiar
                       </button>
                     </div>
-                    <p className="font-body-md text-on-surface whitespace-pre-wrap">{socialCopies.facebook_post}</p>
+                    <pre className="text-xs text-on-surface font-body-md whitespace-pre-wrap select-all bg-surface p-3 border border-outline-variant/10 max-h-40 overflow-y-auto">{socialCopies.facebook_post}</pre>
                   </div>
 
                   {/* TikTok */}
@@ -507,10 +662,10 @@ export default function GearPage() {
                         }}
                         className="text-xs bg-primary-container text-on-surface px-3 py-1 font-mono-technical uppercase hover:bg-inverse-primary"
                       >
-                        COPIAR COPY
+                        Copiar
                       </button>
                     </div>
-                    <p className="font-body-md text-on-surface whitespace-pre-wrap">{socialCopies.tiktok}</p>
+                    <pre className="text-xs text-on-surface font-body-md whitespace-pre-wrap select-all bg-surface p-3 border border-outline-variant/10 max-h-40 overflow-y-auto">{socialCopies.tiktok}</pre>
                   </div>
                 </div>
               )

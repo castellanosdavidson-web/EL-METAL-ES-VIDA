@@ -27,6 +27,9 @@
     "marqueeArsenal": "X ARSENAL X",
     "marqueeRadio": "+++ RADIO ++",
     "verHerramienta": "VER HERRAMIENTA",
+    "nuevosLanzamientos": "Nuevos Lanzamientos",
+    "coleccionLabel": "COLECCIÓN",
+    "tocaParaLeer": "Toca para leer el artículo",
     "enlace": "ENLACE",
     "ningunPlugin": "Ningún plugin ha sido cargado en el taller.",
     "ningunEquipo": "El arsenal está vacío por el momento.",
@@ -120,7 +123,8 @@
     "catDocumental": "Documental Histórico",
     "catAnalisis": "Análisis Técnico",
     "catCiencia": "Ciencia Sonora",
-    "catEquipamiento": "Equipamiento"
+    "catEquipamiento": "Equipamiento",
+    "catBandas": "Bandas"
   },
   "Taller": {
     "tag": "Taller Técnico",

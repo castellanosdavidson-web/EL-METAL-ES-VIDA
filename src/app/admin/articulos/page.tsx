@@ -139,7 +139,11 @@ export default function ArticulosPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title: article.title, desc: article.desc })
+        body: JSON.stringify({ 
+          title: article.title, 
+          desc: article.desc,
+          url: `https://elmetalesvida.com/articulo/${article.id}`
+        })
       });
       
       const data = await res.json();
@@ -517,6 +521,7 @@ export default function ArticulosPage() {
                     <option value="Ciencia Sonora">Ciencia Sonora</option>
                     <option value="Equipamiento">Equipamiento</option>
                     <option value="Historia">Historia</option>
+                    <option value="Bandas">Bandas</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -527,6 +532,19 @@ export default function ArticulosPage() {
                   <label className="font-label-sm text-label-sm uppercase text-on-surface-variant">Fecha de Publ. (Opcional)</label>
                   <input type="datetime-local" name="publishDate" defaultValue={editArticle?.createdAt ? new Date(editArticle.createdAt).toISOString().slice(0, 16) : ''} className="bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical" />
                 </div>
+              </div>
+
+              <div className="flex items-center gap-3 bg-surface-container-low border border-outline-variant p-4">
+                <input 
+                  type="checkbox" 
+                  name="isColombianLegacy" 
+                  id="isColombianLegacy"
+                  defaultChecked={editArticle?.isColombianLegacy || false}
+                  className="w-5 h-5 accent-primary cursor-pointer"
+                />
+                <label htmlFor="isColombianLegacy" className="font-label-sm text-label-sm uppercase text-on-surface cursor-pointer select-none">
+                  Destacar en Expediente Regional (Legado Colombiano)
+                </label>
               </div>
 
               <div className="flex flex-col gap-2">

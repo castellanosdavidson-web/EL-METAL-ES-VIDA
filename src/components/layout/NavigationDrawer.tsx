@@ -88,17 +88,6 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
               <span className="group-hover:text-error">{tDrawer('arsenal')}</span>
             </Link>
           </li>
-          {(canInstall || isIos) && (
-            <li>
-              <button 
-                onClick={handleInstallClick} 
-                className="w-full text-left flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover"
-              >
-                <span className="material-symbols-outlined text-primary">install_mobile</span>
-                <span className="text-primary">{locale === 'en' ? 'Install App' : locale === 'pt' ? 'Instalar App' : 'Instalar App'}</span>
-              </button>
-            </li>
-          )}
         </ul>
 
         <div className="mt-auto border-t-2 border-surface-container-highest pt-6">
