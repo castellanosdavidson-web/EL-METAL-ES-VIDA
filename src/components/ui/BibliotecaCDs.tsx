@@ -139,7 +139,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
         </div>
 
         {/* Contenedor de CDs flex-wrap para soportar múltiples líneas de CDs */}
-        <div className="relative z-10 flex flex-wrap justify-center items-end min-h-[300px] gap-[1px] px-2 md:px-6 pb-0">
+        <div className="relative z-10 flex flex-wrap justify-center items-end min-h-[400px] gap-[1px] px-2 md:px-6 pb-0">
           
           {displayCds.map((cd, index) => {
             const isTailwindClass = cd.spineColor.startsWith('bg-');
@@ -174,7 +174,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                   `}
                   style={{
                     ...spineStyle,
-                    height: index % 5 === 0 ? '256px' : index % 3 === 0 ? '264px' : '260px',
+                    height: index % 5 === 0 ? '336px' : index % 3 === 0 ? '348px' : '342px',
                   }}
                 >
                   {/* Reflejos del plástico del estuche (Jewel Case) */}
@@ -185,13 +185,15 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-[300%] -translate-x-[200%] group-hover:animate-[shine_1s_ease-in-out]"></div>
 
                   {/* Texto del lomo ajustado */}
-                  <div 
-                    className={`transform -rotate-90 whitespace-nowrap font-mono-technical tracking-[0.15em] text-[9px] md:text-[10px] ${textClasses} uppercase absolute`}
-                    style={textStyle}
-                  >
-                    <span className="font-black">{cd.artist}</span> 
-                    <span className="mx-3 opacity-50">/</span> 
-                    <span className="opacity-90 inline-block align-bottom">{cd.title}</span>
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div 
+                      className={`transform -rotate-90 whitespace-nowrap font-mono-technical tracking-normal text-[8px] md:text-[9px] ${textClasses} uppercase w-[300px] text-center text-ellipsis overflow-hidden`}
+                      style={textStyle}
+                    >
+                      <span className="font-black">{cd.artist}</span> 
+                      <span className="mx-2 opacity-50">/</span> 
+                      <span className="opacity-90">{cd.title}</span>
+                    </div>
                   </div>
                 </Link>
 
