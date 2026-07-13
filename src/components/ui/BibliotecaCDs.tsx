@@ -185,15 +185,13 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-[300%] -translate-x-[200%] group-hover:animate-[shine_1s_ease-in-out]"></div>
 
                   {/* Texto del lomo ajustado */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div 
-                      className={`transform -rotate-90 whitespace-nowrap font-mono-technical tracking-normal text-[8px] md:text-[9px] ${textClasses} uppercase w-[300px] text-center text-ellipsis overflow-hidden`}
-                      style={textStyle}
-                    >
-                      <span className="font-black">{cd.artist}</span> 
-                      <span className="mx-2 opacity-50">/</span> 
-                      <span className="opacity-90">{cd.title}</span>
-                    </div>
+                  <div 
+                    className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform -rotate-90 whitespace-nowrap font-mono-technical tracking-normal text-[8px] md:text-[10px] ${textClasses} uppercase w-[300px] max-w-[300px] text-center text-ellipsis overflow-hidden`}
+                    style={textStyle}
+                  >
+                    <span className="font-black">{cd.artist}</span> 
+                    <span className="mx-2 opacity-50">/</span> 
+                    <span className="opacity-90">{cd.title}</span>
                   </div>
                 </Link>
 
