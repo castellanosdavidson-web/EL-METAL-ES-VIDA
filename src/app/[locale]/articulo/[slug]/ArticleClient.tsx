@@ -228,7 +228,6 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
           height: 100%;
           background-size: cover;
           background-position: center top;
-          opacity: 0.08;
           pointer-events: none;
           z-index: 0;
           will-change: transform;
@@ -516,7 +515,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                 alt={articleTitle || 'Portada'} 
                 fill 
                 sizes="100vw"
-                className="object-cover opacity-10" 
+                className="object-cover opacity-[0.15] mix-blend-screen" 
               />
             )}
           </div>

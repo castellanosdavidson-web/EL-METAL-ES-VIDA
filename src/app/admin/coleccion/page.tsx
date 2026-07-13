@@ -353,15 +353,15 @@ export default function ColeccionPage() {
                     {/* Previsualización del lomo en tiempo real */}
                     <div className="mt-4 pt-4 border-t border-outline-variant/30 flex justify-center">
                        <div 
-                         className="w-[28px] h-[200px] border-l-[2px] border-r-[2px] border-t-[2px] border-white/20 bg-clip-padding flex items-center justify-center relative shadow-lg"
+                         className="w-[28px] h-[250px] border-l-[2px] border-r-[2px] border-t-[2px] border-white/20 bg-clip-padding relative shadow-lg overflow-hidden"
                          style={{ backgroundColor: spineColor.startsWith('#') ? spineColor : undefined }}
                        >
                          <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-white/5 to-transparent pointer-events-none"></div>
                          <div 
-                           className="transform -rotate-90 whitespace-nowrap font-mono-technical tracking-[0.15em] text-[10px] uppercase absolute"
+                           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform -rotate-90 whitespace-nowrap font-mono-technical tracking-normal text-[9px] uppercase w-[220px] max-w-[220px] text-center text-ellipsis overflow-hidden"
                            style={{ color: textColor.startsWith('#') ? textColor : undefined }}
                          >
-                           <span className="font-black">{artist || 'BANDA'}</span> <span className="mx-3 opacity-50">/</span> <span className="opacity-90">{editCd?.title || 'ÁLBUM'}</span>
+                           <span className="font-black">{artist || 'BANDA'}</span> <span className="mx-2 opacity-50">/</span> <span className="opacity-90">{editCd?.title || 'ÁLBUM'}</span>
                          </div>
                        </div>
                     </div>
