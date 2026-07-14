@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
   const t = useTranslations('Home');
   const [activeCdId, setActiveCdId] = useState<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const displayCds: any[] = cds.map((cd: any) => ({
     id: cd.id,
@@ -26,6 +27,16 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
       setActiveCdId(displayCds[0].id);
     }
   }, [displayCds, activeCdId]);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 250; // Scroll amount in pixels
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   if (displayCds.length === 0) {
     return null;
@@ -72,7 +83,10 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
           <div className="absolute bottom-0 left-0 right-0 h-4 md:h-6 bg-[#0a0a0a] border-t-2 border-white/10 shadow-[0_-5px_15px_rgba(0,0,0,0.8)] z-10"></div>
 
           {/* Contenedor Flex de CDs */}
-          <div className="relative z-20 flex items-end min-h-[250px] md:min-h-[280px] gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar">
+          <div 
+            ref={scrollContainerRef}
+            className="relative z-20 flex items-end min-h-[290px] md:min-h-[340px] pt-10 gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar"
+          >
             
             {displayCds.map((cd, index) => {
               const isTailwindClass = cd.spineColor.startsWith('bg-');
@@ -227,10 +241,18 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
         </div>
       </div>
       
-      <div className="md:hidden flex justify-center mt-6 text-on-surface-variant font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center opacity-70">
-        <span className="material-symbols-outlined text-[12px]">swipe_left</span>
-        {t('cdDeslizaExplorar')}
-        <span className="material-symbols-outlined text-[12px]">swipe_right</span>
+      <div 
+        className="md:hidden flex justify-center mt-6 text-on-surface-variant font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center opacity-70 cursor-pointer hover:opacity-100 transition-opacity"
+        onClick={() => handleScroll('right')}
+      >
+        <span 
+          className="material-symbols-outlined text-[12px] p-2 -m-2" 
+          onClick={(e) => { e.stopPropagation(); handleScroll('left'); }}
+        >
+          swipe_left
+        </span>
+        <span className="select-none">{t('cdDeslizaExplorar')}</span>
+        <span className="material-symbols-outlined text-[12px] p-2 -m-2">swipe_right</span>
       </div>
     </div>
   );
