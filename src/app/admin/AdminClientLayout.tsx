@@ -20,13 +20,18 @@ export default function AdminClientLayout({ children }: { children: React.ReactN
       if (!session) {
         if (pathname !== '/admin/login') router.push('/admin/login');
         else setLoading(false);
-      } else if (session.user?.email !== ADMIN_EMAIL) {
-        // If not admin, sign out and redirect to login
-        await supabase.auth.signOut();
-        router.push('/admin/login?error=unauthorized');
       } else {
-        setSessionUser(session.user);
-        setLoading(false);
+        const isSuperAdmin = session.user?.email === ADMIN_EMAIL;
+        const isRoleAdmin = session.user?.app_metadata?.role === 'admin';
+        
+        if (!isSuperAdmin && !isRoleAdmin) {
+          // If neither super admin nor role admin, sign out and redirect to login
+          await supabase.auth.signOut();
+          router.push('/admin/login?error=unauthorized');
+        } else {
+          setSessionUser(session.user);
+          setLoading(false);
+        }
       }
     };
 

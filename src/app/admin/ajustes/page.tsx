@@ -22,6 +22,12 @@ export default function AjustesPage() {
   const [heroSubtitle, setHeroSubtitle] = useState('El archivo técnico definitivo para la legión. Desglosamos la agresión sonora, documentamos el equipo y forjamos acero.');
   const [heroSaved, setHeroSaved] = useState(false);
 
+  // New admin state
+  const [newAdminEmail, setNewAdminEmail] = useState('');
+  const [newAdminPassword, setNewAdminPassword] = useState('');
+  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
+  const [newAdminMessage, setNewAdminMessage] = useState('');
+
   useEffect(() => {
     // Check if logo exists
     const checkLogo = async () => {
@@ -170,6 +176,45 @@ export default function AjustesPage() {
         setCommitStatus('Confirmar Configuración');
       }, 2000);
     }, 1500);
+  };
+
+  const handleCreateAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAdminEmail || !newAdminPassword) return;
+    if (newAdminPassword.length < 6) {
+      setNewAdminMessage('Error: La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+    
+    setIsCreatingAdmin(true);
+    setNewAdminMessage('');
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`
+        },
+        body: JSON.stringify({ email: newAdminEmail, password: newAdminPassword })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok || data.error) {
+        setNewAdminMessage(`Error: ${data.error || 'No se pudo crear el administrador'}`);
+      } else {
+        setNewAdminMessage('¡Éxito! Administrador creado correctamente. Ya puede iniciar sesión.');
+        setNewAdminEmail('');
+        setNewAdminPassword('');
+      }
+    } catch (err: any) {
+      setNewAdminMessage(`Error: ${err.message}`);
+    } finally {
+      setIsCreatingAdmin(false);
+    }
   };
 
   return (
@@ -394,6 +439,62 @@ export default function AjustesPage() {
                 <p className="font-mono-technical text-[11px] text-primary/80 uppercase">Advertencia: Cambiar los protocolos de seguridad puede desconectar sesiones de terminal activas y requerir autenticación inmediata en todos los nodos de hardware.</p>
               </div>
             </div>
+          </section>
+
+          {/* New Admin Profile section */}
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b border-outline-variant/10 pb-2">
+              <h3 className="font-headline-md text-headline-md text-primary uppercase">06_Administradores_Alternos</h3>
+              <span className="font-mono-technical text-mono-technical text-on-surface-variant/50">[ CONTROL_ACCESO ]</span>
+            </div>
+            
+            <form onSubmit={handleCreateAdmin} className="space-y-8 bg-surface-container border border-outline-variant/30 p-6">
+              <p className="font-mono-technical text-[11px] text-on-surface-variant uppercase mb-4 border-l-2 border-primary pl-2">
+                Crea cuentas de administrador adicionales. Estos usuarios tendrán acceso total al panel. Guarda la contraseña de forma segura para entregársela al usuario.
+              </p>
+              
+              {newAdminMessage && (
+                <div className={`p-4 border ${newAdminMessage.includes('Éxito') ? 'bg-green-900/20 border-green-500/50 text-green-400' : 'bg-error-container/10 border-error-container text-error'}`}>
+                  <p className="font-mono-technical text-[11px] uppercase">{newAdminMessage}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
+                <div className="space-y-4">
+                  <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Correo Electrónico</label>
+                  <input 
+                    type="email" 
+                    required
+                    value={newAdminEmail}
+                    onChange={(e) => setNewAdminEmail(e.target.value)}
+                    className="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary-container p-4 font-mono-technical outline-none text-on-surface transition-all" 
+                    placeholder="nuevo.admin@ejemplo.com" 
+                  />
+                </div>
+                <div className="space-y-4">
+                  <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Contraseña Asignada</label>
+                  <input 
+                    type="password" 
+                    required
+                    minLength={6}
+                    value={newAdminPassword}
+                    onChange={(e) => setNewAdminPassword(e.target.value)}
+                    className="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary-container p-4 font-mono-technical outline-none text-on-surface transition-all" 
+                    placeholder="••••••••••••••••" 
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <button 
+                  type="submit" 
+                  disabled={isCreatingAdmin}
+                  className="px-8 py-4 bg-primary text-on-primary font-label-sm text-label-sm uppercase font-bold tracking-widest hover:bg-inverse-primary transition-all disabled:opacity-50"
+                >
+                  {isCreatingAdmin ? 'CREANDO...' : 'CREAR PERFIL ADMINISTRADOR'}
+                </button>
+              </div>
+            </form>
           </section>
         </div>
 
