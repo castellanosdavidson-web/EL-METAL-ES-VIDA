@@ -78,8 +78,8 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
         <div className="absolute bottom-0 left-0 right-0 h-4 md:h-6 bg-[#0a0a0a] border-t-2 border-white/10 shadow-[0_-5px_15px_rgba(0,0,0,0.8)] z-10 rounded-b-sm md:rounded-b-xl"></div>
 
         {/* Contenedor de CDs */}
-        {/* Usamos md:overflow-visible para que los tooltips no se corten en desktop, y en mobile agregamos padding superior para que quepan */}
-        <div className="relative z-20 flex md:flex-wrap md:justify-center items-end min-h-[450px] md:min-h-[400px] gap-0 md:gap-px px-4 md:px-6 pt-[180px] md:pt-0 pb-2 md:pb-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory hide-scrollbar">
+        {/* Usamos md:overflow-visible para que los tooltips no se corten en desktop, y en mobile agregamos padding inferior para que quepan hacia abajo */}
+        <div className="relative z-20 flex md:flex-wrap md:justify-center items-end min-h-[450px] md:min-h-[400px] gap-0 md:gap-px px-4 md:px-6 pt-4 md:pt-0 pb-[200px] md:pb-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory hide-scrollbar">
           
           {displayCds.map((cd, index) => {
             const isTailwindClass = cd.spineColor.startsWith('bg-');
@@ -158,27 +158,34 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                 <Link 
                   href={`/articulo/${cd.slug}`}
                   className={`
-                    absolute bottom-[115%] left-1/2 -translate-x-1/2 mb-4 
+                    absolute top-[105%] md:top-full md:mt-4 left-1/2 -translate-x-1/2 mb-4 
                     w-[280px] md:w-[480px] aspect-[2/1] bg-[#050505] 
-                    border border-white/20 rounded-sm
-                    transition-all duration-300 ease-out origin-bottom z-[99999]
-                    ${(hoveredCd === cd.id || activeMobileCd === cd.id) ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4 pointer-events-none'}
+                    border border-white/20 rounded-sm group/tooltip
+                    transition-all duration-300 ease-out origin-top z-[99999]
+                    ${(hoveredCd === cd.id || activeMobileCd === cd.id) ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4 pointer-events-none'}
                   `}
                   style={{
                     boxShadow: (hoveredCd === cd.id || activeMobileCd === cd.id) ? `0 30px 80px -10px ${shadowColor}` : 'none'
                   }}
                 >
+                  {/* Overlay LEER RESEÑA */}
+                  <div className="absolute inset-0 z-50 flex items-center justify-center opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-300 bg-black/50 backdrop-blur-[2px]">
+                    <span className="bg-primary text-background px-6 py-3 font-headline-lg uppercase tracking-widest text-sm md:text-lg shadow-2xl border border-primary-container transform group-hover/tooltip:scale-105 transition-transform duration-300">
+                      LEER RESEÑA
+                    </span>
+                  </div>
+
                   <div className="flex w-full h-full p-[2px] gap-[2px] relative bg-gradient-to-b from-white/10 to-transparent">
                     <div className="absolute top-[10%] left-[3px] w-[6px] h-[15%] bg-white/30 rounded-r-sm z-20 shadow-sm"></div>
                     <div className="absolute bottom-[10%] left-[3px] w-[6px] h-[15%] bg-white/30 rounded-r-sm z-20 shadow-sm"></div>
 
-                    <div className="w-1/2 h-full relative bg-[#111] border-r-2 border-black overflow-hidden group/case">
+                    <div className="w-1/2 h-full relative bg-[#111] border-r-2 border-black overflow-hidden">
                       <Image 
                         src={cd.cover} 
                         alt={cd.title} 
                         fill 
                         sizes="(max-width: 768px) 140px, 240px"
-                        className="object-cover opacity-100 group-hover/case:scale-105 transition-transform duration-700"
+                        className="object-cover opacity-100 transition-transform duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/20 pointer-events-none mix-blend-overlay"></div>
                       <div className="absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-black/60 to-transparent pointer-events-none"></div>
@@ -188,7 +195,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                       <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-black to-transparent pointer-events-none"></div>
                       <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-black to-transparent pointer-events-none"></div>
 
-                      <div className="w-[120px] h-[120px] md:w-[210px] md:h-[210px] rounded-full bg-gradient-to-br from-zinc-800 via-zinc-400 to-zinc-900 border-[1px] border-zinc-500 shadow-[inset_0_0_20px_rgba(0,0,0,0.9),0_10px_20px_rgba(0,0,0,0.5)] flex items-center justify-center relative spin-slow overflow-hidden group-hover/case:scale-105 transition-transform duration-700">
+                      <div className="w-[120px] h-[120px] md:w-[210px] md:h-[210px] rounded-full bg-gradient-to-br from-zinc-800 via-zinc-400 to-zinc-900 border-[1px] border-zinc-500 shadow-[inset_0_0_20px_rgba(0,0,0,0.9),0_10px_20px_rgba(0,0,0,0.5)] flex items-center justify-center relative animate-[spin_4s_linear_infinite] overflow-hidden transition-transform duration-700">
                         {cd.cdImageUrl && (
                           <Image 
                             src={cd.cdImageUrl} 
