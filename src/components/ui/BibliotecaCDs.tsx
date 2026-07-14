@@ -102,6 +102,17 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
     textColor: cd.textColor || '#d4d4d8'
   })) : ALL_CDS;
 
+  // Auto-open middle CD on mobile for better interaction discovery
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768 && displayCds.length > 0) {
+      const middleIndex = Math.floor(displayCds.length / 2);
+      // Give it a tiny delay so the UI renders first before triggering the animation
+      setTimeout(() => {
+        setActiveMobileCd(displayCds[middleIndex].id);
+      }, 500);
+    }
+  }, [displayCds]);
+
   const handleInteraction = (e: React.MouseEvent, cdId: string) => {
     if (typeof window !== 'undefined' && window.matchMedia("(hover: none)").matches) {
       if (activeMobileCd !== cdId) {
@@ -196,7 +207,8 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                 </Link>
 
                 {/* Tooltip / Estuche de CD Abierto */}
-                <div 
+                <Link 
+                  href={`/articulo/${cd.slug}`}
                   className={`
                     absolute bottom-[110%] left-1/2 -translate-x-1/2 mb-4 
                     w-[320px] md:w-[480px] aspect-[2/1] bg-zinc-950 
@@ -267,7 +279,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                     {/* Indicador para mobile */}
                     {activeMobileCd === cd.id && (
                       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-primary text-background px-6 py-2 text-[10px] font-label-technical tracking-widest uppercase animate-pulse shadow-2xl whitespace-nowrap z-30 border border-primary-container">
-                        {t('tocaParaLeer')}
+                        TOCA PARA LEER LA RESEÑA
                       </div>
                     )}
 
@@ -275,7 +287,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                   
                   {/* Flecha del tooltip apuntando al CD */}
                   <div className="absolute -bottom-[10px] left-1/2 -translate-x-1/2 border-l-[10px] border-l-transparent border-t-[10px] border-t-zinc-950 border-r-[10px] border-r-transparent filter drop-shadow-[0_10px_10px_rgba(0,0,0,1)]"></div>
-                </div>
+                </Link>
               </div>
             );
           })}

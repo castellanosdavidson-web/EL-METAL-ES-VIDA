@@ -131,13 +131,16 @@ export default function AdminClientLayout({ children }: { children: React.ReactN
       {/* Main Canvas */}
       <div className="ml-64 w-full flex-1 flex flex-col max-w-[calc(100vw-16rem)] min-h-screen">
         {/* TopNavBar */}
-        <header className="sticky top-0 z-40 flex justify-between items-center w-full px-gutter bg-background border-b border-outline-variant/20 h-16">
-          <div className="flex items-center gap-gutter">
-            <span className="material-symbols-outlined text-primary ml-4">search</span>
-            <input className="bg-transparent border-none focus:ring-0 text-on-surface-variant font-mono-technical text-mono-technical w-64 uppercase tracking-widest outline-none" placeholder="BUSCAR_EN_ARCHIVO..." type="text"/>
+        <header className="sticky top-0 z-40 flex flex-col justify-center w-full px-gutter bg-background border-b border-outline-variant/20 h-24">
+          <div className="w-full flex justify-between items-center mb-2">
+            <img src="/images/logo_emev.png" alt="El Metal Es Vida Logo" className="h-6 object-contain ml-4 opacity-80" />
+            <div className="flex items-center gap-gutter pr-gutter">
+              <span className="font-mono-technical text-[10px] text-primary">v2.4.0_CORE</span>
+            </div>
           </div>
-          <div className="flex items-center gap-gutter pr-gutter">
-            <span className="font-mono-technical text-mono-technical text-primary">v2.4.0_CORE</span>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary ml-4 text-sm">search</span>
+            <input className="bg-transparent border-none focus:ring-0 text-on-surface-variant font-mono-technical text-xs w-64 uppercase tracking-widest outline-none" placeholder="BUSCAR_EN_ARCHIVO..." type="text"/>
           </div>
         </header>
 

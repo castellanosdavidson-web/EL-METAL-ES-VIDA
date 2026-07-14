@@ -14,15 +14,20 @@ export default function ColeccionPage() {
   const [editCd, setEditCd] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
   
   // Form fields
   const [desc, setDesc] = useState('');
   const [artist, setArtist] = useState('');
   const [spineColor, setSpineColor] = useState('#27272a');
-  const [textColor, setTextColor] = useState('#d4d4d8');
+  const [textColor, setTextColor] = useState('#ffffff');
+  const [isNewRelease, setIsNewRelease] = useState(false);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [discPreview, setDiscPreview] = useState<string | null>(null);
+
+
   const [seoKeywords, setSeoKeywords] = useState('');
   const [faqsRaw, setFaqsRaw] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const quillModules = React.useMemo(() => ({
     toolbar: {
@@ -307,10 +312,22 @@ export default function ColeccionPage() {
 
                     <div>
                       <label className="block text-xs uppercase text-on-surface-variant mb-1 font-bold">Portada (Imagen Jewel Case)</label>
-                      <input type="file" name="image" accept="image/*" className="w-full bg-background border border-outline-variant/50 p-2 text-on-surface file:bg-primary file:text-background file:border-0 file:px-4 file:py-1 file:mr-4 file:font-bold file:uppercase file:text-xs" />
-                      {editCd?.imageUrl && (
+                      <input 
+                        type="file" 
+                        name="image" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const url = URL.createObjectURL(file);
+                            setCoverPreview(url);
+                          }
+                        }}
+                        className="w-full bg-background border border-outline-variant/50 p-2 text-on-surface file:bg-primary file:text-background file:border-0 file:px-4 file:py-1 file:mr-4 file:font-bold file:uppercase file:text-xs" 
+                      />
+                      {(coverPreview || editCd?.imageUrl) && (
                         <div className="mt-2 flex gap-4 items-center">
-                          <img src={editCd.imageUrl} alt="preview" className="w-16 h-16 object-cover border border-white/20" />
+                          <img src={coverPreview || editCd?.imageUrl} alt="preview" className="w-16 h-16 object-cover border border-white/20" />
                           <span className="text-xs text-on-surface-variant">Portada Actual</span>
                         </div>
                       )}
@@ -318,11 +335,23 @@ export default function ColeccionPage() {
 
                     <div>
                       <label className="block text-xs uppercase text-on-surface-variant mb-1 font-bold">Mockup de Disco (Opcional)</label>
-                      <input type="file" name="cdImage" accept="image/*" className="w-full bg-background border border-outline-variant/50 p-2 text-on-surface file:bg-primary file:text-background file:border-0 file:px-4 file:py-1 file:mr-4 file:font-bold file:uppercase file:text-xs" />
+                      <input 
+                        type="file" 
+                        name="cdImage" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const url = URL.createObjectURL(file);
+                            setDiscPreview(url);
+                          }
+                        }}
+                        className="w-full bg-background border border-outline-variant/50 p-2 text-on-surface file:bg-primary file:text-background file:border-0 file:px-4 file:py-1 file:mr-4 file:font-bold file:uppercase file:text-xs" 
+                      />
                       <p className="text-[10px] text-on-surface-variant mt-1">Si subes un diseño de CD (PNG sin fondo preferiblemente), reemplazará el CD por defecto.</p>
-                      {editCd?.cdImageUrl && (
+                      {(discPreview || editCd?.cdImageUrl) && (
                         <div className="mt-2 flex gap-4 items-center">
-                          <img src={editCd.cdImageUrl} alt="cd preview" className="w-16 h-16 object-cover border border-white/20 rounded-full" />
+                          <img src={discPreview || editCd?.cdImageUrl} alt="cd preview" className="w-16 h-16 object-cover border border-white/20 rounded-full" />
                           <span className="text-xs text-on-surface-variant">Disco Actual</span>
                         </div>
                       )}
