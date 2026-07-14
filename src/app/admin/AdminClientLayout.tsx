@@ -14,21 +14,28 @@ export default function AdminClientLayout({ children }: { children: React.ReactN
   const [avatarUrl, setAvatarUrl] = React.useState('');
 
   React.useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session && pathname !== '/admin/login') {
-        router.push('/admin/login');
+    const ADMIN_EMAIL = 'elmetalesvidalml@gmail.com';
+
+    const checkAdminSession = async (session: any) => {
+      if (!session) {
+        if (pathname !== '/admin/login') router.push('/admin/login');
+        else setLoading(false);
+      } else if (session.user?.email !== ADMIN_EMAIL) {
+        // If not admin, sign out and redirect to login
+        await supabase.auth.signOut();
+        router.push('/admin/login?error=unauthorized');
       } else {
-        setSessionUser(session?.user);
+        setSessionUser(session.user);
         setLoading(false);
       }
+    };
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      checkAdminSession(session);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session && pathname !== '/admin/login') {
-        router.push('/admin/login');
-      } else {
-        setSessionUser(session?.user);
-      }
+      checkAdminSession(session);
     });
 
     // Cargar perfil dinámico
@@ -133,7 +140,7 @@ export default function AdminClientLayout({ children }: { children: React.ReactN
         {/* TopNavBar */}
         <header className="sticky top-0 z-40 flex flex-col justify-center w-full px-gutter bg-background border-b border-outline-variant/20 h-24">
           <div className="w-full flex justify-between items-center mb-2">
-            <img src="/images/logo_emev.png" alt="El Metal Es Vida Logo" className="h-6 object-contain ml-4 opacity-80" />
+            <img src="/LOGO 2.png" alt="El Metal Es Vida Logo" className="h-6 object-contain ml-4 opacity-80" />
             <div className="flex items-center gap-gutter pr-gutter">
               <span className="font-mono-technical text-[10px] text-primary">v2.4.0_CORE</span>
             </div>

@@ -108,9 +108,9 @@ export default function Header({ onOpenMenu }: HeaderProps) {
                 <Image src="/images/flags/pt.png" alt="PT" fill sizes="(max-width: 640px) 28px, 36px" className="object-cover rounded-[2px]" />
               </button>
             </div>
-          <Link href="/admin" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors duration-200 hidden md:block">
+          <a href="/admin" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors duration-200 hidden md:block">
             <span className="material-symbols-outlined text-3xl">account_circle</span>
-          </Link>
+          </a>
           <button onClick={onOpenMenu} className="text-on-surface-variant hover:text-primary transition-colors duration-200 flex items-center gap-2 group">
             <span className="font-label-technical text-label-technical uppercase hidden md:inline-block group-hover:text-primary">{t('menu') || 'Menú'}</span>
             <span className="material-symbols-outlined text-3xl">menu</span>
