@@ -20,11 +20,10 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
     textColor: cd.textColor || '#d4d4d8'
   }));
 
-  // Inicializar el CD activo con el elemento del medio
+  // Inicializar el CD activo con el elemento más reciente (el primero)
   useEffect(() => {
     if (displayCds.length > 0 && !activeCdId) {
-      const middleIndex = Math.floor(displayCds.length / 2);
-      setActiveCdId(displayCds[middleIndex].id);
+      setActiveCdId(displayCds[0].id);
     }
   }, [displayCds, activeCdId]);
 
@@ -67,13 +66,13 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
         </div>
 
         {/* PANEL IZQUIERDO: ESTANTERÍA DE CDS (70%) */}
-        <div className="relative w-full md:w-[65%] lg:w-[70%] pt-10 md:pt-16 pb-4 md:pb-8 border-b md:border-b-0 md:border-r border-white/10 z-10 flex flex-col justify-end">
+        <div className="relative w-full md:w-[65%] lg:w-[70%] pt-6 md:pt-10 pb-4 md:pb-6 border-b md:border-b-0 md:border-r border-white/10 z-10 flex flex-col justify-end">
           
           {/* Repisa (Donde se apoyan los CDs) */}
           <div className="absolute bottom-0 left-0 right-0 h-4 md:h-6 bg-[#0a0a0a] border-t-2 border-white/10 shadow-[0_-5px_15px_rgba(0,0,0,0.8)] z-10"></div>
 
           {/* Contenedor Flex de CDs */}
-          <div className="relative z-20 flex items-end min-h-[350px] md:min-h-[400px] gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar">
+          <div className="relative z-20 flex items-end min-h-[250px] md:min-h-[280px] gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar">
             
             {displayCds.map((cd, index) => {
               const isTailwindClass = cd.spineColor.startsWith('bg-');
@@ -85,7 +84,8 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
               const textClasses = isTailwindText ? cd.textColor : '';
               
               const tilt = (index % 5 === 0) ? '-rotate-[1deg]' : (index % 7 === 0) ? 'rotate-[1deg]' : '';
-              const height = 'h-[285px] md:h-[342px]';
+              // Reducimos la altura de los CDs para que el módulo sea más bajo
+              const height = 'h-[220px] md:h-[250px]';
               const isSelected = activeCdId === cd.id;
 
               return (
@@ -121,7 +121,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                       <div className="absolute bottom-0 left-0 right-0 h-[8px] bg-gradient-to-t from-black/60 to-transparent pointer-events-none z-10"></div>
 
                       <div 
-                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform -rotate-90 whitespace-nowrap font-mono-technical tracking-normal text-[9px] md:text-[10px] ${textClasses} uppercase w-[250px] md:w-[300px] max-w-[250px] md:max-w-[300px] text-center text-ellipsis overflow-hidden z-0`}
+                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform -rotate-90 whitespace-nowrap font-mono-technical tracking-normal text-[9px] md:text-[10px] ${textClasses} uppercase w-[200px] md:w-[230px] max-w-[200px] md:max-w-[230px] text-center text-ellipsis overflow-hidden z-0`}
                         style={textStyle}
                       >
                         <span className="font-black">{cd.artist}</span> 
@@ -142,7 +142,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
         </div>
 
         {/* PANEL DERECHO: EXHIBICIÓN DEL CD (30%) */}
-        <div className="relative w-full md:w-[35%] lg:w-[30%] bg-[#080808] z-10 flex flex-col items-center justify-center p-6 md:p-8 shadow-[inset_15px_0_30px_rgba(0,0,0,0.9)] min-h-[400px]">
+        <div className="relative w-full md:w-[35%] lg:w-[30%] bg-[#080808] z-10 flex flex-col items-center justify-center p-6 md:p-8 shadow-[inset_15px_0_30px_rgba(0,0,0,0.9)] min-h-[300px] md:min-h-[280px]">
           
           {activeCd && (
             <div className="w-full flex flex-col items-center animate-fade-in">
