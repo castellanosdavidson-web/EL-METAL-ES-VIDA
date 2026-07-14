@@ -28,6 +28,30 @@ export default function AjustesPage() {
   const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
   const [newAdminMessage, setNewAdminMessage] = useState('');
 
+  const [adminUsers, setAdminUsers] = useState<any[]>([]);
+  const [loadingAdmins, setLoadingAdmins] = useState(true);
+  const [editingAdminId, setEditingAdminId] = useState<string | null>(null);
+  const [editingPassword, setEditingPassword] = useState('');
+  const [adminListMessage, setAdminListMessage] = useState('');
+
+  const fetchAdmins = async () => {
+    setLoadingAdmins(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/api/admin/users', {
+        headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAdminUsers(data.users);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingAdmins(false);
+    }
+  };
+
   useEffect(() => {
     // Check if logo exists
     const checkLogo = async () => {
@@ -65,6 +89,7 @@ export default function AjustesPage() {
     checkLogo();
     checkCover();
     checkAvatar();
+    fetchAdmins();
   }, []);
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -209,11 +234,63 @@ export default function AjustesPage() {
         setNewAdminMessage('¡Éxito! Administrador creado correctamente. Ya puede iniciar sesión.');
         setNewAdminEmail('');
         setNewAdminPassword('');
+        fetchAdmins();
       }
     } catch (err: any) {
       setNewAdminMessage(`Error: ${err.message}`);
     } finally {
       setIsCreatingAdmin(false);
+    }
+  };
+
+  const handleDeleteAdmin = async (id: string) => {
+    if (!confirm('¿Estás seguro de que deseas eliminar este administrador? Esta acción no se puede deshacer.')) return;
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`/api/admin/users?id=${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAdminListMessage('Administrador eliminado correctamente.');
+        fetchAdmins();
+        setTimeout(() => setAdminListMessage(''), 3000);
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (err: any) {
+      alert('Error: ' + err.message);
+    }
+  };
+
+  const handleUpdatePassword = async (id: string) => {
+    if (!editingPassword || editingPassword.length < 6) {
+      alert('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`/api/admin/users`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}` 
+        },
+        body: JSON.stringify({ id, password: editingPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAdminListMessage('Contraseña actualizada correctamente.');
+        setEditingAdminId(null);
+        setEditingPassword('');
+        setTimeout(() => setAdminListMessage(''), 3000);
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (err: any) {
+      alert('Error: ' + err.message);
     }
   };
 
@@ -495,6 +572,64 @@ export default function AjustesPage() {
                 </button>
               </div>
             </form>
+
+            <div className="mt-8">
+              <h4 className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface mb-4">Administradores Activos</h4>
+              
+              {adminListMessage && (
+                <div className="p-3 bg-green-900/20 border border-green-500/50 text-green-400 mb-4">
+                  <p className="font-mono-technical text-[11px] uppercase">{adminListMessage}</p>
+                </div>
+              )}
+
+              {loadingAdmins ? (
+                <p className="font-mono-technical text-xs text-on-surface-variant">Cargando...</p>
+              ) : adminUsers.length === 0 ? (
+                <p className="font-mono-technical text-xs text-on-surface-variant border border-outline-variant/30 p-4">No hay administradores alternos creados.</p>
+              ) : (
+                <div className="border border-outline-variant/30 bg-surface-container-low overflow-hidden">
+                  <div className="grid grid-cols-12 gap-4 p-4 border-b border-outline-variant/30 bg-surface-container font-label-sm text-[10px] text-on-surface-variant uppercase tracking-widest">
+                    <div className="col-span-4">Correo Electrónico</div>
+                    <div className="col-span-4">ID de Sistema</div>
+                    <div className="col-span-4 text-right">Acciones</div>
+                  </div>
+                  {adminUsers.map(user => (
+                    <div key={user.id} className="grid grid-cols-12 gap-4 p-4 border-b border-outline-variant/10 items-center hover:bg-surface-container transition-colors group">
+                      <div className="col-span-4 font-mono-technical text-xs text-on-surface break-all">{user.email}</div>
+                      <div className="col-span-4 font-mono-technical text-[10px] text-on-surface-variant/70">{user.id.substring(0, 12)}...</div>
+                      <div className="col-span-4 flex justify-end gap-2">
+                        {editingAdminId === user.id ? (
+                          <div className="flex items-center gap-2 w-full max-w-[200px]">
+                            <input 
+                              type="password" 
+                              placeholder="Nueva Clave" 
+                              className="flex-1 bg-background border border-outline-variant p-2 font-mono-technical text-[10px] outline-none text-on-surface"
+                              value={editingPassword}
+                              onChange={(e) => setEditingPassword(e.target.value)}
+                            />
+                            <button onClick={() => handleUpdatePassword(user.id)} className="bg-primary text-on-primary p-2 flex items-center justify-center hover:bg-inverse-primary transition-colors" title="Guardar">
+                              <span className="material-symbols-outlined text-[16px]">save</span>
+                            </button>
+                            <button onClick={() => setEditingAdminId(null)} className="border border-outline-variant p-2 flex items-center justify-center hover:bg-surface-variant text-on-surface-variant transition-colors" title="Cancelar">
+                              <span className="material-symbols-outlined text-[16px]">close</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <button onClick={() => setEditingAdminId(user.id)} className="p-2 border border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors flex items-center justify-center" title="Cambiar Contraseña">
+                              <span className="material-symbols-outlined text-[18px]">key</span>
+                            </button>
+                            <button onClick={() => handleDeleteAdmin(user.id)} className="p-2 border border-outline-variant text-error hover:bg-error hover:text-on-error hover:border-error transition-colors flex items-center justify-center" title="Eliminar Admin">
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </section>
         </div>
 
