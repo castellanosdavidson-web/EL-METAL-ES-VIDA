@@ -84,8 +84,8 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
               const textClasses = isTailwindText ? cd.textColor : '';
               
               const tilt = (index % 5 === 0) ? '-rotate-[1deg]' : (index % 7 === 0) ? 'rotate-[1deg]' : '';
-              // Reducimos la altura de los CDs para que el módulo sea más bajo
-              const height = 'h-[220px] md:h-[250px]';
+              // Hacemos los CDs más altos dentro del mismo espacio (relativo a la altura del contenedor)
+              const height = 'h-[250px] md:h-[300px]';
               const isSelected = activeCdId === cd.id;
 
               return (
@@ -203,7 +203,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
 
               {/* Título de Exhibición */}
               <div className="text-center mb-6 w-full px-2">
-                <span className="font-label-technical text-[10px] text-primary tracking-widest uppercase mb-1 block">Seleccionado</span>
+                <span className="font-label-technical text-[10px] text-primary tracking-widest uppercase mb-1 block">{t('cdSeleccionado')}</span>
                 <h3 className="font-headline-sm uppercase text-on-surface truncate w-full">{activeCd.title}</h3>
                 <p className="font-body-sm text-on-surface-variant truncate w-full">{activeCd.artist}</p>
               </div>
@@ -216,7 +216,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                 <div className="absolute inset-0 bg-primary opacity-0 group-hover/btn:opacity-20 transition-opacity duration-300"></div>
                 <span className="font-label-technical text-xs tracking-widest text-primary group-hover/btn:text-white uppercase flex items-center gap-2 relative z-10 transition-colors">
                   <span className="material-symbols-outlined text-[16px]">headphones</span>
-                  Acceder a la reseña
+                  {t('cdAccederResena')}
                 </span>
                 
                 {/* Animación de escáner */}
@@ -229,7 +229,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
       
       <div className="md:hidden flex justify-center mt-6 text-on-surface-variant font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center opacity-70">
         <span className="material-symbols-outlined text-[12px]">swipe_left</span>
-        Desliza para explorar la colección
+        {t('cdDeslizaExplorar')}
         <span className="material-symbols-outlined text-[12px]">swipe_right</span>
       </div>
     </div>
