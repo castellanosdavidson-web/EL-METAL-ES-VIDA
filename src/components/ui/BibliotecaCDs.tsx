@@ -47,7 +47,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
   const activeShadowColor = isActiveTailwind ? 'rgba(255,255,255,0.2)' : activeCd?.spineColor;
 
   return (
-    <div className="w-full relative py-12 px-0 md:px-margin-desktop max-w-container-max mx-auto z-[100] mt-8">
+    <div className="w-full relative py-12 px-0 md:px-margin-desktop max-w-container-max mx-auto z-10 mt-8">
       
       {/* Encabezado */}
       <div className="flex justify-between items-end mb-8 border-b-2 border-surface-container-highest pb-4 px-margin-mobile md:px-0">

@@ -15,9 +15,9 @@ export default function Footer() {
           <span className="font-label-technical text-label-technical text-on-surface-variant">© {new Date().getFullYear()} {t('archiveVersion')}</span>
         </div>
         <nav className="flex gap-6">
-          <Link href="#" className="font-label-technical text-label-technical text-on-surface-variant hover:text-primary hover:underline transition-colors opacity-70 hover:opacity-100">{t('privacy')}</Link>
-          <Link href="#" className="font-label-technical text-label-technical text-on-surface-variant hover:text-primary hover:underline transition-colors opacity-70 hover:opacity-100">{t('terms')}</Link>
-          <Link href="#" className="font-label-technical text-label-technical text-on-surface-variant hover:text-primary hover:underline transition-colors opacity-70 hover:opacity-100">{t('contact')}</Link>
+          <Link href="/privacidad" className="font-label-technical text-label-technical text-on-surface-variant hover:text-primary hover:underline transition-colors opacity-70 hover:opacity-100">{t('privacy')}</Link>
+          <Link href="/terminos" className="font-label-technical text-label-technical text-on-surface-variant hover:text-primary hover:underline transition-colors opacity-70 hover:opacity-100">{t('terms')}</Link>
+          <a href="mailto:contacto@elmetalesvida.com" className="font-label-technical text-label-technical text-on-surface-variant hover:text-primary hover:underline transition-colors opacity-70 hover:opacity-100">{t('contact')}</a>
         </nav>
       </div>
     </footer>
