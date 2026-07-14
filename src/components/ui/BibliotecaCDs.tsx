@@ -59,10 +59,10 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
       </div>
 
       {/* Estructura del Gabinete Amplificador (El Estante) */}
-      <div className="relative pt-10 md:pt-16 pb-4 md:pb-8 shadow-2xl rounded-sm md:rounded-xl mx-2 md:mx-0 overflow-hidden bg-black border-4 md:border-8 border-[#1a1a1a] shadow-[inset_0_0_10px_rgba(0,0,0,1),_0_20px_50px_rgba(0,0,0,0.8)]">
+      <div className="relative pt-10 md:pt-16 pb-4 md:pb-8 shadow-2xl rounded-sm md:rounded-xl mx-2 md:mx-0 bg-black border-4 md:border-8 border-[#1a1a1a] shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-20">
         
-        {/* Textura Tolex y Grill (Malla Frontal de Amplificador) */}
-        <div className="absolute inset-0 pointer-events-none">
+        {/* Textura Tolex y Grill (Malla Frontal de Amplificador) - Con overflow hidden para recortar texturas */}
+        <div className="absolute inset-0 rounded-sm md:rounded-xl overflow-hidden pointer-events-none z-0">
           <div className="absolute inset-0 shadow-[inset_0_40px_100px_rgba(0,0,0,1)] z-0"></div>
           <div className="absolute inset-0 opacity-40 mix-blend-screen" 
                style={{ 
@@ -75,10 +75,11 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
         </div>
 
         {/* Repisa (Donde se apoyan los CDs) */}
-        <div className="absolute bottom-0 left-0 right-0 h-4 md:h-6 bg-[#0a0a0a] border-t-2 border-white/10 shadow-[0_-5px_15px_rgba(0,0,0,0.8)] z-20"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-4 md:h-6 bg-[#0a0a0a] border-t-2 border-white/10 shadow-[0_-5px_15px_rgba(0,0,0,0.8)] z-10 rounded-b-sm md:rounded-b-xl"></div>
 
         {/* Contenedor de CDs */}
-        <div className="relative z-10 flex md:flex-wrap md:justify-center items-end min-h-[350px] md:min-h-[400px] gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar">
+        {/* Usamos md:overflow-visible para que los tooltips no se corten en desktop, y en mobile agregamos padding superior para que quepan */}
+        <div className="relative z-20 flex md:flex-wrap md:justify-center items-end min-h-[450px] md:min-h-[400px] gap-0 md:gap-px px-4 md:px-6 pt-[180px] md:pt-0 pb-2 md:pb-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory hide-scrollbar">
           
           {displayCds.map((cd, index) => {
             const isTailwindClass = cd.spineColor.startsWith('bg-');
@@ -92,11 +93,13 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
             // Variaciones aleatorias para realismo
             const tilt = (index % 5 === 0) ? '-rotate-[1deg]' : (index % 7 === 0) ? 'rotate-[1deg]' : '';
             const height = 'h-[285px] md:h-[342px]';
+            
+            const shadowColor = isTailwindClass ? 'rgba(255,255,255,0.2)' : cd.spineColor;
 
             return (
               <div 
                 key={cd.id}
-                className={`relative group perspective-[1000px] z-10 hover:z-[99999] shrink-0 snap-center transition-transform duration-500 origin-bottom ${tilt} mx-[1px]`}
+                className={`relative group perspective-[1000px] z-30 hover:z-[99999] shrink-0 snap-center transition-transform duration-500 origin-bottom ${tilt} mx-[1px]`}
                 onMouseEnter={() => setHoveredCd(cd.id)}
                 onMouseLeave={() => {
                   setHoveredCd(null);
@@ -157,10 +160,13 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
                   className={`
                     absolute bottom-[115%] left-1/2 -translate-x-1/2 mb-4 
                     w-[280px] md:w-[480px] aspect-[2/1] bg-[#050505] 
-                    border border-white/20 rounded-sm shadow-[0_40px_80px_rgba(0,0,0,1)]
+                    border border-white/20 rounded-sm
                     transition-all duration-300 ease-out origin-bottom z-[99999]
                     ${(hoveredCd === cd.id || activeMobileCd === cd.id) ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4 pointer-events-none'}
                   `}
+                  style={{
+                    boxShadow: (hoveredCd === cd.id || activeMobileCd === cd.id) ? `0 30px 80px -10px ${shadowColor}` : 'none'
+                  }}
                 >
                   <div className="flex w-full h-full p-[2px] gap-[2px] relative bg-gradient-to-b from-white/10 to-transparent">
                     <div className="absolute top-[10%] left-[3px] w-[6px] h-[15%] bg-white/30 rounded-r-sm z-20 shadow-sm"></div>
