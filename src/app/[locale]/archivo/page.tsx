@@ -46,7 +46,8 @@ export default function EnciclopediaPage() {
     t('catAnalisis'),
     t('catCiencia'),
     t('catEquipamiento'),
-    t('catBandas')
+    t('catBandas'),
+    'RESEÑAS' // Hardcoded because we don't want to break translation files, mapping it below
   ];
 
   const sortedPosts = [...posts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -61,7 +62,8 @@ export default function EnciclopediaPage() {
           [t('catAnalisis')]: 'Análisis Técnico',
           [t('catCiencia')]: 'Ciencia Sonora',
           [t('catEquipamiento')]: 'Equipamiento',
-          [t('catBandas')]: 'Bandas'
+          [t('catBandas')]: 'Bandas',
+          ['RESEÑAS']: 'Reseña'
         };
         return p.category === esCategories[selectedCategory];
       });

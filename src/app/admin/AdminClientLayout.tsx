@@ -69,6 +69,14 @@ export default function AdminClientLayout({ children }: { children: React.ReactN
     return "flex items-center gap-stack-tight text-on-surface-variant hover:bg-surface-variant/30 px-4 py-3 border-l-4 border-transparent hover:text-primary transition-all";
   };
 
+  const [globalSearchTerm, setGlobalSearchTerm] = React.useState('');
+
+  const handleGlobalSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && globalSearchTerm.trim()) {
+      router.push(`/admin/search?q=${encodeURIComponent(globalSearchTerm.trim())}`);
+    }
+  };
+
   if (pathname === '/admin/login') {
     return <>{children}</>;
   }
@@ -122,6 +130,12 @@ export default function AdminClientLayout({ children }: { children: React.ReactN
             <span className="material-symbols-outlined" style={pathname.includes('/productos') ? { fontVariationSettings: "'FILL' 1" } : {}}>shopping_cart</span>
             <span className="font-label-sm text-label-sm uppercase tracking-widest">Afiliados</span>
           </Link>
+          
+          {/* Añadimos enlace de búsqueda para que se mantenga activo */}
+          <Link className={getLinkClass('/admin/search')} href="/admin/search">
+            <span className="material-symbols-outlined" style={pathname.includes('/search') ? { fontVariationSettings: "'FILL' 1" } : {}}>search</span>
+            <span className="font-label-sm text-label-sm uppercase tracking-widest">Buscador</span>
+          </Link>
 
           <Link className={getLinkClass('/admin/usuarios')} href="/admin/usuarios">
             <span className="material-symbols-outlined" style={pathname.includes('/usuarios') ? { fontVariationSettings: "'FILL' 1" } : {}}>group</span>
@@ -152,7 +166,14 @@ export default function AdminClientLayout({ children }: { children: React.ReactN
           </div>
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary ml-4 text-sm">search</span>
-            <input className="bg-transparent border-none focus:ring-0 text-on-surface-variant font-mono-technical text-xs w-64 uppercase tracking-widest outline-none" placeholder="BUSCAR_EN_ARCHIVO..." type="text"/>
+            <input 
+              className="bg-transparent border-none focus:ring-0 text-on-surface-variant font-mono-technical text-xs w-64 uppercase tracking-widest outline-none" 
+              placeholder="BUSCAR_GLOBALMENTE..." 
+              type="text"
+              value={globalSearchTerm}
+              onChange={(e) => setGlobalSearchTerm(e.target.value)}
+              onKeyDown={handleGlobalSearch}
+            />
           </div>
         </header>
 
