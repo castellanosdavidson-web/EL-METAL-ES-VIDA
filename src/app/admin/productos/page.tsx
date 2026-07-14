@@ -15,6 +15,13 @@ export default function GearPage() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 15;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const [desc, setDesc] = useState('');
   const [faqsRaw, setFaqsRaw] = useState('');
 
@@ -213,6 +220,9 @@ export default function GearPage() {
     article.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+  const paginatedArticles = filteredArticles.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   return (
     <main className="p-8 flex-1 flex flex-col h-full">
       <div className="space-y-8 max-w-7xl mx-auto w-full">
@@ -274,10 +284,10 @@ export default function GearPage() {
               <tbody className="divide-y divide-outline-variant/10">
                 {loadingArticles ? (
                   <tr><td colSpan={5} className="px-6 py-8 text-center text-primary animate-pulse font-mono-technical uppercase">CARGANDO INVENTARIO...</td></tr>
-                ) : filteredArticles.length === 0 ? (
+                ) : paginatedArticles.length === 0 ? (
                   <tr><td colSpan={5} className="px-6 py-8 text-center text-on-surface-variant font-mono-technical uppercase">NO HAY REGISTROS COINCIDENTES</td></tr>
                 ) : (
-                  filteredArticles.map((article, idx) => (
+                  paginatedArticles.map((article, idx) => (
                     <tr key={article.id} className={`hover:bg-surface-variant/10 transition-colors group ${article.is_hidden ? 'opacity-50' : ''}`}>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-4">
@@ -317,6 +327,34 @@ export default function GearPage() {
                 )}
               </tbody>
             </table>
+          </div>
+          
+          {/* Pagination / Footer */}
+          <div className="px-6 py-4 bg-surface-container flex justify-between items-center border-t border-outline-variant/20">
+            <p className="font-mono-technical text-[11px] text-on-surface-variant uppercase">
+              Mostrando {paginatedArticles.length} de {filteredArticles.length} entradas
+            </p>
+            {totalPages > 1 && (
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined text-xs">chevron_left</span>
+                </button>
+                <span className="flex items-center justify-center font-mono-technical text-xs px-2 text-on-surface-variant">
+                  {currentPage} / {totalPages}
+                </span>
+                <button 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined text-xs">chevron_right</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

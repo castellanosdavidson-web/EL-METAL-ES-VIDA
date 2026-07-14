@@ -15,6 +15,13 @@ export default function ArticulosPage() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 15;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const [desc, setDesc] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [seoKeywords, setSeoKeywords] = useState('');
@@ -169,7 +176,6 @@ export default function ArticulosPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Validar el tamaño del archivo en el cliente para evitar el error 413 de Vercel (4.5 MB límite)
     const imageFile = formData.get('image') as File | null;
     if (imageFile && imageFile.name && imageFile.size > 4 * 1024 * 1024) {
       setMessage('Error: La imagen de portada supera el límite de 4 MB de Vercel. Por favor, comprímela o usa una imagen más ligera.');
@@ -177,8 +183,6 @@ export default function ArticulosPage() {
       return;
     }
 
-    // Override the description with the ReactQuill state
-    // Si hay URL de YouTube, añadirla al final del contenido
     let finalDesc = desc;
     if (youtubeUrl.trim()) {
       finalDesc += `\n<p>${youtubeUrl.trim()}</p>`;
@@ -195,7 +199,6 @@ export default function ArticulosPage() {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
-      // Handle Audio Upload via Signed URL (Bypass Vercel 4.5MB limit)
       const audioFile = formData.get('audio') as File | null;
       if (audioFile && audioFile.size > 0) {
         setMessage('SUBIENDO AUDIO (ESPERE POR FAVOR)...');
@@ -204,7 +207,6 @@ export default function ArticulosPage() {
         const sanitizedOriginal = originalNameWithoutExt.replace(/[^a-zA-Z0-9 -_]/g, '').trim();
         const fileName = `Elmetalesvida - ${sanitizedOriginal} - ${Date.now()}.${fileExt}`;
 
-        // Get signed URL
         const signedRes = await fetch('/api/upload/signed-url', {
           method: 'POST',
           headers: {
@@ -217,7 +219,6 @@ export default function ArticulosPage() {
         const signedData = await signedRes.json();
         if (!signedRes.ok) throw new Error(signedData.error || 'Error al obtener enlace de subida seguro');
 
-        // Upload directly to Supabase using signed URL
         const uploadRes = await fetch(signedData.signedUrl, {
           method: 'PUT',
           headers: {
@@ -228,13 +229,11 @@ export default function ArticulosPage() {
 
         if (!uploadRes.ok) throw new Error('Error al subir archivo MP3 a Supabase');
 
-        // Get the public URL for the uploaded file
         const { data: publicUrlData } = supabase.storage
           .from('articles')
           .getPublicUrl(signedData.path);
           
         formData.set('audioUrl', publicUrlData.publicUrl);
-        // Remove the audio file from formData to avoid Vercel 4.5MB limit in API route
         formData.delete('audio');
       }
 
@@ -258,7 +257,7 @@ export default function ArticulosPage() {
 
       if (response.ok) {
         setMessage(editArticle ? '¡Artículo actualizado con éxito!' : '¡Artículo subido con éxito!');
-        fetchArticles(); // Refrescar lista
+        fetchArticles(); 
         setTimeout(() => {
           setIsModalOpen(false);
           setEditArticle(null);
@@ -321,10 +320,12 @@ export default function ArticulosPage() {
     article.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+  const paginatedArticles = filteredArticles.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   return (
     <main className="p-8 flex-1 flex flex-col h-full">
       <div className="space-y-8 max-w-7xl mx-auto w-full">
-        {/* Page Header */}
         <div className="flex justify-between items-end">
           <div>
             <h2 className="font-headline-lg text-headline-lg text-on-surface uppercase tracking-tight">Archivos Técnicos</h2>
@@ -339,7 +340,6 @@ export default function ArticulosPage() {
           </button>
         </div>
 
-        {/* Stats Bar (Bento style) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-masonry-gap">
           <div className="p-6 border border-outline-variant/20 bg-surface-container-lowest">
             <p className="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Total Entradas</p>
@@ -359,7 +359,6 @@ export default function ArticulosPage() {
           </div>
         </div>
 
-        {/* Search & Filter */}
         <div className="flex gap-4 mb-4">
             <input 
               type="text" 
@@ -370,7 +369,6 @@ export default function ArticulosPage() {
             />
         </div>
 
-        {/* Main List Table */}
         <div className="border border-outline-variant/20 bg-surface-container-lowest overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[800px]">
@@ -387,10 +385,10 @@ export default function ArticulosPage() {
               <tbody className="divide-y divide-outline-variant/10">
                 {loadingArticles ? (
                   <tr><td colSpan={6} className="px-6 py-8 text-center text-primary animate-pulse font-mono-technical uppercase">CARGANDO ARCHIVOS DEL NÚCLEO...</td></tr>
-                ) : filteredArticles.length === 0 ? (
+                ) : paginatedArticles.length === 0 ? (
                   <tr><td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant font-mono-technical uppercase">NO HAY REGISTROS COINCIDENTES</td></tr>
                 ) : (
-                  filteredArticles.map((article, idx) => (
+                  paginatedArticles.map((article) => (
                     <tr key={article.id} className={`hover:bg-surface-variant/10 transition-colors group ${article.is_hidden ? 'opacity-50' : ''}`}>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-4">
@@ -437,16 +435,30 @@ export default function ArticulosPage() {
           
           {/* Pagination / Footer */}
           <div className="px-6 py-4 bg-surface-container flex justify-between items-center border-t border-outline-variant/20">
-            <p className="font-mono-technical text-[11px] text-on-surface-variant uppercase">Mostrando {filteredArticles.length} entradas</p>
-            <div className="flex gap-2">
-              <button className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90">
-                <span className="material-symbols-outlined text-xs">chevron_left</span>
-              </button>
-              <button className="w-8 h-8 flex items-center justify-center bg-primary-container text-on-surface font-mono-technical text-xs">1</button>
-              <button className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90">
-                <span className="material-symbols-outlined text-xs">chevron_right</span>
-              </button>
-            </div>
+            <p className="font-mono-technical text-[11px] text-on-surface-variant uppercase">
+              Mostrando {paginatedArticles.length} de {filteredArticles.length} entradas
+            </p>
+            {totalPages > 1 && (
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined text-xs">chevron_left</span>
+                </button>
+                <span className="flex items-center justify-center font-mono-technical text-xs px-2 text-on-surface-variant">
+                  {currentPage} / {totalPages}
+                </span>
+                <button 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined text-xs">chevron_right</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

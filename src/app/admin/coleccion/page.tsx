@@ -14,6 +14,13 @@ export default function ColeccionPage() {
   const [editCd, setEditCd] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 15;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
   
   // Form fields
   const [desc, setDesc] = useState('');
@@ -194,6 +201,9 @@ export default function ColeccionPage() {
     (cd.artist && cd.artist.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const totalPages = Math.ceil(filteredCds.length / ITEMS_PER_PAGE);
+  const paginatedCds = filteredCds.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   return (
     <div className="p-8 pb-32">
       <div className="flex justify-between items-end mb-8 border-b border-outline-variant/30 pb-4">
@@ -235,7 +245,7 @@ export default function ColeccionPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredCds.map((cd) => (
+              {paginatedCds.map((cd) => (
                 <tr key={cd.id} className="border-b border-outline-variant/10 hover:bg-surface-variant/20 transition-colors">
                   <td className="p-4">
                     <img src={cd.imageUrl} alt={cd.title} className="w-12 h-12 object-cover border border-outline-variant/50" />
@@ -271,13 +281,41 @@ export default function ColeccionPage() {
                   </td>
                 </tr>
               ))}
-              {filteredCds.length === 0 && (
+              {paginatedCds.length === 0 && (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-on-surface-variant font-mono-technical">SIN_RESULTADOS</td>
                 </tr>
               )}
             </tbody>
           </table>
+          
+          {/* Pagination / Footer */}
+          <div className="px-6 py-4 bg-surface-container flex justify-between items-center border-t border-outline-variant/20">
+            <p className="font-mono-technical text-[11px] text-on-surface-variant uppercase">
+              Mostrando {paginatedCds.length} de {filteredCds.length} entradas
+            </p>
+            {totalPages > 1 && (
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined text-xs">chevron_left</span>
+                </button>
+                <span className="flex items-center justify-center font-mono-technical text-xs px-2 text-on-surface-variant">
+                  {currentPage} / {totalPages}
+                </span>
+                <button 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="w-8 h-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary-container hover:text-on-surface transition-colors active:scale-90 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined text-xs">chevron_right</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
