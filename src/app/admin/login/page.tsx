@@ -18,7 +18,6 @@ export default function LoginPage() {
   const [password, setPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState('');
-  const [isRegistering, setIsRegistering] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -26,30 +25,16 @@ export default function LoginPage() {
     setLoading(true);
     setMessage('');
     
-    if (isRegistering) {
-      // Registrar usuario
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      if (error) {
-        setMessage(`Error al registrar: ${error.message}`);
-      } else {
-        setMessage('Usuario registrado. Revisa tu correo para confirmar o inicia sesión si ya está confirmado.');
-        setIsRegistering(false); // Volver a modo login
-      }
+    // Iniciar sesión
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      setMessage(`Error al ingresar: ${error.message}`);
     } else {
-      // Iniciar sesión
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) {
-        setMessage(`Error al ingresar: ${error.message}`);
-      } else {
-        // Redirigir al panel si es exitoso
-        router.push('/admin');
-      }
+      // Redirigir al panel si es exitoso
+      router.push('/admin');
     }
     setLoading(false);
   };
@@ -61,7 +46,7 @@ export default function LoginPage() {
           <span className="material-symbols-outlined text-primary text-4xl mb-2">admin_panel_settings</span>
           <h1 className="font-headline-lg uppercase text-on-surface">Panel Central</h1>
           <p className="font-body-md text-on-surface-variant">
-            {isRegistering ? 'Crea tu cuenta de administrador.' : 'Ingresa con tu correo y contraseña.'}
+            Ingresa con tu correo y contraseña.
           </p>
         </div>
         
@@ -102,20 +87,11 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-primary text-on-primary px-6 py-4 uppercase font-label-technical font-bold flex items-center justify-center gap-3 hover:scale-105 transition-all disabled:opacity-50"
           >
-            <span className="material-symbols-outlined">{isRegistering ? 'person_add' : 'login'}</span>
-            {loading ? 'PROCESANDO...' : (isRegistering ? 'CREAR CUENTA' : 'INICIAR SESIÓN')}
+            <span className="material-symbols-outlined">login</span>
+            {loading ? 'PROCESANDO...' : 'INICIAR SESIÓN'}
           </button>
         </form>
 
-        <button 
-          onClick={() => {
-            setIsRegistering(!isRegistering);
-            setMessage('');
-          }}
-          className="text-primary font-label-sm uppercase hover:underline mt-2"
-        >
-          {isRegistering ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí'}
-        </button>
       </div>
     </main>
   );
