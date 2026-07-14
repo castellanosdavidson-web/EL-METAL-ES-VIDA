@@ -34,7 +34,6 @@ export default function ColeccionPage() {
 
   const [seoKeywords, setSeoKeywords] = useState('');
   const [faqsRaw, setFaqsRaw] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
 
   const quillModules = React.useMemo(() => ({
     toolbar: {
