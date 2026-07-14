@@ -103,9 +103,10 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
               const isSelected = activeCdId === cd.id;
 
               return (
-                <div 
+                <Link 
+                  href={`/articulo/${cd.slug}`}
                   key={cd.id}
-                  className={`relative group perspective-[1000px] z-30 shrink-0 snap-center transition-all duration-500 origin-bottom ${tilt} mx-[1px] ${isSelected ? 'z-[99999] scale-y-105 -translate-y-2' : 'hover:z-[9999] hover:-translate-y-2'}`}
+                  className={`relative group perspective-[1000px] z-30 shrink-0 snap-center transition-all duration-500 origin-bottom ${tilt} mx-[1px] ${isSelected ? 'z-[99999] scale-y-105 -translate-y-2' : 'hover:z-[9999] hover:-translate-y-2'} block`}
                   onMouseEnter={() => setActiveCdId(cd.id)}
                   onClick={() => setActiveCdId(cd.id)}
                 >
@@ -149,7 +150,7 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
 
                     <div className="h-[4px] md:h-[5px] w-full bg-gradient-to-t from-white/30 to-white/10 border-t border-black/40 z-20"></div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
