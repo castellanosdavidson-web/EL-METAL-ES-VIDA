@@ -89,7 +89,7 @@ const MOCK_ARTICLES = [
 export default function Home() {
   const t = useTranslations('Home');
   const locale = useLocale();
-  const [articles, setArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<any[]>([...MOCK_ARTICLES].slice(0, 4));
   const [plugins, setPlugins] = useState<any[]>([]);
   const [gear, setGear] = useState<any[]>([]);
   const [cds, setCds] = useState<any[]>([]);
@@ -148,7 +148,7 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
-          const filteredArticles = data.filter((a: any) => a.type !== 'plugin' && a.type !== 'gear' && !a.is_hidden && a.type !== 'cd');
+          const filteredArticles = data.filter((a: any) => a.type !== 'plugin' && a.type !== 'gear' && !a.is_hidden);
           const shuffledArticles = filteredArticles
             .map((value: any) => ({ value, sort: Math.random() }))
             .sort((a: any, b: any) => a.sort - b.sort)
@@ -262,12 +262,7 @@ export default function Home() {
           </Link>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <span className="font-label-technical text-primary animate-pulse tracking-widest">{t('sincronizando')}</span>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-1 bg-surface-container-high border-2 border-outline-variant p-1">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-1 bg-surface-container-high border-2 border-outline-variant p-1">
             {/* Main Feature */}
             {articles[0] && (
               <Link href={articles[0].slug ? `/articulo/${articles[0].slug}` : `/articulo/${articles[0].id}`} className="md:col-span-8 bg-surface-dim relative group overflow-hidden border-t-4 border-primary-container hover:border-primary transition-colors duration-300 flex flex-col h-[500px] cursor-pointer block">
@@ -324,7 +319,6 @@ export default function Home() {
             )}
 
           </div>
-        )}
       </section>
 
       {/* Animated Marquee Transition 1 */}
