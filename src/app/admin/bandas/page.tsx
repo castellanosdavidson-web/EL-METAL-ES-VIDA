@@ -233,14 +233,9 @@ export default function BandasPage() {
           body: audioFile
         });
 
-        if (!uploadRes.ok) throw new Error('Error al subir archivo MP3 a Supabase');
+        if (!uploadRes.ok) throw new Error('Error al subir archivo MP3 al almacenamiento');
 
-        // Get the public URL for the uploaded file
-        const { data: publicUrlData } = supabase.storage
-          .from('articles')
-          .getPublicUrl(signedData.path);
-          
-        formData.set('audioUrl', publicUrlData.publicUrl);
+        formData.set('audioUrl', signedData.publicUrl);
         // Remove the audio file from formData to avoid Vercel 4.5MB limit in API route
         formData.delete('audio');
       }

@@ -227,13 +227,9 @@ export default function ArticulosPage() {
           body: audioFile
         });
 
-        if (!uploadRes.ok) throw new Error('Error al subir archivo MP3 a Supabase');
+        if (!uploadRes.ok) throw new Error('Error al subir archivo MP3 al almacenamiento');
 
-        const { data: publicUrlData } = supabase.storage
-          .from('articles')
-          .getPublicUrl(signedData.path);
-          
-        formData.set('audioUrl', publicUrlData.publicUrl);
+        formData.set('audioUrl', signedData.publicUrl);
         formData.delete('audio');
       }
 

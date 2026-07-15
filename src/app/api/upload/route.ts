@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server';
-import { getServiceSupabase, supabase } from '@/utils/supabase';
+import { supabase } from '@/utils/supabase';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 export const dynamic = 'force-dynamic';
 
+const S3 = new S3Client({
+  region: 'auto',
+  endpoint: process.env.CLOUDFLARE_R2_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY!,
+  },
+});
+
 export async function POST(request: Request) {
   try {
-    // 1. Verificar la autenticación
     const authHeader = request.headers.get('Authorization');
     const token = authHeader?.split(' ')[1];
     
@@ -19,7 +28,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Acceso denegado. Token inválido.' }, { status: 401 });
     }
 
-    // 2. Obtener el archivo
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
@@ -27,27 +35,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No se recibió ningún archivo.' }, { status: 400 });
     }
 
-    const serviceSupabase = getServiceSupabase();
     const fileExt = file.name.split('.').pop();
     const filenameParam = formData.get('filename') as string;
     const fileName = filenameParam ? filenameParam : `${Date.now()}_editor.${fileExt}`;
 
-    // 3. Subir usando la cuenta de servicio (service role) que tiene bypass RLS
-    const { error: uploadError } = await serviceSupabase.storage
-      .from('articles')
-      .upload(fileName, file, {
-        cacheControl: filenameParam ? '0' : '3600',
-        upsert: filenameParam ? true : false,
-      });
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    if (uploadError) throw uploadError;
+    await S3.send(new PutObjectCommand({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME!,
+      Key: fileName,
+      Body: buffer,
+      ContentType: file.type,
+    }));
 
-    // 4. Obtener URL pública
-    const { data: publicUrlData } = serviceSupabase.storage
-      .from('articles')
-      .getPublicUrl(fileName);
+    const publicUrl = `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${fileName}`;
 
-    return NextResponse.json({ url: publicUrlData.publicUrl });
+    return NextResponse.json({ url: publicUrl });
   } catch (error: any) {
     console.error('Error in API upload:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
