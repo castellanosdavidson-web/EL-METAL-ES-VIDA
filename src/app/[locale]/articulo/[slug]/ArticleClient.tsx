@@ -66,7 +66,22 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ElMetalEsVida - ${initialArticle.title}.mp3`;
+      
+      let downloadName = `El Metal Es Vida - ${initialArticle.title}.mp3`;
+      try {
+        const urlObj = new URL(initialArticle.audioUrl);
+        const fileNamePart = decodeURIComponent(urlObj.pathname.split('/').pop() || '');
+        if (fileNamePart) {
+          downloadName = fileNamePart.replace(/ - \d+(\.[a-zA-Z0-9]+)$/, '$1');
+          if (!downloadName.toLowerCase().startsWith('el metal es vida')) {
+            downloadName = `El Metal Es Vida - ${downloadName}`;
+          } else {
+            downloadName = downloadName.replace(/^Elmetalesvida\s*-\s*/i, 'El Metal Es Vida - ');
+          }
+        }
+      } catch (e) {}
+      
+      a.download = downloadName;
       document.body.appendChild(a);
       a.click();
       a.remove();
