@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Acceso denegado. Token inválido.' }, { status: 401 });
     }
 
-    const { fileName } = await request.json();
+    const { fileName, contentType } = await request.json();
 
     if (!fileName) {
       return NextResponse.json({ error: 'Falta fileName' }, { status: 400 });
@@ -38,6 +38,7 @@ export async function POST(request: Request) {
     const command = new PutObjectCommand({
       Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME!,
       Key: fileName,
+      ContentType: contentType || 'application/octet-stream',
     });
 
     const signedUrl = await getSignedUrl(S3, command, { expiresIn: 3600 });

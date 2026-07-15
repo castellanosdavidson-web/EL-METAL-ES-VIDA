@@ -207,13 +207,14 @@ export default function ArticulosPage() {
         const sanitizedOriginal = originalNameWithoutExt.replace(/[^a-zA-Z0-9 -_]/g, '').trim();
         const fileName = `Elmetalesvida - ${sanitizedOriginal} - ${Date.now()}.${fileExt}`;
 
+        const contentType = audioFile.type || 'audio/mpeg';
         const signedRes = await fetch('/api/upload/signed-url', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ fileName })
+          body: JSON.stringify({ fileName, contentType })
         });
         
         const signedData = await signedRes.json();
@@ -222,7 +223,7 @@ export default function ArticulosPage() {
         const uploadRes = await fetch(signedData.signedUrl, {
           method: 'PUT',
           headers: {
-            'Content-Type': audioFile.type || 'audio/mpeg'
+            'Content-Type': contentType
           },
           body: audioFile
         });
