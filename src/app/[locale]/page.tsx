@@ -270,8 +270,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
                 <div className="relative z-10 mt-auto p-8 border-t border-surface-container-highest/50 bg-background/80 backdrop-blur-sm">
                   <div className="flex gap-2 mb-4">
-                    <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary">{t('historia')}</span>
-                    <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-on-surface-variant">{t('doc094')}</span>
+                    <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary uppercase">{articles[0].category || 'CATEGORIA'}</span>
                   </div>
                   <h3 className="text-headline-lg font-headline-lg uppercase text-on-surface mb-3 group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[0].title_en || articles[0].title) : locale === 'pt' ? (articles[0].title_pt || articles[0].title) : articles[0].title}</h3>
                   <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -286,7 +285,7 @@ export default function Home() {
               <Link href={articles[1].slug ? `/articulo/${articles[1].slug}` : `/articulo/${articles[1].id}`} className="md:col-span-4 bg-surface relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto cursor-pointer block">
                 <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[1].imageUrl}')` }}></div>
                 <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-background to-background/20 h-full flex flex-col justify-end">
-                  <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3">{t('ciencia')}</span>
+                  <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3 uppercase">{articles[1].category || 'CATEGORIA'}</span>
                   <h3 className="text-headline-lg-mobile font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[1].title_en || articles[1].title) : locale === 'pt' ? (articles[1].title_pt || articles[1].title) : articles[1].title}</h3>
                 </div>
               </Link>
@@ -295,7 +294,7 @@ export default function Home() {
             {articles[2] && (
               <Link href={articles[2].slug ? `/articulo/${articles[2].slug}` : `/articulo/${articles[2].id}`} className="md:col-span-4 bg-surface p-6 border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col justify-between group cursor-pointer block">
                 <div>
-                  <span className="font-label-technical text-label-technical text-on-surface-variant mb-4 block">{t('resenaTecnica')}</span>
+                  <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-4 block uppercase">{articles[2].category || 'CATEGORIA'}</span>
                   <h3 className="font-headline-lg text-headline-lg-mobile text-on-surface mb-3 uppercase group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[2].title_en || articles[2].title) : locale === 'pt' ? (articles[2].title_pt || articles[2].title) : articles[2].title}</h3>
                   <p className="font-body-md text-on-surface-variant overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {getPlainText(locale === 'en' ? (articles[2].desc_en || articles[2].desc) : locale === 'pt' ? (articles[2].desc_pt || articles[2].desc) : articles[2].desc)}
@@ -312,7 +311,7 @@ export default function Home() {
               <Link href={articles[3].slug ? `/articulo/${articles[3].slug}` : `/articulo/${articles[3].id}`} className="md:col-span-8 bg-surface-dim relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto cursor-pointer block">
                 <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[3].imageUrl || articles[1].imageUrl}')` }}></div>
                 <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-background to-background/20 h-full flex flex-col justify-end">
-                  <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3">{t('historia')}</span>
+                  <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3 uppercase">{articles[3].category || 'CATEGORIA'}</span>
                   <h3 className="text-headline-lg font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[3].title_en || articles[3].title) : locale === 'pt' ? (articles[3].title_pt || articles[3].title) : articles[3].title}</h3>
                 </div>
               </Link>

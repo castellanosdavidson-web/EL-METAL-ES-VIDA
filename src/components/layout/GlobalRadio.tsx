@@ -394,6 +394,7 @@ export default function GlobalRadio() {
         {/* HTML5 Audio Core */}
         <audio 
           ref={audioRef}
+          autoPlay
           src={STATIONS[currentStationIdx].url}
           onPlay={() => { setIsPlaying(true); setIsBuffering(false); }}
           onPause={() => setIsPlaying(false)}
