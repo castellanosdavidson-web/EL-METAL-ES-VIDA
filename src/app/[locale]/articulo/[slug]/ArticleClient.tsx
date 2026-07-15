@@ -54,6 +54,30 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
   const [copied, setCopied] = useState(false);
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [shareUrl, setShareUrl] = useState('');
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadMp3 = async () => {
+    if (!initialArticle.audioUrl) return;
+    setIsDownloading(true);
+    try {
+      const response = await fetch(initialArticle.audioUrl);
+      if (!response.ok) throw new Error('Error downloading');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ElMetalEsVida - ${initialArticle.title}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert('Hubo un error al intentar descargar el archivo.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
   
   const [leadEmail, setLeadEmail] = useState('');
   const [leadStatus, setLeadStatus] = useState<'idle' | 'loading' | 'unlocked'>('idle');
@@ -599,13 +623,16 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                       <p>{t('accessGrantedDesc1')}</p>
                       <p>{t('accessGrantedDesc2')}</p>
                     </div>
-                    <a 
-                      href={`${initialArticle.audioUrl}?download=`} 
-                      className="inline-flex items-center gap-3 bg-primary text-on-primary px-8 py-4 uppercase font-bold tracking-widest hover:bg-inverse-primary hover:text-primary-container transition-all active:scale-95 shadow-[0_0_15px_rgba(var(--md-sys-color-primary),0.3)]"
+                    <button 
+                      onClick={handleDownloadMp3}
+                      disabled={isDownloading}
+                      className="inline-flex items-center gap-3 bg-primary text-on-primary px-8 py-4 uppercase font-bold tracking-widest hover:bg-inverse-primary hover:text-primary-container transition-all active:scale-95 shadow-[0_0_15px_rgba(var(--md-sys-color-primary),0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <span className="material-symbols-outlined">download</span>
-                      {t('downloadMp3')}
-                    </a>
+                      <span className="material-symbols-outlined">
+                        {isDownloading ? 'hourglass_empty' : 'download'}
+                      </span>
+                      {isDownloading ? t('verifying') + '...' : t('downloadMp3')}
+                    </button>
                   </div>
                 ) : (
                   <div className="bg-surface-container-high/20 border border-outline-variant/30 p-6 relative z-10">
