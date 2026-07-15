@@ -1,6 +1,18 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase, supabase } from '@/utils/supabase';
 import { GoogleGenAI } from '@google/genai';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const S3 = new S3Client({
+  region: 'auto',
+  endpoint: process.env.CLOUDFLARE_R2_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY!,
+  },
+});
+const R2_PUBLIC_URL = process.env.CLOUDFLARE_R2_PUBLIC_URL!;
+const BUCKET_NAME = process.env.CLOUDFLARE_R2_BUCKET_NAME!;
 
 function cleanAndParseJSON(text: string) {
   if (!text) return {};
@@ -185,39 +197,30 @@ export async function POST(request: Request) {
     if (image && image.name) {
       const fileExt = image.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await serviceSupabase.storage
-        .from('articles')
-        .upload(fileName, image, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-
-      if (uploadError) throw uploadError;
-      
-      const { data: publicUrlData } = serviceSupabase.storage
-        .from('articles')
-        .getPublicUrl(fileName);
-        
-      imageUrl = publicUrlData.publicUrl;
+      const arrayBuffer = await image.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      await S3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: fileName,
+        Body: buffer,
+        ContentType: image.type || 'image/jpeg',
+      }));
+      imageUrl = `${R2_PUBLIC_URL}/${fileName}`;
     }
 
     let cdImageUrl = '';
     if (cdImage && cdImage.name) {
       const fileExt = cdImage.name.split('.').pop();
       const fileName = `cd_${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await serviceSupabase.storage
-        .from('articles')
-        .upload(fileName, cdImage, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-
-      if (!uploadError) {
-        const { data: publicUrlData } = serviceSupabase.storage
-          .from('articles')
-          .getPublicUrl(fileName);
-        cdImageUrl = publicUrlData.publicUrl;
-      }
+      const arrayBuffer = await cdImage.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      await S3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: fileName,
+        Body: buffer,
+        ContentType: cdImage.type || 'image/jpeg',
+      }));
+      cdImageUrl = `${R2_PUBLIC_URL}/${fileName}`;
     }
 
     let audioUrl = clientAudioUrl || '';
@@ -351,39 +354,30 @@ export async function PUT(request: Request) {
     if (image && image.name && image.size > 0) {
       const fileExt = image.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await serviceSupabase.storage
-        .from('articles')
-        .upload(fileName, image, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-
-      if (uploadError) throw uploadError;
-      
-      const { data: publicUrlData } = serviceSupabase.storage
-        .from('articles')
-        .getPublicUrl(fileName);
-        
-      imageUrl = publicUrlData.publicUrl;
+      const arrayBuffer = await image.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      await S3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: fileName,
+        Body: buffer,
+        ContentType: image.type || 'image/jpeg',
+      }));
+      imageUrl = `${R2_PUBLIC_URL}/${fileName}`;
     }
 
     let cdImageUrl = posts[postIndex].cdImageUrl || '';
     if (cdImage && cdImage.name && cdImage.size > 0) {
       const fileExt = cdImage.name.split('.').pop();
       const fileName = `cd_${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await serviceSupabase.storage
-        .from('articles')
-        .upload(fileName, cdImage, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-
-      if (!uploadError) {
-        const { data: publicUrlData } = serviceSupabase.storage
-          .from('articles')
-          .getPublicUrl(fileName);
-        cdImageUrl = publicUrlData.publicUrl;
-      }
+      const arrayBuffer = await cdImage.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      await S3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: fileName,
+        Body: buffer,
+        ContentType: cdImage.type || 'image/jpeg',
+      }));
+      cdImageUrl = `${R2_PUBLIC_URL}/${fileName}`;
     }
 
     let audioUrl = clientAudioUrl || posts[postIndex].audioUrl || '';
