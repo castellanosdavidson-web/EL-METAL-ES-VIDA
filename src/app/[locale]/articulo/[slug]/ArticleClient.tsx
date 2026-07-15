@@ -72,12 +72,12 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
         const urlObj = new URL(initialArticle.audioUrl);
         const fileNamePart = decodeURIComponent(urlObj.pathname.split('/').pop() || '');
         if (fileNamePart) {
+          // Remove timestamp
           downloadName = fileNamePart.replace(/ - \d+(\.[a-zA-Z0-9]+)$/, '$1');
-          if (!downloadName.toLowerCase().startsWith('el metal es vida')) {
-            downloadName = `El Metal Es Vida - ${downloadName}`;
-          } else {
-            downloadName = downloadName.replace(/^Elmetalesvida\s*-\s*/i, 'El Metal Es Vida - ');
-          }
+          // Remove any existing "Elmetalesvida - " or "El Metal Es Vida - " from the start
+          downloadName = downloadName.replace(/^(el\s*metal\s*es\s*vida\s*-\s*)/i, '');
+          // Prepend the clean prefix
+          downloadName = `El Metal Es Vida - ${downloadName}`;
         }
       } catch (e) {}
       
