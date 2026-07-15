@@ -109,6 +109,8 @@ export default async function RootLayout({
             })(window,document,'script','dataLayer','GTM-TWWHZ5P3');`
           }}
         />
+        {/* Google AdSense */}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4672043114418419" crossOrigin="anonymous"></script>
         {/* Google Analytics (gtag.js) */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-H5DD80FFKE"></script>
         <script
