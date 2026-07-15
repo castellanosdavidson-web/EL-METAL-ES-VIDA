@@ -4,7 +4,7 @@ import { Link } from '@/i18n/routing';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import BibliotecaCDs from '@/components/ui/BibliotecaCDs';
-
+import AdBanner from '@/components/layout/AdBanner';
 function processYouTubeEmbeds(html: string): string {
   if (!html) return '';
 
@@ -802,6 +802,16 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                 <BibliotecaCDs cds={bandCds} />
               </div>
             )}
+
+            {/* Article AdBanner */}
+            <div className="my-10">
+              <AdBanner 
+                dataAdSlot="5876971184" 
+                dataAdFormat="auto" 
+                dataFullWidthResponsive={true} 
+                className="rounded shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+              />
+            </div>
 
             {/* Share section */}
             <div className="my-8 p-6 bg-surface-container/30 border border-outline-variant/20 rounded">

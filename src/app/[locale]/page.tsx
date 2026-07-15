@@ -4,7 +4,7 @@ import { Link } from '@/i18n/routing';
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import BibliotecaCDs from '@/components/ui/BibliotecaCDs';
-
+import AdBanner from '@/components/layout/AdBanner';
 const MOCK_ARTICLES = [
   {
     id: 'mock-1',
@@ -312,6 +312,15 @@ export default function Home() {
             )}
 
           </div>
+      </section>
+
+      <section className="mb-12 px-0 md:px-4">
+        <AdBanner 
+          dataAdSlot="6644660314" 
+          dataAdFormat="auto" 
+          dataFullWidthResponsive={true} 
+          className="rounded shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+        />
       </section>
 
       {/* Animated Marquee Transition 1 */}
