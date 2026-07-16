@@ -457,14 +457,14 @@ export default function Home() {
               <div className="flex gap-6 animate-[marquee_10s_linear_infinite] hover:[animation-play-state:paused] w-max" style={{ animationDuration: `${Math.max(20, gear.length * 10)}s` }}>
                 {[...gear, ...gear, ...gear, ...gear].map((item, idx) => (
                   <div key={`${item.id}-${idx}`} className="w-[85vw] md:w-[350px] shrink-0 bg-surface-dim border border-outline-variant hover:border-error transition-colors group flex flex-col relative overflow-hidden h-[480px]">
-                    <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} className="flex flex-col flex-grow">
+                    <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="flex flex-col flex-grow">
                       {item.imageUrl && (
-                        <div className="w-full h-[180px] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
+                        <div className="w-full h-[180px] bg-white relative overflow-hidden shrink-0 border-b border-outline-variant">
                           <div className="absolute top-4 left-4 z-20 bg-surface-container-highest/90 backdrop-blur-sm border border-outline-variant px-3 py-1 flex items-center gap-2">
                             <span className="material-symbols-outlined text-sm text-error">{getCategoryIcon(item.category)}</span>
                             <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{item.category || 'EQUIPAMIENTO'}</span>
                           </div>
-                          <Image src={item.imageUrl} alt={item.title} fill sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                          <Image src={item.imageUrl} alt={item.title} fill sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-contain p-4 grayscale group-hover:grayscale-0 transition-all duration-500" />
                         </div>
                       )}
                       <div className="flex flex-col flex-grow relative p-6 pb-0">
@@ -483,15 +483,11 @@ export default function Home() {
                           {getPlainText(locale === 'en' ? (item.desc_en || item.desc) : locale === 'pt' ? (item.desc_pt || item.desc) : item.desc)}
                         </p>
                       </div>
-                    </Link>
-                    <div className="p-6 pt-4 mt-auto flex items-center justify-between gap-4 border-t border-transparent group-hover:border-outline-variant/30 transition-colors shrink-0">
-                      <Link href={item.slug ? `/articulo/${item.slug}` : `/articulo/${item.id}`} className="text-on-surface-variant hover:text-error transition-colors font-label-technical text-[11px] uppercase tracking-widest flex items-center gap-1 group/link">
-                        {t('verHerramienta')}
-                        <span className="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
-                      </Link>
-                      <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="border border-outline-variant hover:border-error text-on-surface hover:text-error transition-colors font-label-technical text-[10px] uppercase tracking-widest px-3 py-2 flex items-center gap-2 bg-surface-container-lowest hover:bg-error/10">
-                        {t('enlace')}
-                        <span className="material-symbols-outlined text-[14px]">exit_to_app</span>
+                    </a>
+                    <div className="p-6 pt-4 mt-auto flex items-center gap-4 border-t border-transparent group-hover:border-outline-variant/30 transition-colors shrink-0">
+                      <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="w-full border border-error bg-error/10 hover:bg-error text-error hover:text-white transition-colors font-label-technical text-[12px] uppercase tracking-widest px-4 py-3 flex items-center justify-center gap-2">
+                        {t('enlace') || 'VER PRODUCTO'}
+                        <span className="material-symbols-outlined text-[16px]">exit_to_app</span>
                       </a>
                     </div>
                   </div>
