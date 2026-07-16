@@ -82,8 +82,21 @@ Debes responder estrictamente en formato JSON con la siguiente estructura de cla
       }
     });
 
-    const result = JSON.parse(response.text || '{}');
-    
+    let rawText = response.text || '{}';
+    let result = {};
+    try {
+      const startIndex = rawText.indexOf('{');
+      const endIndex = rawText.lastIndexOf('}');
+      if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+        const jsonStr = rawText.substring(startIndex, endIndex + 1);
+        result = JSON.parse(jsonStr);
+      } else {
+        result = JSON.parse(rawText);
+      }
+    } catch (parseError: any) {
+      console.error('Failed to parse Gemini response:', rawText);
+      throw new Error('La IA generó un formato inesperado. Por favor, intenta de nuevo.');
+    }
     // Fallback: Si la IA omite el enlace, se lo anexamos manualmente.
     let finalReel = result.facebook_reel || '';
     let finalPost = result.facebook_post || '';
