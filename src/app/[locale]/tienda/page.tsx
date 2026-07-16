@@ -59,7 +59,7 @@ const ProductFAQ = ({ faqsRaw }: { faqsRaw: string }) => {
         <span className="material-symbols-outlined text-[16px]">quiz</span>
         Preguntas Frecuentes
       </div>
-      {faqs.map((faq, idx) => (
+      {faqs.slice(0, 5).map((faq, idx) => (
         <div key={idx} className="border border-outline-variant/30 bg-surface-container-lowest">
           <button 
             onClick={(e) => { e.preventDefault(); setOpenIdx(openIdx === idx ? null : idx); }}
@@ -186,13 +186,13 @@ export default function TiendaPage() {
       </div>
 
       {/* Product Catalog */}
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-masonry-gap space-y-masonry-gap">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
           <div className="col-span-full flex justify-center py-12">
             <span className="material-symbols-outlined text-4xl text-primary animate-spin">sync</span>
           </div>
         ) : filteredGear.length === 0 ? (
-          <div className="break-inside-avoid col-span-full text-center py-12 border border-dashed border-outline-variant/30">
+          <div className="col-span-full text-center py-12 border border-dashed border-outline-variant/30">
             <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">inventory_2</span>
             <p className="font-mono-technical text-xs text-on-surface-variant uppercase">{t('empty')}</p>
           </div>
@@ -201,7 +201,7 @@ export default function TiendaPage() {
             <article 
               key={product.id} 
               onClick={() => window.open(product.externalUrl, '_blank')}
-              className="break-inside-avoid flex flex-col border border-outline-variant/20 bg-[#0D0D0D] relative group hover:border-primary transition-colors cursor-pointer"
+              className="flex flex-col border border-outline-variant/20 bg-[#0D0D0D] relative group hover:border-primary transition-colors cursor-pointer h-full"
             >
               <div className="absolute top-2 left-2 z-10 border border-outline bg-[#0D0D0D] px-2 py-1 flex items-center gap-1">
                 <span className="material-symbols-outlined text-[14px] text-primary">{getCategoryIcon(product.category)}</span>
@@ -213,7 +213,7 @@ export default function TiendaPage() {
               </div>
               
               <div className="p-6 flex flex-col gap-4 flex-grow">
-                <h3 className="font-headline-lg text-headline-lg text-on-surface leading-tight group-hover:text-primary transition-colors pb-2">{locale === 'en' ? (product.title_en || product.title) : locale === 'pt' ? (product.title_pt || product.title) : product.title}</h3>
+                <h3 className="font-headline-sm text-xl font-bold text-on-surface leading-tight group-hover:text-primary transition-colors pb-2 line-clamp-3">{locale === 'en' ? (product.title_en || product.title) : locale === 'pt' ? (product.title_pt || product.title) : product.title}</h3>
                 
                 <div 
                   className="font-body-md text-body-md text-on-surface-variant text-sm break-words overflow-hidden w-full [&_p]:mb-2 [&_p:last-child]:mb-0 line-clamp-4" 
