@@ -386,7 +386,7 @@ export default function Home() {
                             </div>
                           </>
                         )}
-                        <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (plugin.title_en || plugin.title) : locale === 'pt' ? (plugin.title_pt || plugin.title) : plugin.title}</h3>
+                        <h3 className="font-headline-sm text-xl font-bold uppercase text-on-surface mb-2 leading-tight group-hover:text-primary transition-colors relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (plugin.title_en || plugin.title) : locale === 'pt' ? (plugin.title_pt || plugin.title) : plugin.title}</h3>
                         <p className="font-body-md text-on-surface-variant text-sm overflow-hidden relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {getPlainText(locale === 'en' ? (plugin.desc_en || plugin.desc) : locale === 'pt' ? (plugin.desc_pt || plugin.desc) : plugin.desc)}
                         </p>
@@ -478,7 +478,7 @@ export default function Home() {
                             </div>
                           </>
                         )}
-                        <h3 className="font-headline-lg text-headline-lg-mobile uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (item.title_en || item.title) : locale === 'pt' ? (item.title_pt || item.title) : item.title}</h3>
+                        <h3 className="font-headline-sm text-xl font-bold uppercase text-on-surface mb-2 leading-tight group-hover:text-error transition-colors relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (item.title_en || item.title) : locale === 'pt' ? (item.title_pt || item.title) : item.title}</h3>
                         <p className="font-body-md text-on-surface-variant text-sm overflow-hidden relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {getPlainText(locale === 'en' ? (item.desc_en || item.desc) : locale === 'pt' ? (item.desc_pt || item.desc) : item.desc)}
                         </p>
