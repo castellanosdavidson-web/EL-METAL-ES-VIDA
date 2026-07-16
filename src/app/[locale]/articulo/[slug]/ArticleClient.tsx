@@ -865,33 +865,48 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
             {/* Recommendations Section */}
             {recommendations.length > 0 && (
               <div className="my-12 pt-8 border-t border-outline-variant/20">
-                <h3 className="font-headline-md text-headline-md text-on-surface uppercase mb-6 tracking-wide">{t('moreArticles')}</h3>
+                <h3 className="font-headline-md text-headline-md text-on-surface uppercase mb-6 tracking-wide">TE PUEDE INTERESAR</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {recommendations.map((rec) => (
-                    <Link key={rec.id} href={`/articulo/${rec.slug || rec.id}`} className="flex flex-col border border-outline-variant/10 bg-surface-container-lowest/30 hover:border-primary/50 transition-all group overflow-hidden">
-                      <div className="h-32 w-full overflow-hidden relative">
-                        <Image 
-                          src={rec.imageUrl} 
-                          alt={rec.title} 
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-80 z-10" />
-                        <span className="absolute bottom-2 left-2 bg-primary-container/95 text-white px-2 py-0.5 text-[8px] font-mono-technical tracking-wider uppercase">
-                          {rec.category}
-                        </span>
-                      </div>
-                      <div className="p-4 flex-grow flex flex-col justify-between">
-                        <h4 className="font-headline-md text-sm text-on-surface line-clamp-2 uppercase tracking-wide group-hover:text-primary transition-colors">
-                          {locale === 'en' ? (rec.title_en || rec.title) : locale === 'pt' ? (rec.title_pt || rec.title) : rec.title}
-                        </h4>
-                        <span className="text-[9px] font-mono-technical text-on-surface-variant/60 block mt-2 uppercase">
-                          {t('readExpediente')}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
+                  {recommendations.map((rec) => {
+                    const isGear = rec.type === 'gear';
+                    const targetHref = isGear && rec.externalUrl ? rec.externalUrl : `/articulo/${rec.slug || rec.id}`;
+                    const targetProps = isGear ? { target: "_blank", rel: "noopener noreferrer" } : {};
+                    const actionText = isGear ? 'VER PRODUCTO' : rec.type === 'plugin' ? 'VER HERRAMIENTA' : 'LEER EXPEDIENTE';
+
+                    // Use standard <a> tag for external links to avoid Next.js Link issues with external URLs
+                    const LinkComponent = isGear && rec.externalUrl ? 'a' : Link;
+
+                    return (
+                      <LinkComponent 
+                        key={rec.id} 
+                        href={targetHref} 
+                        {...targetProps}
+                        className="flex flex-col border border-outline-variant/10 bg-surface-container-lowest/30 hover:border-primary/50 transition-all group overflow-hidden"
+                      >
+                        <div className="h-32 w-full overflow-hidden relative">
+                          <Image 
+                            src={rec.imageUrl || 'https://dxmaslijicgzrwfmzkuv.supabase.co/storage/v1/object/public/articles/1783486070494.png'} 
+                            alt={rec.title} 
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-80 z-10" />
+                          <span className="absolute bottom-2 left-2 bg-primary-container/95 text-white px-2 py-0.5 text-[8px] font-mono-technical tracking-wider uppercase">
+                            {rec.category || rec.type}
+                          </span>
+                        </div>
+                        <div className="p-4 flex-grow flex flex-col justify-between">
+                          <h4 className="font-headline-md text-sm text-on-surface line-clamp-2 uppercase tracking-wide group-hover:text-primary transition-colors">
+                            {locale === 'en' ? (rec.title_en || rec.title) : locale === 'pt' ? (rec.title_pt || rec.title) : rec.title}
+                          </h4>
+                          <span className="text-[9px] font-mono-technical text-on-surface-variant/60 block mt-2 uppercase flex items-center gap-1">
+                            {actionText} <span className="material-symbols-outlined text-[10px]">arrow_forward</span>
+                          </span>
+                        </div>
+                      </LinkComponent>
+                    );
+                  })}
                 </div>
               </div>
             )}
