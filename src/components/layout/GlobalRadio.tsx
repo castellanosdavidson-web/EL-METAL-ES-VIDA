@@ -178,30 +178,38 @@ export default function GlobalRadio() {
   // Global Interaction Autoplay
   useEffect(() => {
     const handleFirstInteraction = () => {
-      if (!hasInteracted && !isPlaying && audioRef.current) {
-        setHasInteracted(true);
-        setIsBuffering(true);
-        audioRef.current.play().then(() => {
+      if (hasInteracted || isPlaying || !audioRef.current) return;
+
+      setIsBuffering(true);
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          // Éxito: El navegador permitió reproducir el audio
+          setHasInteracted(true);
           setIsPlaying(true);
           setIsBuffering(false);
+          
+          // Removemos los listeners solo si tuvimos éxito
+          window.removeEventListener('click', handleFirstInteraction);
+          window.removeEventListener('keydown', handleFirstInteraction);
+          window.removeEventListener('touchstart', handleFirstInteraction);
+          window.removeEventListener('touchend', handleFirstInteraction);
+          window.removeEventListener('scroll', handleFirstInteraction);
         }).catch(err => {
-          console.error("Autoplay prevent logic triggered:", err);
+          // Fallo: El navegador bloqueó el autoplay (ej. scroll no es interacción válida)
+          console.warn("Autoplay bloqueado, se reintentará en el próximo toque:", err);
           setIsBuffering(false);
+          // No removemos los listeners ni cambiamos hasInteracted, para que el próximo toque intente de nuevo
         });
       }
-      
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-      window.removeEventListener('touchend', handleFirstInteraction);
-      window.removeEventListener('scroll', handleFirstInteraction);
     };
 
-    window.addEventListener('click', handleFirstInteraction, { once: true });
-    window.addEventListener('keydown', handleFirstInteraction, { once: true });
-    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
-    window.addEventListener('touchend', handleFirstInteraction, { once: true });
-    window.addEventListener('scroll', handleFirstInteraction, { once: true });
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('keydown', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+    window.addEventListener('touchend', handleFirstInteraction);
+    window.addEventListener('scroll', handleFirstInteraction);
 
     return () => {
       window.removeEventListener('click', handleFirstInteraction);
