@@ -27,6 +27,59 @@ const TiendaProductImage = ({ src, alt, priority }: { src: string; alt: string; 
   );
 };
 
+const ProductFAQ = ({ faqsRaw }: { faqsRaw: string }) => {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  if (!faqsRaw) return null;
+
+  const lines = faqsRaw.split('\n');
+  const faqs: {q: string, a: string}[] = [];
+  let currentQ = '';
+  let currentA = '';
+  
+  lines.forEach(line => {
+    if (line.trim().startsWith('Q:')) {
+      if (currentQ) faqs.push({ q: currentQ, a: currentA });
+      currentQ = line.replace('Q:', '').trim();
+      currentA = '';
+    } else if (line.trim().startsWith('A:')) {
+      currentA = line.replace('A:', '').trim();
+    } else {
+      if (currentA !== '') currentA += ' ' + line.trim();
+      else if (currentQ !== '') currentQ += ' ' + line.trim();
+    }
+  });
+  if (currentQ) faqs.push({ q: currentQ, a: currentA });
+
+  if (faqs.length === 0) return null;
+
+  return (
+    <div className="mt-2 flex flex-col gap-2 relative z-20" onClick={(e) => e.stopPropagation()}>
+      <div className="font-label-sm text-primary uppercase tracking-widest flex items-center gap-2 mb-1">
+        <span className="material-symbols-outlined text-[16px]">quiz</span>
+        Preguntas Frecuentes
+      </div>
+      {faqs.map((faq, idx) => (
+        <div key={idx} className="border border-outline-variant/30 bg-surface-container-lowest">
+          <button 
+            onClick={(e) => { e.preventDefault(); setOpenIdx(openIdx === idx ? null : idx); }}
+            className="w-full text-left p-3 flex justify-between items-center hover:bg-surface-variant/20 transition-colors"
+          >
+            <span className="font-body-md text-sm font-bold text-on-surface pr-2">{faq.q}</span>
+            <span className="material-symbols-outlined text-primary text-[18px] shrink-0">
+              {openIdx === idx ? 'remove' : 'add'}
+            </span>
+          </button>
+          {openIdx === idx && (
+            <div className="p-3 pt-0 font-body-md text-sm text-on-surface-variant border-t border-outline-variant/20 bg-surface/50">
+              {faq.a}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
 export default function TiendaPage() {
   const locale = useLocale();
   const t = useTranslations('Tienda');
@@ -145,7 +198,11 @@ export default function TiendaPage() {
           </div>
         ) : (
           filteredGear.map((product, idx) => (
-            <article key={product.id} className="break-inside-avoid flex flex-col border border-outline-variant/20 bg-[#0D0D0D] relative group hover:border-primary transition-colors">
+            <article 
+              key={product.id} 
+              onClick={() => window.open(product.externalUrl, '_blank')}
+              className="break-inside-avoid flex flex-col border border-outline-variant/20 bg-[#0D0D0D] relative group hover:border-primary transition-colors cursor-pointer"
+            >
               <div className="absolute top-2 left-2 z-10 border border-outline bg-[#0D0D0D] px-2 py-1 flex items-center gap-1">
                 <span className="material-symbols-outlined text-[14px] text-primary">{getCategoryIcon(product.category)}</span>
                 <span className="font-mono-technical text-mono-technical text-primary uppercase">{product.category}</span>
@@ -159,19 +216,24 @@ export default function TiendaPage() {
                 <h3 className="font-headline-lg text-headline-lg text-on-surface leading-tight group-hover:text-primary transition-colors pb-2">{locale === 'en' ? (product.title_en || product.title) : locale === 'pt' ? (product.title_pt || product.title) : product.title}</h3>
                 
                 <div 
-                  className="font-body-md text-body-md text-on-surface-variant text-sm break-words overflow-hidden w-full [&_p]:mb-2 [&_p:last-child]:mb-0" 
+                  className="font-body-md text-body-md text-on-surface-variant text-sm break-words overflow-hidden w-full [&_p]:mb-2 [&_p:last-child]:mb-0 line-clamp-4" 
                   dangerouslySetInnerHTML={{ __html: locale === 'en' ? (product.desc_en || product.desc) : locale === 'pt' ? (product.desc_pt || product.desc) : product.desc }}
                 />
+
+                <ProductFAQ faqsRaw={locale === 'en' ? (product.faqsRaw_en || product.faqsRaw) : locale === 'pt' ? (product.faqsRaw_pt || product.faqsRaw) : product.faqsRaw} />
                 
-                <a 
-                  href={product.externalUrl} 
-                  target="_blank" 
-                  rel="noreferrer nofollow"
-                  className="mt-4 w-full font-label-sm text-label-sm uppercase py-4 border transition-all flex items-center justify-center gap-2 bg-primary-container hover:bg-inverse-primary text-on-surface border-transparent hover:border-primary"
-                >
-                  <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
-                  {t('viewAmazon')}
-                </a>
+                <div className="mt-auto pt-4">
+                  <a 
+                    href={product.externalUrl} 
+                    target="_blank" 
+                    rel="noreferrer nofollow"
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full font-label-sm text-label-sm uppercase py-4 border transition-all flex items-center justify-center gap-2 bg-primary-container group-hover:bg-inverse-primary text-on-surface border-transparent group-hover:border-primary relative z-20"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
+                    {t('viewAmazon')}
+                  </a>
+                </div>
               </div>
             </article>
           ))
