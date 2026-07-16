@@ -58,6 +58,9 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
           </div>
           <h2 className="text-headline-lg font-headline-lg uppercase text-on-surface">{t('nuevosLanzamientos')}</h2>
         </div>
+        <Link href="/coleccion" className="font-label-technical text-label-technical text-primary hover:underline flex items-center gap-1 hidden md:flex">
+          VER TODA LA COLECCIÓN <span className="material-symbols-outlined text-sm">arrow_outward</span>
+        </Link>
       </div>
 
       {/* Estructura del Gabinete Amplificador (El Estante) */}
