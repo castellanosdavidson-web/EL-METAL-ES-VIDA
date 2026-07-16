@@ -35,6 +35,20 @@ export default function ColeccionPage() {
   const [seoKeywords, setSeoKeywords] = useState('');
   const [faqsRaw, setFaqsRaw] = useState('');
 
+  const openEyeDropper = async (setter: (color: string) => void) => {
+    if (typeof window !== 'undefined' && 'EyeDropper' in window) {
+      try {
+        const eyeDropper = new (window as any).EyeDropper();
+        const result = await eyeDropper.open();
+        setter(result.sRGBHex);
+      } catch (e) {
+        console.log('EyeDropper cancelado o error:', e);
+      }
+    } else {
+      alert('Tu navegador no soporta el cuentagotas avanzado (requiere Chrome/Edge/Opera). Puedes usar el selector de color nativo al lado.');
+    }
+  };
+
   const quillModules = React.useMemo(() => ({
     toolbar: {
       container: [
@@ -402,17 +416,23 @@ export default function ColeccionPage() {
                     <div>
                       <label className="block text-xs uppercase text-on-surface-variant mb-1 font-bold">Color del Lomo (CSS / HEX)</label>
                       <div className="flex gap-2">
-                        <input type="color" value={spineColor.startsWith('#') ? spineColor : '#000000'} onChange={(e) => setSpineColor(e.target.value)} className="w-10 h-10 border-0 p-0 cursor-pointer" />
-                        <input type="text" value={spineColor} onChange={(e) => setSpineColor(e.target.value)} placeholder="Ej: #661C10 o bg-red-950" className="flex-1 bg-background border border-outline-variant/50 p-2 focus:border-primary text-on-surface" />
+                        <button type="button" onClick={() => openEyeDropper(setSpineColor)} className="w-10 h-10 flex items-center justify-center bg-surface-container border border-outline-variant/50 hover:bg-surface-variant hover:text-primary text-on-surface transition-colors group" title="Cuentagotas (Selección precisa en pantalla)">
+                          <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">colorize</span>
+                        </button>
+                        <input type="color" value={spineColor.startsWith('#') ? spineColor : '#000000'} onChange={(e) => setSpineColor(e.target.value)} className="w-10 h-10 border-0 p-0 cursor-pointer" title="Selector de sistema" />
+                        <input type="text" value={spineColor} onChange={(e) => setSpineColor(e.target.value)} placeholder="Ej: #661C10 o bg-red-950" className="flex-1 bg-background border border-outline-variant/50 p-2 focus:border-primary text-on-surface uppercase font-mono-technical" />
                       </div>
-                      <p className="text-[10px] text-on-surface-variant mt-1">Escribe el código HEX (ej. #661c10) o una clase Tailwind.</p>
+                      <p className="text-[10px] text-on-surface-variant mt-1">Usa el cuentagotas (ícono) para hacer clic en cualquier parte de la portada y obtener máxima precisión.</p>
                     </div>
 
                     <div>
                       <label className="block text-xs uppercase text-on-surface-variant mb-1 font-bold">Color del Texto (CSS / HEX)</label>
                       <div className="flex gap-2">
-                        <input type="color" value={textColor.startsWith('#') ? textColor : '#ffffff'} onChange={(e) => setTextColor(e.target.value)} className="w-10 h-10 border-0 p-0 cursor-pointer" />
-                        <input type="text" value={textColor} onChange={(e) => setTextColor(e.target.value)} placeholder="Ej: #FFFFFF" className="flex-1 bg-background border border-outline-variant/50 p-2 focus:border-primary text-on-surface" />
+                        <button type="button" onClick={() => openEyeDropper(setTextColor)} className="w-10 h-10 flex items-center justify-center bg-surface-container border border-outline-variant/50 hover:bg-surface-variant hover:text-primary text-on-surface transition-colors group" title="Cuentagotas (Selección precisa en pantalla)">
+                          <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">colorize</span>
+                        </button>
+                        <input type="color" value={textColor.startsWith('#') ? textColor : '#ffffff'} onChange={(e) => setTextColor(e.target.value)} className="w-10 h-10 border-0 p-0 cursor-pointer" title="Selector de sistema" />
+                        <input type="text" value={textColor} onChange={(e) => setTextColor(e.target.value)} placeholder="Ej: #FFFFFF" className="flex-1 bg-background border border-outline-variant/50 p-2 focus:border-primary text-on-surface uppercase font-mono-technical" />
                       </div>
                     </div>
 
