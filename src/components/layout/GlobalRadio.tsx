@@ -3,11 +3,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLocale } from 'next-intl';
 
 const STATIONS = [
+  { id: 'wacken', name: 'Wacken Radio', url: 'https://stream.laut.fm/wacken', tagline: 'La radio oficial de la comunidad de Wacken' },
   { id: 'rockantenne', name: 'Rock Antenne Heavy', url: 'https://stream.rockantenne.de/heavy-metal/stream/mp3', tagline: 'Clásicos y Heavy Metal 24/7' },
-  { id: 'metalcore', name: 'Metalcore Radio', url: 'https://stream.laut.fm/metalcore', tagline: 'Metalcore, Deathcore & Hardcore extremo' },
   { id: 'brutaldeath', name: 'Brutal Death Radio', url: 'https://stream.laut.fm/deathmetal', tagline: 'Death Metal, Brutal Slam & Grindcore' },
-  { id: 'latinmetal', name: 'Metal Caravan', url: 'https://stream.laut.fm/metalcaravan', tagline: 'Metal Underground Internacional' },
-  { id: 'wacken', name: 'Wacken Radio', url: 'https://stream.laut.fm/wacken', tagline: 'La radio oficial de la comunidad de Wacken' }
+  { id: 'metalcore', name: 'Metalcore Radio', url: 'https://stream.laut.fm/metalcore', tagline: 'Metalcore, Deathcore & Hardcore extremo' },
+  { id: 'latinmetal', name: 'Metal Caravan', url: 'https://stream.laut.fm/metalcaravan', tagline: 'Metal Underground Internacional' }
 ];
 
 const TRANSLATIONS: Record<string, { header: string; status: { connecting: string, live: string, offline: string }; list: Record<string, { name: string; tagline: string }> }> = {
