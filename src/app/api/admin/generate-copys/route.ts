@@ -83,7 +83,7 @@ Debes responder estrictamente en formato JSON con la siguiente estructura de cla
     });
 
     let rawText = response.text || '{}';
-    let result = {};
+    let result: any = {};
     try {
       const startIndex = rawText.indexOf('{');
       const endIndex = rawText.lastIndexOf('}');
