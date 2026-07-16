@@ -153,7 +153,7 @@ export default function TiendaPage() {
       </section>
 
       {/* Filters & Search */}
-      <div className="sticky top-[80px] z-40 bg-background/95 backdrop-blur py-4 border-b border-outline-variant/20 mb-8 flex flex-col gap-4">
+      <div className="py-4 border-b border-outline-variant/20 mb-8 flex flex-col gap-4">
         
         {/* Search Bar */}
         <div className="relative w-full max-w-md mx-auto md:mx-0">
