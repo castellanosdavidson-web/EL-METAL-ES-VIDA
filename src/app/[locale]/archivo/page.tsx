@@ -130,6 +130,7 @@ export default function EnciclopediaPage() {
                     src={post.imageUrl || '/posts/placeholder.png'} 
                     alt={post.title}
                     fill
+                    unoptimized={true}
                     sizes="(max-width: 768px) 100vw, 33vw"
                     priority={idx < 3}
                     className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 

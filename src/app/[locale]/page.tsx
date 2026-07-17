@@ -372,7 +372,7 @@ export default function Home() {
                             <span className="material-symbols-outlined text-sm text-primary">{getCategoryIcon(plugin.category)}</span>
                             <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{plugin.category || 'TALLER'}</span>
                           </div>
-                          <Image src={plugin.imageUrl} alt={plugin.title} fill sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                          <Image src={plugin.imageUrl} alt={plugin.title} fill unoptimized={true} sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                         </div>
                       )}
                       <div className="flex flex-col flex-grow relative p-6 pb-0">
@@ -464,7 +464,7 @@ export default function Home() {
                             <span className="material-symbols-outlined text-sm text-error">{getCategoryIcon(item.category)}</span>
                             <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{item.category || 'EQUIPAMIENTO'}</span>
                           </div>
-                          <Image src={item.imageUrl} alt={item.title} fill sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-contain p-4 grayscale group-hover:grayscale-0 transition-all duration-500" />
+                          <Image src={item.imageUrl} alt={item.title} fill unoptimized={true} sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-contain p-4 grayscale group-hover:grayscale-0 transition-all duration-500" />
                         </div>
                       )}
                       <div className="flex flex-col flex-grow relative p-6 pb-0">
