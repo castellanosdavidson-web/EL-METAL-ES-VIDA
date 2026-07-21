@@ -138,7 +138,8 @@
     "disclaimer": "Metal is life, it does not host any software for download. The contents link to the official download sites of the original programs provided by their developers.",
     "loading": "Decoding Plugins...",
     "empty": "No plugins found under this classification.",
-    "viewTool": "View Tool"
+    "viewTool": "View Tool",
+    "deslizaExplorar": "Swipe to explore the workshop"
   },
   "Tienda": {
     "title": "Recommended Arsenal",
@@ -147,7 +148,8 @@
     "affiliateDesc": "By clicking on product links, you will be redirected to Amazon. If you make a purchase, \"El Metal es Vida\" may receive a small commission at no additional cost to you. This helps keep the project alive.",
     "searchPlaceholder": "Search for gear, brand, or description...",
     "empty": "The arsenal is empty at the moment.",
-    "viewAmazon": "VIEW ON AMAZON"
+    "viewAmazon": "VIEW ON AMAZON",
+    "deslizaExplorar": "Swipe to explore the arsenal"
   },
   "NavigationDrawer": {
     "legion": "METAL LEGION",

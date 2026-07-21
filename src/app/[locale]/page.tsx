@@ -364,7 +364,7 @@ export default function Home() {
           
           <div className="md:hidden flex justify-center text-primary font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center opacity-70 mb-4 animate-pulse">
             <span className="material-symbols-outlined text-[12px]">swipe_left</span>
-            <span className="select-none">{t('cdDeslizaExplorar')}</span>
+            <span className="select-none">{t('Taller.deslizaExplorar')}</span>
             <span className="material-symbols-outlined text-[12px]">swipe_right</span>
           </div>
 
@@ -463,7 +463,7 @@ export default function Home() {
 
           <div className="md:hidden flex justify-center text-error font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center opacity-70 mb-4 animate-pulse">
             <span className="material-symbols-outlined text-[12px]">swipe_left</span>
-            <span className="select-none">{t('cdDeslizaExplorar')}</span>
+            <span className="select-none">{t('Tienda.deslizaExplorar')}</span>
             <span className="material-symbols-outlined text-[12px]">swipe_right</span>
           </div>
 

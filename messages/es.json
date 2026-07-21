@@ -138,7 +138,8 @@
     "disclaimer": "El metal es vida, no aloja ningún software para su descarga. Los contenidos enlazan con los sitios oficiales de descarga de los programas originales proporcionados por sus desarrolladores.",
     "loading": "Decodificando Plugins...",
     "empty": "Ningún plugin hallado bajo esta clasificación.",
-    "viewTool": "Ver Herramienta"
+    "viewTool": "Ver Herramienta",
+    "deslizaExplorar": "Desliza para explorar el taller"
   },
   "Tienda": {
     "title": "Arsenal Recomendado",
@@ -147,7 +148,8 @@
     "affiliateDesc": "Al hacer clic en los enlaces de los productos, serás redirigido a Amazon. Si realizas una compra, \"El Metal es Vida\" puede recibir una pequeña comisión sin costo adicional para ti. Esto ayuda a mantener vivo el proyecto.",
     "searchPlaceholder": "Buscar por equipo, marca o descripción...",
     "empty": "El arsenal está vacío por el momento.",
-    "viewAmazon": "VER EN AMAZON"
+    "viewAmazon": "VER EN AMAZON",
+    "deslizaExplorar": "Desliza para explorar el arsenal"
   },
   "NavigationDrawer": {
     "legion": "LEGIÓN METALERA",
