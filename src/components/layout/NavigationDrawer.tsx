@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from '@/i18n/routing';
 import { useTranslations, useLocale } from 'next-intl';
+import Image from 'next/image';
 
 interface NavigationDrawerProps {
   isOpen: boolean;
@@ -71,26 +72,34 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
 
         <ul className="flex-grow flex flex-col gap-6">
           <li>
-            <Link onClick={onClose} href="/archivo" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-primary border-l-4 border-primary pl-4 opacity-80 hover:opacity-100 hover:translate-x-2 transition-all duration-300 glitch-hover">
-              <span className="material-symbols-outlined text-[32px]">album</span>
+            <Link onClick={onClose} href="/archivo" className="group flex items-center text-headline-lg font-headline-lg uppercase text-primary border-l-4 border-primary pl-4 opacity-80 hover:opacity-100 hover:translate-x-2 transition-all duration-300 glitch-hover">
+              <div className="relative w-8 h-8 mr-4 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
+                <Image src="/custom_icons/icon_20.png" alt="Archivo" fill unoptimized className="object-contain drop-shadow-[0_0_8px_rgba(196,112,75,0.4)]" />
+              </div>
               <span>{tNav('archivo')}</span>
             </Link>
           </li>
           <li>
-            <Link onClick={onClose} href="/taller" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
-              <span className="material-symbols-outlined">electric_bolt</span>
+            <Link onClick={onClose} href="/taller" className="group flex items-center text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
+              <div className="relative w-8 h-8 mr-4 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
+                <Image src="/custom_icons/icon_7.png" alt="Taller" fill unoptimized className="object-contain" />
+              </div>
               <span>{tNav('taller')}</span>
             </Link>
           </li>
           <li>
-            <Link onClick={onClose} href="/legado" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
-              <span className="material-symbols-outlined text-[32px] text-[#c4704b]">landscape</span>
+            <Link onClick={onClose} href="/legado" className="group flex items-center text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-[#c4704b] hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
+              <div className="relative w-8 h-8 mr-4 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
+                <Image src="/custom_icons/icon_15.png" alt="Legado" fill unoptimized className="object-contain" />
+              </div>
               <span>Legado</span>
             </Link>
           </li>
           <li>
-            <Link onClick={onClose} href="/tienda" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
-              <span className="material-symbols-outlined text-[32px] text-error">hardware</span>
+            <Link onClick={onClose} href="/tienda" className="group flex items-center text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-error hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
+              <div className="relative w-8 h-8 mr-4 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
+                <Image src="/custom_icons/icon_19.png" alt="Tienda" fill unoptimized className="object-contain" />
+              </div>
               <span className="group-hover:text-error">{tDrawer('arsenal')}</span>
             </Link>
           </li>
