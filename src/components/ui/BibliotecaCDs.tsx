@@ -99,7 +99,7 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
           {/* Contenedor Flex de CDs */}
           <div 
             ref={scrollContainerRef}
-            className="relative z-20 flex items-end min-h-[180px] md:min-h-[340px] pt-4 md:pt-10 gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar"
+            className="relative z-20 flex items-end min-h-[290px] md:min-h-[340px] pt-4 md:pt-10 gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar"
           >
             
             {displayCds.map((cd, index) => {
@@ -113,7 +113,7 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
               
               const tilt = (index % 5 === 0) ? '-rotate-[1deg]' : (index % 7 === 0) ? 'rotate-[1deg]' : '';
               // Hacemos los CDs más altos dentro del mismo espacio (relativo a la altura del contenedor)
-              const height = 'h-[160px] md:h-[300px]';
+              const height = 'h-[250px] md:h-[300px]';
               const isSelected = activeCdId === cd.id;
 
               return (
@@ -170,7 +170,7 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
         </div>
 
         {/* PANEL DERECHO: EXHIBICIÓN DEL CD (30%) */}
-        <div className="relative w-full md:w-[35%] lg:w-[30%] bg-[#080808] z-10 flex flex-col items-center justify-center p-4 md:p-8 shadow-[inset_15px_0_30px_rgba(0,0,0,0.9)] min-h-[220px] md:min-h-[280px]">
+        <div className="relative w-full md:w-[35%] lg:w-[30%] bg-[#080808] z-10 flex flex-col items-center justify-center p-4 md:p-8 shadow-[inset_15px_0_30px_rgba(0,0,0,0.9)] min-h-[300px] md:min-h-[280px]">
           
           {activeCd && (
             <div className="w-full flex flex-col items-center animate-fade-in">
