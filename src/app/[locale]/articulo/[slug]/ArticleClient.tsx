@@ -5,6 +5,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import BibliotecaCDs from '@/components/ui/BibliotecaCDs';
 import AdBanner from '@/components/layout/AdBanner';
+import ArticleGallery from '@/components/ui/ArticleGallery';
+
 function processYouTubeEmbeds(html: string): string {
   if (!html) return '';
 
@@ -391,9 +393,45 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
         .article-content ul li {
           list-style-type: '⛧ ';
         }
-
         .article-content ol li {
           list-style-type: decimal;
+        }
+
+        /* Tables CSS */
+        .article-content table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 2.5em 0;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.85em;
+          box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+          overflow-x: auto;
+          display: block;
+        }
+        
+        .article-content th,
+        .article-content td {
+          border: 1px solid rgba(196, 112, 75, 0.3);
+          padding: 1em 1.5em;
+          text-align: left;
+        }
+
+        .article-content th {
+          background-color: rgba(196, 112, 75, 0.15);
+          color: #f0e6d8;
+          font-family: 'Cinzel', serif;
+          text-transform: uppercase;
+          font-weight: bold;
+          letter-spacing: 0.05em;
+        }
+
+        .article-content td {
+          background-color: rgba(20, 20, 20, 0.6);
+          color: #d1bba4;
+        }
+
+        .article-content tr:hover td {
+          background-color: rgba(196, 112, 75, 0.05);
         }
 
         .article-content blockquote {
@@ -571,10 +609,37 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
             </div>
 
             {/* Article content */}
-            <div 
-              className="article-content"
-              dangerouslySetInnerHTML={{ __html: processedContent }} 
-            />
+            <div className="article-content">
+              {(() => {
+                if (processedContent.includes('[GALERIA]')) {
+                  return processedContent.split('[GALERIA]').map((part, index, array) => (
+                    <React.Fragment key={index}>
+                      <div dangerouslySetInnerHTML={{ __html: part }} />
+                      {index < array.length - 1 && initialArticle.galleryImages && initialArticle.galleryImages.length > 0 && (
+                        <ArticleGallery images={initialArticle.galleryImages} />
+                      )}
+                    </React.Fragment>
+                  ));
+                }
+                
+                if (initialArticle.galleryImages && initialArticle.galleryImages.length > 0) {
+                  const pParts = processedContent.split('</p>');
+                  if (pParts.length > 2) {
+                    const p1 = pParts.slice(0, 2).join('</p>') + '</p>';
+                    const p2 = pParts.slice(2).join('</p>');
+                    return (
+                      <>
+                        <div dangerouslySetInnerHTML={{ __html: p1 }} />
+                        <ArticleGallery images={initialArticle.galleryImages} />
+                        <div dangerouslySetInnerHTML={{ __html: p2 }} />
+                      </>
+                    );
+                  }
+                }
+
+                return <div dangerouslySetInnerHTML={{ __html: processedContent }} />;
+              })()}
+            </div>
 
             {/* Bottom separator */}
             <div className="metal-separator">

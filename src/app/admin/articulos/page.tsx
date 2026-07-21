@@ -29,6 +29,7 @@ export default function ArticulosPage() {
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [loadingCopies, setLoadingCopies] = useState(false);
   const [socialCopies, setSocialCopies] = useState<{ facebook_reel: string, facebook_post: string, tiktok: string } | null>(null);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
 
   const quillModules = React.useMemo(() => ({
     toolbar: {
@@ -36,7 +37,8 @@ export default function ArticulosPage() {
         [{ 'header': [1, 2, 3, false] }],
         ['bold', 'italic', 'underline', 'strike', 'blockquote'],
         [{'list': 'ordered'}, {'list': 'bullet'}],
-        ['link', 'image', 'video'],
+        [{ 'align': [] }],
+        ['link', 'image', 'video', 'table'],
         ['clean']
       ],
       handlers: {
@@ -118,6 +120,7 @@ export default function ArticulosPage() {
     setYoutubeUrl(article.youtubeUrl || '');
     setSeoKeywords(article.seoKeywords || '');
     setFaqsRaw(article.faqsRaw || '');
+    setGalleryImages(article.galleryImages || []);
     setMessage('');
     setIsModalOpen(true);
   };
@@ -128,6 +131,7 @@ export default function ArticulosPage() {
     setYoutubeUrl('');
     setSeoKeywords('');
     setFaqsRaw('');
+    setGalleryImages([]);
     setMessage('');
     setIsModalOpen(true);
   };
@@ -189,6 +193,7 @@ export default function ArticulosPage() {
     }
     formData.set('desc', finalDesc);
     formData.set('youtubeUrl', youtubeUrl.trim());
+    formData.set('galleryImages', JSON.stringify(galleryImages));
     formData.append('type', 'article');
 
     if (editArticle) {
@@ -518,6 +523,68 @@ export default function ArticulosPage() {
                   placeholder="Ej: https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
                 />
                 <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">Pega aquí el enlace de YouTube y se mostrará como video embebido en el artículo</p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-primary">collections</span>
+                  Galería Fotográfica (Opcional)
+                </label>
+                <p className="text-[10px] font-mono-technical text-on-surface-variant/60 uppercase">
+                  Sube múltiples imágenes para mostrar como carrusel. Para insertarla, escribe <strong className="text-primary">[GALERIA]</strong> en el editor.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {galleryImages.map((img, i) => (
+                    <div key={i} className="relative w-20 h-20 border border-outline-variant bg-surface-container-highest">
+                      <img src={img} alt={`Gallery ${i}`} className="w-full h-full object-cover" />
+                      <button 
+                        type="button"
+                        onClick={() => setGalleryImages(prev => prev.filter((_, idx) => idx !== i))}
+                        className="absolute -top-2 -right-2 bg-error text-white w-5 h-5 flex items-center justify-center text-xs rounded-full"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = 'image/*';
+                      input.multiple = true;
+                      input.onchange = async () => {
+                        const files = Array.from(input.files || []);
+                        if (files.length > 0) {
+                          try {
+                            const { data: { session } } = await supabase.auth.getSession();
+                            const token = session?.access_token;
+                            for (const file of files) {
+                              const uploadFormData = new FormData();
+                              uploadFormData.append('file', file);
+                              const res = await fetch('/api/upload', {
+                                method: 'POST',
+                                headers: { 'Authorization': `Bearer ${token}` },
+                                body: uploadFormData
+                              });
+                              const data = await res.json();
+                              if (res.ok && data.url) {
+                                setGalleryImages(prev => [...prev, data.url]);
+                              }
+                            }
+                          } catch (e) {
+                            console.error(e);
+                          }
+                        }
+                      };
+                      input.click();
+                    }}
+                    className="w-20 h-20 bg-surface-container-high border border-outline-variant hover:border-primary transition-colors flex items-center justify-center cursor-pointer"
+                    title="Añadir imágenes a la galería"
+                  >
+                    <span className="material-symbols-outlined text-on-surface-variant">add_photo_alternate</span>
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
