@@ -15,7 +15,7 @@ export default function FloatingLegadoButton() {
           alt="Colombia Flag" 
           fill 
           unoptimized={true}
-          className="object-cover scale-[1.3] group-hover:scale-[1.4] transition-transform duration-500 opacity-90 group-hover:opacity-100" 
+          className="object-cover scale-[1.8] group-hover:scale-[1.9] transition-transform duration-500 opacity-90 group-hover:opacity-100" 
         />
       </div>
       <div className="flex flex-col overflow-hidden max-w-0 md:max-w-[200px] opacity-0 md:opacity-100 group-hover:max-w-[200px] group-hover:opacity-100 group-hover:pr-2 md:pr-2 transition-all duration-500 ease-in-out whitespace-nowrap">
