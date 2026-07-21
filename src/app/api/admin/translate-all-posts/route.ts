@@ -48,7 +48,7 @@ async function translateContent(title: string, desc: string, faqsRaw: string): P
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       const prompt = `Translate the following title, HTML description, and FAQs from Spanish to English AND Portuguese. 
-ALSO, analyze the content (which is about metal music/production) and recommend exactly 5 similar underground metal bands (Colombian or International). For each band, provide a song name and a 1-sentence description explaining why they fit. Generate these 5 recommendations and provide their descriptions in Spanish, English, and Portuguese.
+ALSO, analyze the content (which is about metal music/production) and recommend exactly 5 similar underground metal bands (ONLY Colombian metal bands, DO NOT INCLUDE INTERNATIONAL BANDS). For each band, provide a song name and a 1-sentence description explaining why they fit. Generate these 5 recommendations and provide their descriptions in Spanish, English, and Portuguese.
 
 Return a JSON object exactly with these keys: 
 "title_en", "desc_en", "title_pt", "desc_pt", 

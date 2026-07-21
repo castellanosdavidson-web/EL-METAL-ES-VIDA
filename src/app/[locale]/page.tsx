@@ -503,6 +503,16 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Floating Button for Legado Colombiano */}
+      <Link href="/legado" className="fixed bottom-6 right-6 z-50 group flex items-center gap-3 bg-surface-container-highest border-2 border-outline-variant hover:border-[#c4704b] p-2 pr-5 shadow-[0_10px_30px_rgba(0,0,0,0.8)] transition-all duration-300 hover:scale-105 hover:-translate-y-1">
+        <div className="w-10 h-10 overflow-hidden border border-[#c4704b]/30 relative shrink-0 shadow-inner">
+          <Image src="/colombia-flag.png" alt="Colombia Flag" fill className="object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
+        </div>
+        <div className="flex flex-col">
+          <span className="font-label-technical text-[9px] uppercase tracking-[0.2em] text-[#c4704b] leading-tight opacity-80">Expediente Regional</span>
+          <span className="font-headline-sm text-xs uppercase text-on-surface font-black group-hover:text-[#c4704b] transition-colors leading-tight tracking-widest mt-0.5">Legado Colombiano</span>
+        </div>
+      </Link>
     </main>
   );
 }

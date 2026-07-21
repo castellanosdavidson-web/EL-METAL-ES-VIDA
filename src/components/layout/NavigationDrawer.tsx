@@ -85,7 +85,7 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
           <li>
             <Link onClick={onClose} href="/legado" className="flex items-center gap-4 text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
               <span className="material-symbols-outlined text-[32px] text-[#c4704b]">landscape</span>
-              <span>{tDrawer('legado') || 'Legado Colombiano'}</span>
+              <span>Legado</span>
             </Link>
           </li>
           <li>

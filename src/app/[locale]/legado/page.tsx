@@ -147,7 +147,7 @@ export default function LegadoColombianoPage() {
                             onClick={() => setCurrentPage(i + 1)}
                             className={`w-10 h-10 flex items-center justify-center font-mono-technical text-sm border transition-colors ${
                               currentPage === i + 1 
-                                ? 'border-primary bg-primary text-background' 
+                                ? 'border-primary bg-primary text-white' 
                                 : 'border-outline-variant/30 bg-surface text-on-surface hover:border-primary/50'
                             }`}
                           >
