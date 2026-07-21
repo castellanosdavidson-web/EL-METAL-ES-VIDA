@@ -188,7 +188,7 @@ export default function ArticulosPage() {
     }
 
     let finalDesc = desc;
-    if (youtubeUrl.trim()) {
+    if (youtubeUrl.trim() && !finalDesc.includes(youtubeUrl.trim())) {
       finalDesc += `\n<p>${youtubeUrl.trim()}</p>`;
     }
     formData.set('desc', finalDesc);

@@ -20,8 +20,8 @@ export default function ArticleGallery({ images }: ArticleGalleryProps) {
   };
 
   return (
-    <div className="w-full my-8 bg-surface-container-lowest border border-outline-variant/30 overflow-hidden group">
-      <div className="relative aspect-video md:aspect-[21/9] w-full bg-black/50">
+    <div className="w-full max-w-2xl mx-auto my-12 bg-[#121212] border-4 border-[#c4704b] shadow-[0_0_30px_rgba(196,112,75,0.3)] overflow-hidden group relative rounded-sm">
+      <div className="relative aspect-video w-full bg-black">
         <Image
           src={images[currentIndex]}
           alt={`Gallery image ${currentIndex + 1}`}

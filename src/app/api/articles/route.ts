@@ -191,6 +191,12 @@ export async function POST(request: Request) {
     const isColombianLegacy = formData.get('isColombianLegacy') === 'on';
     const isNewRelease = formData.get('isNewRelease') === 'on';
 
+    const galleryImagesStr = formData.get('galleryImages') as string;
+    let galleryImages: string[] = [];
+    if (galleryImagesStr) {
+      try { galleryImages = JSON.parse(galleryImagesStr); } catch (e) {}
+    }
+
     const serviceSupabase = getServiceSupabase();
 
     let imageUrl = clientImageUrl || '';
@@ -271,6 +277,7 @@ export async function POST(request: Request) {
       similarBands,
       similarBands_en,
       similarBands_pt,
+      galleryImages,
       createdAt: publishDate ? new Date(publishDate).toISOString() : new Date().toISOString()
     };
 
@@ -329,6 +336,12 @@ export async function PUT(request: Request) {
     const faqsRaw = formData.get('faqsRaw') as string | null;
     const isColombianLegacy = formData.get('isColombianLegacy') === 'on';
     const isNewRelease = formData.get('isNewRelease') === 'on';
+
+    const galleryImagesStr = formData.get('galleryImages') as string;
+    let galleryImages: string[] | undefined = undefined;
+    if (formData.has('galleryImages')) {
+      try { galleryImages = JSON.parse(galleryImagesStr); } catch (e) {}
+    }
 
     const serviceSupabase = getServiceSupabase();
 
@@ -447,6 +460,7 @@ export async function PUT(request: Request) {
       similarBands: similarBands,
       similarBands_en: similarBands_en,
       similarBands_pt: similarBands_pt,
+      galleryImages: galleryImages !== undefined ? galleryImages : posts[postIndex].galleryImages,
       updatedAt: new Date().toISOString(),
       ...(publishDate && { createdAt: new Date(publishDate).toISOString() })
     };
