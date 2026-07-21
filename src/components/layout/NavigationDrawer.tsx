@@ -74,7 +74,7 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
           <li>
             <Link onClick={onClose} href="/archivo" className="group flex items-center text-headline-lg font-headline-lg uppercase text-primary border-l-4 border-primary pl-4 opacity-80 hover:opacity-100 hover:translate-x-2 transition-all duration-300 glitch-hover">
               <div className="relative w-8 h-8 mr-4 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
-                <Image src="/custom_icons/icon_20.png" alt="Archivo" fill unoptimized className="object-contain drop-shadow-[0_0_8px_rgba(196,112,75,0.4)]" />
+                <Image src="/nav_icons/1.png" alt="Archivo" fill unoptimized className="object-contain drop-shadow-[0_0_8px_rgba(196,112,75,0.4)]" />
               </div>
               <span>{tNav('archivo')}</span>
             </Link>
@@ -82,7 +82,7 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
           <li>
             <Link onClick={onClose} href="/taller" className="group flex items-center text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-primary hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
               <div className="relative w-8 h-8 mr-4 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
-                <Image src="/custom_icons/icon_7.png" alt="Taller" fill unoptimized className="object-contain" />
+                <Image src="/nav_icons/2.png" alt="Taller" fill unoptimized className="object-contain" />
               </div>
               <span>{tNav('taller')}</span>
             </Link>
@@ -90,7 +90,7 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
           <li>
             <Link onClick={onClose} href="/legado" className="group flex items-center text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-[#c4704b] hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
               <div className="relative w-8 h-8 mr-4 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
-                <Image src="/custom_icons/icon_15.png" alt="Legado" fill unoptimized className="object-contain" />
+                <Image src="/nav_icons/3.png" alt="Legado" fill unoptimized className="object-contain" />
               </div>
               <span>Legado</span>
             </Link>
@@ -98,7 +98,7 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
           <li>
             <Link onClick={onClose} href="/tienda" className="group flex items-center text-headline-lg font-headline-lg uppercase text-on-surface pl-4 hover:text-error hover:bg-surface-container-highest/50 py-2 hover:translate-x-2 transition-all duration-300 glitch-hover">
               <div className="relative w-8 h-8 mr-4 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
-                <Image src="/custom_icons/icon_19.png" alt="Tienda" fill unoptimized className="object-contain" />
+                <Image src="/nav_icons/4.png" alt="Tienda" fill unoptimized className="object-contain" />
               </div>
               <span className="group-hover:text-error">{tDrawer('arsenal')}</span>
             </Link>

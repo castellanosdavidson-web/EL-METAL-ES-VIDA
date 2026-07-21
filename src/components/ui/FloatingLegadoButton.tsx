@@ -19,8 +19,8 @@ export default function FloatingLegadoButton() {
         />
       </div>
       <div className="flex flex-col pr-2">
-        <span className="font-label-technical text-[8px] uppercase tracking-[0.2em] text-[#c4704b] leading-tight opacity-80">Expediente colombiano</span>
-        <span className="font-headline-sm text-xs uppercase text-on-surface font-black group-hover:text-[#c4704b] transition-colors leading-tight tracking-widest mt-0.5">Legado</span>
+        <span className="font-label-technical text-[8px] uppercase tracking-[0.2em] text-[#c4704b] leading-tight opacity-80">Expediente</span>
+        <span className="font-headline-sm text-xs uppercase text-white group-hover:text-[#c4704b] transition-colors font-bold tracking-wider leading-none">Colombiano</span>
       </div>
     </Link>
   );
