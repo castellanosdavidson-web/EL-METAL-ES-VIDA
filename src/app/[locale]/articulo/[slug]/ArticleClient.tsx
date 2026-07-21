@@ -507,6 +507,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                 alt={articleTitle || 'Portada'} 
                 fill 
                 priority 
+                unoptimized={true}
                 sizes="100vw"
                 className="object-cover animate-fade-in" 
               />
@@ -553,6 +554,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                 src={initialArticle.imageUrl} 
                 alt={articleTitle || 'Portada'} 
                 fill 
+                unoptimized={true}
                 sizes="100vw"
                 className="object-cover opacity-[0.15] mix-blend-screen" 
               />
@@ -888,6 +890,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                             src={rec.imageUrl || 'https://dxmaslijicgzrwfmzkuv.supabase.co/storage/v1/object/public/articles/1783486070494.png'} 
                             alt={rec.title} 
                             fill
+                            unoptimized={true}
                             sizes="(max-width: 768px) 100vw, 33vw"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                           />
