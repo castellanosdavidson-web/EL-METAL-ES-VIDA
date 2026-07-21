@@ -297,10 +297,10 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
           font-size: 1.05rem;
           line-height: 1.85;
           word-wrap: normal !important;
-          overflow-wrap: normal !important;
-          hyphens: none !important;
-          word-break: normal !important;
-          text-align: justify;
+          overflow-wrap: break-word !important;
+          hyphens: auto;
+          word-break: break-word !important;
+          text-align: left;
           font-weight: 400;
         }
 
@@ -315,6 +315,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
           .article-content {
             font-size: 1.15rem;
             line-height: 1.75;
+            text-align: justify;
           }
         }
 
@@ -349,6 +350,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
           text-shadow: 0 0 15px rgba(196, 112, 75, 0.15);
           letter-spacing: 0.06em;
           word-spacing: 0.1em;
+          text-align: left;
         }
 
         .article-content h1 { font-size: 1.5rem; font-weight: 600; }
