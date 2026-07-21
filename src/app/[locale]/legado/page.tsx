@@ -60,9 +60,9 @@ export default function LegadoColombianoPage() {
             <span className="material-symbols-outlined text-[20px]">landscape</span>
             <span className="font-mono-technical text-mono-technical uppercase tracking-[0.25em]">Expediente Regional</span>
           </div>
-          <h1 className="font-headline-lg-mobile md:text-display-lg text-display-md text-on-surface uppercase tracking-wider drop-shadow-md">Legado Colombiano</h1>
+          <h1 className="font-headline-lg-mobile md:text-display-lg text-display-md text-on-surface uppercase tracking-wider drop-shadow-md">{t('regionalTitle')}</h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-4 leading-relaxed">
-            La génesis del sonido extremo en las montañas y ciudades de Colombia. Colecciones, reseñas y biografías de las bandas que forjaron metal en medio del fuego cruzado.
+            {t('regionalDesc')}
           </p>
         </section>
 

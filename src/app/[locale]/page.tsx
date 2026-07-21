@@ -361,11 +361,11 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="overflow-hidden group/carousel relative">
+          <div className="overflow-hidden group/carousel relative w-full">
             {plugins.length > 0 ? (
-              <div className="flex gap-6 animate-[marquee_10s_linear_infinite] hover:[animation-play-state:paused] w-max" style={{ animationDuration: `${Math.max(20, plugins.length * 10)}s` }}>
+              <div className="flex gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory md:overflow-visible md:animate-[marquee_10s_linear_infinite] md:hover:[animation-play-state:paused] w-full md:w-max pb-4" style={{ animationDuration: `${Math.max(20, plugins.length * 10)}s` }}>
                 {[...plugins, ...plugins, ...plugins, ...plugins].map((plugin, idx) => (
-                  <div key={`${plugin.id}-${idx}`} className="w-[85vw] md:w-[350px] shrink-0 bg-surface border border-outline-variant hover:border-primary transition-colors group flex flex-col relative overflow-hidden h-[480px]">
+                  <div key={`${plugin.id}-${idx}`} className={`w-[85vw] md:w-[350px] shrink-0 bg-surface border border-outline-variant hover:border-primary transition-colors group relative overflow-hidden h-[480px] snap-center ${idx >= plugins.length ? 'hidden md:flex' : 'flex'} flex-col`}>
                     <Link href={plugin.slug ? `/articulo/${plugin.slug}` : `/articulo/${plugin.id}`} className="flex flex-col flex-grow">
                       {plugin.imageUrl && (
                         <div className="w-full h-[180px] bg-surface-container-highest relative overflow-hidden shrink-0 border-b border-outline-variant">
@@ -453,11 +453,11 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="overflow-hidden group/carousel relative">
+          <div className="overflow-hidden group/carousel relative w-full">
             {gear.length > 0 ? (
-              <div className="flex gap-6 animate-[marquee_10s_linear_infinite] hover:[animation-play-state:paused] w-max" style={{ animationDuration: `${Math.max(20, gear.length * 10)}s` }}>
+              <div className="flex gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory md:overflow-visible md:animate-[marquee_10s_linear_infinite] md:hover:[animation-play-state:paused] w-full md:w-max pb-4" style={{ animationDuration: `${Math.max(20, gear.length * 10)}s` }}>
                 {[...gear, ...gear, ...gear, ...gear].map((item, idx) => (
-                  <div key={`${item.id}-${idx}`} className="w-[85vw] md:w-[350px] shrink-0 bg-surface-dim border border-outline-variant hover:border-error transition-colors group flex flex-col relative overflow-hidden h-[480px]">
+                  <div key={`${item.id}-${idx}`} className={`w-[85vw] md:w-[350px] shrink-0 bg-surface-dim border border-outline-variant hover:border-error transition-colors group relative overflow-hidden h-[480px] snap-center ${idx >= gear.length ? 'hidden md:flex' : 'flex'} flex-col`}>
                     <a href={item.externalUrl || '#'} target="_blank" rel="noopener noreferrer" className="flex flex-col flex-grow">
                       {item.imageUrl && (
                         <div className="w-full h-[180px] bg-white relative overflow-hidden shrink-0 border-b border-outline-variant">
