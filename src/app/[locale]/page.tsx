@@ -361,6 +361,13 @@ export default function Home() {
               </Link>
             </div>
           </div>
+          
+          <div className="md:hidden flex justify-center text-primary font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center opacity-70 mb-4 animate-pulse">
+            <span className="material-symbols-outlined text-[12px]">swipe_left</span>
+            <span className="select-none">{t('cdDeslizaExplorar')}</span>
+            <span className="material-symbols-outlined text-[12px]">swipe_right</span>
+          </div>
+
           <div className="overflow-hidden group/carousel relative w-full">
             {plugins.length > 0 ? (
               <div className="flex gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory md:overflow-visible md:animate-[marquee_10s_linear_infinite] md:hover:[animation-play-state:paused] w-full md:w-max pb-4" style={{ animationDuration: `${Math.max(20, plugins.length * 10)}s` }}>
@@ -453,6 +460,13 @@ export default function Home() {
               </Link>
             </div>
           </div>
+
+          <div className="md:hidden flex justify-center text-error font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center opacity-70 mb-4 animate-pulse">
+            <span className="material-symbols-outlined text-[12px]">swipe_left</span>
+            <span className="select-none">{t('cdDeslizaExplorar')}</span>
+            <span className="material-symbols-outlined text-[12px]">swipe_right</span>
+          </div>
+
           <div className="overflow-hidden group/carousel relative w-full">
             {gear.length > 0 ? (
               <div className="flex gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory md:overflow-visible md:animate-[marquee_10s_linear_infinite] md:hover:[animation-play-state:paused] w-full md:w-max pb-4" style={{ animationDuration: `${Math.max(20, gear.length * 10)}s` }}>
