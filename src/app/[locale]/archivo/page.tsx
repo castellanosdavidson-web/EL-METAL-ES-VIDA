@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
-
+import FloatingLegadoButton from '@/components/ui/FloatingLegadoButton';
 export default function EnciclopediaPage() {
   const locale = useLocale();
   const t = useTranslations('Archive');
@@ -192,7 +192,7 @@ export default function EnciclopediaPage() {
         </>
       )}
 
-
+      <FloatingLegadoButton />
     </main>
   );
 }
