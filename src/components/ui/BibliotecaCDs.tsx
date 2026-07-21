@@ -206,15 +206,14 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
                     <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-black to-transparent pointer-events-none"></div>
 
                     <div className="w-[90%] aspect-square rounded-full bg-gradient-to-br from-zinc-800 via-zinc-400 to-zinc-900 border-[1px] border-zinc-500 shadow-[inset_0_0_20px_rgba(0,0,0,0.9),0_10px_20px_rgba(0,0,0,0.5)] flex items-center justify-center relative animate-[spin_4s_linear_infinite] overflow-hidden">
-                      {activeCd.cdImageUrl && (
-                        <Image 
-                          src={activeCd.cdImageUrl} 
-                          alt={`Disco de ${activeCd.title}`}
-                          fill
-                          sizes="(max-width: 768px) 160px, 200px"
-                          className="object-cover opacity-90 mix-blend-hard-light"
-                        />
-                      )}
+                      <Image 
+                        src={(activeCd.cdImageUrl && activeCd.cdImageUrl !== 'null') ? activeCd.cdImageUrl : activeCd.cover} 
+                        alt=""
+                        fill
+                        sizes="(max-width: 768px) 160px, 200px"
+                        className="object-cover opacity-90 mix-blend-hard-light"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
 
                       <div className="w-[20%] aspect-square bg-[#090909] rounded-full border-4 border-white/20 shadow-[inset_0_0_5px_rgba(0,0,0,1)] relative z-10 flex items-center justify-center">
                          <div className="w-[40%] aspect-square rounded-full bg-transparent border border-white/10"></div>
