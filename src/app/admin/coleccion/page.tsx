@@ -461,22 +461,42 @@ export default function ColeccionPage() {
                       <label className="block text-xs uppercase text-on-surface-variant mb-1 font-bold">Categoría (Opcional)</label>
                       <input type="text" name="category" defaultValue={editCd?.category || 'Reseña'} className="w-full bg-background border border-outline-variant/50 p-2 focus:border-primary text-on-surface" />
                     </div>
-                    <div className="flex items-center gap-3 bg-background border border-outline-variant/50 p-3">
-                      <input 
-                        type="checkbox" 
-                        name="isNewRelease" 
-                        id="isNewRelease"
-                        defaultChecked={editCd ? editCd.isNewRelease : false} 
-                        className="w-5 h-5 accent-primary cursor-pointer"
-                      />
-                      <div>
-                        <label htmlFor="isNewRelease" className="font-label-technical text-sm text-on-surface cursor-pointer font-bold uppercase">
-                          Mostrar en "Nuevos Lanzamientos" (Home)
-                        </label>
-                        <p className="text-[10px] text-on-surface-variant mt-1 leading-tight">
-                          Si marcas esta casilla, el CD aparecerá en el carrusel de lanzamientos del inicio. <br/>
-                          Si la desmarcas, solo aparecerá dentro del expediente de la Banda.
-                        </p>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center gap-3 bg-background border border-outline-variant/50 p-3">
+                        <input 
+                          type="checkbox" 
+                          name="isNewRelease" 
+                          id="isNewRelease"
+                          defaultChecked={editCd ? editCd.isNewRelease : false} 
+                          className="w-5 h-5 accent-primary cursor-pointer"
+                        />
+                        <div>
+                          <label htmlFor="isNewRelease" className="font-label-technical text-sm text-on-surface cursor-pointer font-bold uppercase">
+                            Mostrar en "Nuevos Lanzamientos" (Home)
+                          </label>
+                          <p className="text-[10px] text-on-surface-variant mt-1 leading-tight">
+                            Si marcas esta casilla, el CD aparecerá en el carrusel de lanzamientos del inicio. <br/>
+                            Si la desmarcas, solo aparecerá dentro del expediente de la Banda.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 bg-background border border-outline-variant/50 p-3">
+                        <input 
+                          type="checkbox" 
+                          name="isColombianLegacy" 
+                          id="isColombianLegacy"
+                          defaultChecked={editCd ? editCd.isColombianLegacy : false} 
+                          className="w-5 h-5 accent-primary cursor-pointer"
+                        />
+                        <div>
+                          <label htmlFor="isColombianLegacy" className="font-label-technical text-sm text-on-surface cursor-pointer font-bold uppercase">
+                            Legado Colombiano
+                          </label>
+                          <p className="text-[10px] text-on-surface-variant mt-1 leading-tight">
+                            Si marcas esta casilla, el CD será enviado a la sección exclusiva de Legado Colombiano.
+                          </p>
+                        </div>
                       </div>
                     </div>
                     <div>

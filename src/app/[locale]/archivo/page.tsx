@@ -192,35 +192,7 @@ export default function EnciclopediaPage() {
         </>
       )}
 
-      {/* Legado Colombiano Highlight */}
-      <section className="mt-8 border border-outline-variant bg-surface-container-high relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px)" }}></div>
-        <div className="p-6 md:p-8 flex flex-col gap-6 relative z-10">
-          <div className="flex flex-col gap-2 border-b border-outline-variant/50 pb-4">
-            <span className="font-mono-technical text-mono-technical text-primary tracking-widest uppercase">{t('regionalTag')}</span>
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase">{t('regionalTitle')}</h2>
-          </div>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
-            {t('regionalDesc')}
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            {posts.filter(p => p.category === 'Bandas' && p.isColombianLegacy).length > 0 ? (
-              posts.filter(p => p.category === 'Bandas' && p.isColombianLegacy).map(band => (
-                <Link href={`/articulo/${band.slug || band.id}`} key={band.id}>
-                  <div className="border border-outline-variant/30 p-4 bg-surface flex items-center justify-between group cursor-pointer hover:border-primary transition-colors h-full">
-                    <span className="font-label-sm text-label-sm text-on-surface uppercase tracking-widest truncate max-w-[80%]">{locale === 'en' && band.title_en ? band.title_en : locale === 'pt' && band.title_pt ? band.title_pt : band.title}</span>
-                    <span className="material-symbols-outlined text-primary text-[16px] opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 shrink-0">chevron_right</span>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <div className="col-span-full border border-outline-variant/30 p-4 bg-surface text-center">
-                <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Aún no hay bandas registradas</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+
     </main>
   );
 }

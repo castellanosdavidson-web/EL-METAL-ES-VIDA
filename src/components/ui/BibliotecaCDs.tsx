@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 
-export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
+export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { cds?: any[], title?: string, hideLink?: boolean }) {
   const t = useTranslations('Home');
   const [activeCdId, setActiveCdId] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -56,11 +56,13 @@ export default function BibliotecaCDs({ cds = [] }: { cds?: any[] }) {
             <span className="material-symbols-outlined text-primary">album</span>
             <span className="font-label-technical text-label-technical text-on-surface-variant">{t('coleccionLabel')}</span>
           </div>
-          <h2 className="text-headline-lg font-headline-lg uppercase text-on-surface">{t('nuevosLanzamientos')}</h2>
+          <h2 className="text-headline-lg font-headline-lg uppercase text-on-surface">{title || t('nuevosLanzamientos')}</h2>
         </div>
-        <Link href="/coleccion" className="font-label-technical text-label-technical text-primary hover:underline flex items-center gap-1 hidden md:flex">
-          VER TODA LA COLECCIÓN <span className="material-symbols-outlined text-sm">arrow_outward</span>
-        </Link>
+        {!hideLink && (
+          <Link href="/coleccion" className="font-label-technical text-label-technical text-primary hover:underline flex items-center gap-1 hidden md:flex">
+            VER TODA LA COLECCIÓN <span className="material-symbols-outlined text-sm">arrow_outward</span>
+          </Link>
+        )}
       </div>
 
       {/* Estructura del Gabinete Amplificador (El Estante) */}
