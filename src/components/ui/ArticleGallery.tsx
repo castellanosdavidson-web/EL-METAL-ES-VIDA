@@ -28,7 +28,7 @@ export default function ArticleGallery({ images }: ArticleGalleryProps) {
             alt={`Gallery image ${currentIndex + 1}`}
             fill
             unoptimized
-            className="object-contain transition-opacity duration-500"
+            className="!m-0 !border-none !shadow-none object-contain transition-opacity duration-500"
           />
         </div>
         
