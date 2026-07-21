@@ -267,7 +267,7 @@ export default function Home() {
             {/* Main Feature */}
             {articles[0] && (
               <Link href={articles[0].slug ? `/articulo/${articles[0].slug}` : `/articulo/${articles[0].id}`} className="md:col-span-8 bg-surface-dim relative group overflow-hidden border-t-4 border-primary-container hover:border-primary transition-colors duration-300 flex flex-col h-[500px] cursor-pointer block">
-                <div className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[0].imageUrl}')` }}></div>
+                <div className="absolute inset-0 bg-cover bg-center opacity-100 md:opacity-40 group-hover:opacity-100 md:group-hover:opacity-80 grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[0].imageUrl}')` }}></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
                 <div className="relative z-10 mt-auto p-8 border-t border-surface-container-highest/50 bg-background/80 backdrop-blur-sm">
                   <div className="flex gap-2 mb-4">
@@ -284,7 +284,7 @@ export default function Home() {
             {/* Secondary Features */}
             {articles[1] && (
               <Link href={articles[1].slug ? `/articulo/${articles[1].slug}` : `/articulo/${articles[1].id}`} className="md:col-span-4 bg-surface relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto cursor-pointer block">
-                <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[1].imageUrl}')` }}></div>
+                <div className="absolute inset-0 bg-cover bg-center opacity-100 md:opacity-30 group-hover:opacity-100 md:group-hover:opacity-80 grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[1].imageUrl}')` }}></div>
                 <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-background to-background/20 h-full flex flex-col justify-end">
                   <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3 uppercase">{articles[1].category || 'CATEGORIA'}</span>
                   <h3 className="text-headline-lg-mobile font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[1].title_en || articles[1].title) : locale === 'pt' ? (articles[1].title_pt || articles[1].title) : articles[1].title}</h3>
@@ -294,7 +294,7 @@ export default function Home() {
 
             {articles[2] && (
               <Link href={articles[2].slug ? `/articulo/${articles[2].slug}` : `/articulo/${articles[2].id}`} className="md:col-span-4 bg-surface relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto cursor-pointer block">
-                <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[2].imageUrl}')` }}></div>
+                <div className="absolute inset-0 bg-cover bg-center opacity-100 md:opacity-30 group-hover:opacity-100 md:group-hover:opacity-80 grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[2].imageUrl}')` }}></div>
                 <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-background to-background/20 h-full flex flex-col justify-end">
                   <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3 uppercase">{articles[2].category || 'CATEGORIA'}</span>
                   <h3 className="text-headline-lg-mobile font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[2].title_en || articles[2].title) : locale === 'pt' ? (articles[2].title_pt || articles[2].title) : articles[2].title}</h3>
@@ -304,7 +304,7 @@ export default function Home() {
 
             {articles[3] && (
               <Link href={articles[3].slug ? `/articulo/${articles[3].slug}` : `/articulo/${articles[3].id}`} className="md:col-span-8 bg-surface-dim relative group overflow-hidden border-t-4 border-secondary-container hover:border-primary-container transition-colors duration-300 flex flex-col h-[500px] md:h-auto cursor-pointer block">
-                <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[3].imageUrl || articles[1].imageUrl}')` }}></div>
+                <div className="absolute inset-0 bg-cover bg-center opacity-100 md:opacity-30 group-hover:opacity-100 md:group-hover:opacity-80 grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-500" style={{ backgroundImage: `url('${articles[3].imageUrl || articles[1].imageUrl}')` }}></div>
                 <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-background to-background/20 h-full flex flex-col justify-end">
                   <span className="bg-surface border border-outline-variant px-2 py-1 font-label-technical text-label-technical text-primary w-max mb-3 uppercase">{articles[3].category || 'CATEGORIA'}</span>
                   <h3 className="text-headline-lg font-headline-lg uppercase text-on-surface leading-tight mb-2 group-hover:text-primary transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{locale === 'en' ? (articles[3].title_en || articles[3].title) : locale === 'pt' ? (articles[3].title_pt || articles[3].title) : articles[3].title}</h3>
@@ -380,7 +380,7 @@ export default function Home() {
                             <span className="material-symbols-outlined text-sm text-primary">{getCategoryIcon(plugin.category)}</span>
                             <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{plugin.category || 'TALLER'}</span>
                           </div>
-                          <Image src={plugin.imageUrl} alt={plugin.title} fill unoptimized={true} sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                          <Image src={plugin.imageUrl} alt={plugin.title} fill unoptimized={true} sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-cover grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-500" />
                         </div>
                       )}
                       <div className="flex flex-col flex-grow relative p-6 pb-0">
@@ -479,7 +479,7 @@ export default function Home() {
                             <span className="material-symbols-outlined text-sm text-error">{getCategoryIcon(item.category)}</span>
                             <span className="font-label-technical text-[10px] uppercase tracking-widest text-on-surface">{item.category || 'EQUIPAMIENTO'}</span>
                           </div>
-                          <Image src={item.imageUrl} alt={item.title} fill unoptimized={true} sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-contain p-4 grayscale group-hover:grayscale-0 transition-all duration-500" />
+                          <Image src={item.imageUrl} alt={item.title} fill unoptimized={true} sizes="(max-width: 768px) 100vw, 350px" priority={idx < 3} className="w-full h-full object-contain p-4 grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-500" />
                         </div>
                       )}
                       <div className="flex flex-col flex-grow relative p-6 pb-0">
