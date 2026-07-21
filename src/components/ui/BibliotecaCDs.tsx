@@ -85,7 +85,7 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
         <div className="relative w-full md:w-[65%] lg:w-[70%] pt-2 md:pt-10 pb-4 md:pb-6 border-b md:border-b-0 md:border-r border-white/10 z-10 flex flex-col justify-end">
           
           <div 
-            className="md:hidden flex justify-center text-on-surface-variant font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center cursor-pointer z-30 mb-2 animate-pulse"
+            className="md:hidden flex justify-center text-primary font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center cursor-pointer z-30 mb-2 animate-pulse"
             onClick={() => handleScroll('right')}
             style={{ animationDuration: '1s' }}
           >
