@@ -82,15 +82,24 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
         </div>
 
         {/* PANEL IZQUIERDO: ESTANTERÍA DE CDS (70%) */}
-        <div className="relative w-full md:w-[65%] lg:w-[70%] pt-6 md:pt-10 pb-4 md:pb-6 border-b md:border-b-0 md:border-r border-white/10 z-10 flex flex-col justify-end">
+        <div className="relative w-full md:w-[65%] lg:w-[70%] pt-2 md:pt-10 pb-4 md:pb-6 border-b md:border-b-0 md:border-r border-white/10 z-10 flex flex-col justify-end">
           
+          <div 
+            className="md:hidden flex justify-center text-on-surface-variant font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center opacity-70 cursor-pointer hover:opacity-100 transition-opacity z-30 mb-2"
+            onClick={() => handleScroll('right')}
+          >
+            <span className="material-symbols-outlined text-[12px]">swipe_left</span>
+            <span className="select-none">{t('cdDeslizaExplorar')}</span>
+            <span className="material-symbols-outlined text-[12px]">swipe_right</span>
+          </div>
+
           {/* Repisa (Donde se apoyan los CDs) */}
           <div className="absolute bottom-0 left-0 right-0 h-4 md:h-6 bg-[#0a0a0a] border-t-2 border-white/10 shadow-[0_-5px_15px_rgba(0,0,0,0.8)] z-10"></div>
 
           {/* Contenedor Flex de CDs */}
           <div 
             ref={scrollContainerRef}
-            className="relative z-20 flex items-end min-h-[290px] md:min-h-[340px] pt-10 gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar"
+            className="relative z-20 flex items-end min-h-[180px] md:min-h-[340px] pt-4 md:pt-10 gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar"
           >
             
             {displayCds.map((cd, index) => {
@@ -104,14 +113,13 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
               
               const tilt = (index % 5 === 0) ? '-rotate-[1deg]' : (index % 7 === 0) ? 'rotate-[1deg]' : '';
               // Hacemos los CDs más altos dentro del mismo espacio (relativo a la altura del contenedor)
-              const height = 'h-[250px] md:h-[300px]';
+              const height = 'h-[160px] md:h-[300px]';
               const isSelected = activeCdId === cd.id;
 
               return (
-                <Link 
-                  href={`/articulo/${cd.slug}`}
+                <div 
                   key={cd.id}
-                  className={`relative group perspective-[1000px] z-30 shrink-0 snap-center transition-all duration-500 origin-bottom ${tilt} mx-[1px] ${isSelected ? 'z-[99999] scale-y-105 -translate-y-2' : 'hover:z-[9999] hover:-translate-y-2'} block`}
+                  className={`relative group perspective-[1000px] z-30 shrink-0 snap-center transition-all duration-500 origin-bottom ${tilt} mx-[1px] ${isSelected ? 'z-[99999] scale-y-105 -translate-y-2' : 'hover:z-[9999] hover:-translate-y-2'} block cursor-pointer`}
                   onMouseEnter={() => setActiveCdId(cd.id)}
                   onClick={() => setActiveCdId(cd.id)}
                 >
@@ -155,14 +163,14 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
 
                     <div className="h-[4px] md:h-[5px] w-full bg-gradient-to-t from-white/30 to-white/10 border-t border-black/40 z-20"></div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
         </div>
 
         {/* PANEL DERECHO: EXHIBICIÓN DEL CD (30%) */}
-        <div className="relative w-full md:w-[35%] lg:w-[30%] bg-[#080808] z-10 flex flex-col items-center justify-center p-6 md:p-8 shadow-[inset_15px_0_30px_rgba(0,0,0,0.9)] min-h-[300px] md:min-h-[280px]">
+        <div className="relative w-full md:w-[35%] lg:w-[30%] bg-[#080808] z-10 flex flex-col items-center justify-center p-4 md:p-8 shadow-[inset_15px_0_30px_rgba(0,0,0,0.9)] min-h-[220px] md:min-h-[280px]">
           
           {activeCd && (
             <div className="w-full flex flex-col items-center animate-fade-in">
@@ -245,20 +253,6 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
             </div>
           )}
         </div>
-      </div>
-      
-      <div 
-        className="md:hidden flex justify-center mt-6 text-on-surface-variant font-mono-technical text-[9px] uppercase tracking-widest gap-2 items-center opacity-70 cursor-pointer hover:opacity-100 transition-opacity"
-        onClick={() => handleScroll('right')}
-      >
-        <span 
-          className="material-symbols-outlined text-[12px] p-2 -m-2" 
-          onClick={(e) => { e.stopPropagation(); handleScroll('left'); }}
-        >
-          swipe_left
-        </span>
-        <span className="select-none">{t('cdDeslizaExplorar')}</span>
-        <span className="material-symbols-outlined text-[12px] p-2 -m-2">swipe_right</span>
       </div>
     </div>
   );
