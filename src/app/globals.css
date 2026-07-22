@@ -182,3 +182,62 @@ body {
   padding: 8px;
   border: 1px solid var(--md-sys-color-outline-variant, #4a4949);
 }
+
+/* ==========================================================================
+   FORZAR ESTILOS DE TIPOGRAFÍA PARA ARTÍCULOS (Ignora estilos inline de Gemini/ChatGPT)
+   ========================================================================== */
+.article-content * {
+  background-color: transparent !important;
+}
+
+.article-content p,
+.article-content span,
+.article-content li,
+.article-content div {
+  font-family: 'Lora', Georgia, serif !important;
+  color: #d8cec4 !important;
+  line-height: inherit !important;
+}
+
+.article-content a {
+  font-family: 'Lora', Georgia, serif !important;
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6,
+.article-content th {
+  font-family: 'Cinzel', serif !important;
+  color: #f0e6d8 !important;
+  line-height: 1.35 !important;
+}
+
+.article-content code,
+.article-content pre {
+  font-family: 'JetBrains Mono', monospace !important;
+  color: #c4704b !important;
+}
+
+.article-content strong,
+.article-content b {
+  font-family: 'Lora', Georgia, serif !important;
+  font-weight: 600 !important;
+  color: #f0e6d8 !important;
+}
+
+.article-content em,
+.article-content i {
+  font-family: 'Lora', Georgia, serif !important;
+  font-style: italic !important;
+  color: #c4a882 !important;
+}
+
+/* Forzar la primera letra tipo capital para que nunca se pierda */
+.article-content > p:first-of-type::first-letter {
+  font-family: 'Cinzel Decorative', serif !important;
+  color: #c4704b !important;
+  font-weight: 900 !important;
+}
