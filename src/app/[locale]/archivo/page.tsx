@@ -50,7 +50,7 @@ export default function EnciclopediaPage() {
     'RESEÑAS' // Hardcoded because we don't want to break translation files, mapping it below
   ];
 
-  const sortedPosts = [...posts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const sortedPosts = [...posts].sort((a, b) => new Date(b.created_at || b.createdAt).getTime() - new Date(a.created_at || a.createdAt).getTime());
 
   const filteredPosts = selectedCategory === t('catTodos') 
     ? sortedPosts 
@@ -116,16 +116,16 @@ export default function EnciclopediaPage() {
           <p className="font-mono-technical text-xs text-on-surface-variant uppercase">{t('empty')}</p>
         </div>
       ) : (
-        /* Encyclopedic Masonry Grid */
+        /* Encyclopedic Grid */
         <>
-          <section className="columns-1 md:columns-2 lg:columns-3 gap-masonry-gap space-y-masonry-gap">
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedPosts.map((post, idx) => (
               <Link 
                 href={post.slug ? `/articulo/${post.slug}` : `/articulo/${post.id}`} 
                 key={post.id} 
-                className="break-inside-avoid border border-outline-variant/30 flex flex-col bg-surface-container-low group cursor-pointer relative overflow-hidden mb-masonry-gap block"
+                className="border border-outline-variant/30 flex flex-col bg-surface-container-low group cursor-pointer relative overflow-hidden h-full"
               >
-                <div className="w-full relative pt-[75%] bg-surface-variant">
+                <div className="w-full relative pt-[75%] bg-surface-variant flex-shrink-0">
                   <Image 
                     src={post.imageUrl || '/posts/placeholder.png'} 
                     alt={post.title}
@@ -140,12 +140,12 @@ export default function EnciclopediaPage() {
                     <span className="font-label-sm text-label-sm uppercase text-on-surface">{post.category}</span>
                   </div>
                 </div>
-                <div className="p-4 flex flex-col gap-2 border-t border-outline-variant/30 bg-surface-container-lowest relative z-20">
+                <div className="p-4 flex flex-col gap-2 border-t border-outline-variant/30 bg-surface-container-lowest relative z-20 flex-grow">
                   <h2 className="font-headline-md text-headline-md text-on-surface leading-tight group-hover:text-primary transition-colors uppercase">{locale === 'en' && post.title_en ? post.title_en : locale === 'pt' && post.title_pt ? post.title_pt : post.title}</h2>
                   <p className="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-3 overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {getPlainText(locale === 'en' && post.desc_en ? post.desc_en : locale === 'pt' && post.desc_pt ? post.desc_pt : post.desc)}
                   </p>
-                  <div className="mt-2 flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase opacity-80 group-hover:opacity-100 cursor-pointer">
+                  <div className="mt-auto pt-4 flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase opacity-80 group-hover:opacity-100 cursor-pointer">
                     <span>{t('viewRecord')}</span>
                     <span className="material-symbols-outlined text-[16px] transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
                   </div>
