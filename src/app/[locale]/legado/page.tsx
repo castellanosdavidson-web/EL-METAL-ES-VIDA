@@ -12,6 +12,7 @@ export default function LegadoColombianoPage() {
   const [posts, setPosts] = useState<any[]>([]);
   const [cds, setCds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('TODOS');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
@@ -45,14 +46,16 @@ export default function LegadoColombianoPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const totalPages = Math.ceil(posts.length / itemsPerPage);
-  const paginatedPosts = posts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const categories = ['TODOS', ...Array.from(new Set(posts.map(p => p.category || 'Banda')))].sort();
+  const filteredPosts = selectedCategory === 'TODOS' 
+    ? posts 
+    : posts.filter(p => (p.category || 'Banda') === selectedCategory);
+
+  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
+  const paginatedPosts = filteredPosts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <main className="flex-grow pt-[160px] pb-stack-loose px-margin-mobile flex flex-col gap-stack-loose w-full mx-auto relative min-h-screen bg-background">
-      {/* Background Texture specific for Legado */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none z-0" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 1px, #c4704b 1px, #c4704b 2px)" }}></div>
-
       <div className="max-w-7xl mx-auto w-full flex flex-col gap-12 relative z-10">
         {/* Hero Section */}
         <section className="flex flex-col gap-stack-tight border-b border-outline-variant/30 pb-10">
@@ -66,6 +69,28 @@ export default function LegadoColombianoPage() {
           </p>
         </section>
 
+        {/* Category Filter Tabs */}
+        {!loading && posts.length > 0 && (
+          <section className="flex flex-wrap gap-3 border-b border-outline-variant/10 pb-6 -mt-6">
+            {categories.map((cat) => (
+              <button 
+                key={cat as string} 
+                onClick={() => {
+                  setSelectedCategory(cat as string);
+                  setCurrentPage(1);
+                }}
+                className={`px-4 py-2 font-mono-technical text-[10px] md:text-xs uppercase tracking-widest transition-all duration-300 border ${
+                  selectedCategory === cat 
+                    ? 'bg-primary-container text-white border-primary-container' 
+                    : 'border-outline-variant/30 text-on-surface-variant hover:text-primary hover:border-primary/50'
+                }`}
+              >
+                {cat as string}
+              </button>
+            ))}
+          </section>
+        )}
+
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -73,15 +98,8 @@ export default function LegadoColombianoPage() {
           </div>
         ) : (
           <>
-            {/* CD Library Section */}
-            {cds.length > 0 && (
-              <section className="mb-12">
-                <BibliotecaCDs cds={cds} title="Colección Metal Colombiano" hideLink={true} />
-              </section>
-            )}
-
             {/* Articles / Bands Grid */}
-            <section className="mt-8">
+            <section className="mt-2">
               <div className="flex items-center gap-2 text-primary mb-8 border-b border-outline-variant/20 pb-4">
                 <span className="material-symbols-outlined text-[18px]">auto_stories</span>
                 <h2 className="font-headline-md text-headline-md text-on-surface uppercase">Expedientes Biográficos</h2>
@@ -94,14 +112,14 @@ export default function LegadoColombianoPage() {
                 </div>
               ) : (
                 <>
-                  <div className="columns-1 md:columns-2 lg:columns-3 gap-masonry-gap space-y-masonry-gap">
+                  <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {paginatedPosts.map((post, idx) => (
                       <Link 
                         href={post.slug ? `/articulo/${post.slug}` : `/articulo/${post.id}`} 
                         key={post.id} 
-                        className="break-inside-avoid border border-outline-variant/30 flex flex-col bg-surface-container-low group cursor-pointer relative overflow-hidden mb-masonry-gap block"
+                        className="border border-outline-variant/30 flex flex-col bg-surface-container-low group cursor-pointer relative overflow-hidden h-full"
                       >
-                        <div className="w-full relative pt-[75%] bg-surface-variant">
+                        <div className="w-full relative pt-[75%] bg-surface-variant flex-shrink-0">
                           <Image 
                             src={post.imageUrl || '/posts/placeholder.png'} 
                             alt={post.title}
@@ -111,23 +129,23 @@ export default function LegadoColombianoPage() {
                             priority={idx < 3}
                             className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
                           />
-                          <div className="absolute top-2 left-2 bg-primary text-on-primary border border-primary px-2 py-1 flex items-center gap-1 z-10 shadow-md">
-                            <span className="font-label-sm text-label-sm uppercase tracking-widest">{post.category || 'Banda'}</span>
+                          <div className="absolute top-2 left-2 bg-surface border border-outline-variant px-2 py-1 flex items-center gap-1 z-10 shadow-md">
+                            <span className="font-label-sm text-label-sm uppercase text-on-surface">{post.category || 'Banda'}</span>
                           </div>
                         </div>
-                        <div className="p-4 flex flex-col gap-2 border-t border-outline-variant/30 bg-surface-container-lowest relative z-20">
+                        <div className="p-4 flex flex-col gap-2 border-t border-outline-variant/30 bg-surface-container-lowest relative z-20 flex-grow">
                           <h2 className="font-headline-md text-headline-md text-on-surface leading-tight group-hover:text-primary transition-colors uppercase">{locale === 'en' && post.title_en ? post.title_en : locale === 'pt' && post.title_pt ? post.title_pt : post.title}</h2>
                           <p className="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-3 overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                             {getPlainText(locale === 'en' && post.desc_en ? post.desc_en : locale === 'pt' && post.desc_pt ? post.desc_pt : post.desc)}
                           </p>
-                          <div className="mt-4 pt-2 border-t border-outline-variant/20 flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase opacity-80 group-hover:opacity-100 cursor-pointer">
+                          <div className="mt-auto pt-4 flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase opacity-80 group-hover:opacity-100 cursor-pointer">
                             <span>Leer Expediente</span>
                             <span className="material-symbols-outlined text-[16px] transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
                           </div>
                         </div>
                       </Link>
                     ))}
-                  </div>
+                  </section>
 
                   {/* Pagination */}
                   {totalPages > 1 && (
@@ -168,6 +186,13 @@ export default function LegadoColombianoPage() {
                 </>
               )}
             </section>
+
+            {/* CD Library Section - Moved to bottom */}
+            {cds.length > 0 && (
+              <section className="mt-12 pt-12 border-t border-outline-variant/20">
+                <BibliotecaCDs cds={cds} title="Colección Metal Colombiano" hideLink={true} />
+              </section>
+            )}
           </>
         )}
       </div>
