@@ -15,42 +15,19 @@ function processYouTubeEmbeds(html: string): string {
     .replace(/&nbsp;/g, ' ')
     .replace(/\u00a0/g, ' ');
 
-  // Primero: reemplazar enlaces <a> que apuntan a YouTube
-  const seenVideoIds = new Set<string>();
-  
+  // Asegurarnos de que todos los enlaces insertados (por si pegan una URL) se abran en ventana nueva
+  // Esto previene que el usuario pierda la página al clickear un link dentro del artículo
   processed = processed.replace(
-    /<a[^>]*href=["'](?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})[^"']*["'][^>]*>.*?<\/a>/gi,
-    (_, videoId) => {
-      if (seenVideoIds.has(videoId)) return ''; // Remove duplicate
-      seenVideoIds.add(videoId);
-      return createYouTubeEmbed(videoId);
-    }
-  );
-
-  // Segundo: reemplazar URLs de YouTube que aparecen como texto plano
-  processed = processed.replace(
-    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})(?:[^\s<"']*)/gi,
-    (match, videoId) => {
-      if (match.includes('iframe')) return match;
-      if (seenVideoIds.has(videoId)) return ''; // Remove duplicate plain text
-      seenVideoIds.add(videoId);
-      return createYouTubeEmbed(videoId);
+    /<a([^>]*)>/gi,
+    (match, attributes) => {
+      if (!attributes.includes('target=')) {
+        return `<a${attributes} target="_blank" rel="noopener noreferrer">`;
+      }
+      return match;
     }
   );
 
   return processed;
-}
-
-function createYouTubeEmbed(videoId: string): string {
-  return `<div class="yt-embed-wrapper">
-    <iframe 
-      src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-      allowfullscreen
-      title="Video de YouTube"
-      loading="lazy"
-    ></iframe>
-  </div>`;
 }
 
 interface ArticleClientProps {
