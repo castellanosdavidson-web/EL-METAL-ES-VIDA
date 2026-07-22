@@ -161,7 +161,11 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
   }
 
   const articleDesc = locale === 'en' ? (initialArticle.desc_en || initialArticle.desc) : locale === 'pt' ? (initialArticle.desc_pt || initialArticle.desc) : initialArticle.desc;
-  const processedContent = processYouTubeEmbeds(articleDesc || '');
+  
+  // Procesamos los videos de YouTube y limpiamos los párrafos vacíos al inicio (que rompen la Letra Capital)
+  let processedContent = processYouTubeEmbeds(articleDesc || '');
+  processedContent = processedContent.replace(/^(?:<p>(?:<br>|\s|&nbsp;|<\/?span[^>]*>)*<\/p>\s*)+/gi, '');
+  
   const articleTitle = locale === 'en' ? (initialArticle.title_en || initialArticle.title) : locale === 'pt' ? (initialArticle.title_pt || initialArticle.title) : initialArticle.title;
 
   const faqs = locale === 'en' && initialArticle.faqs_en?.length ? initialArticle.faqs_en : 

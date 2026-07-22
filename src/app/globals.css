@@ -236,8 +236,14 @@ body {
 }
 
 /* Forzar la primera letra tipo capital para que nunca se pierda */
-.article-content > p:first-of-type::first-letter {
+.article-content div > p:first-of-type::first-letter {
   font-family: 'Cinzel Decorative', serif !important;
   color: #c4704b !important;
   font-weight: 900 !important;
+  font-size: 3.5em !important;
+  float: left !important;
+  line-height: 0.8 !important;
+  margin-right: 0.1em !important;
+  margin-top: 0.05em !important;
+  text-shadow: 0 0 20px rgba(196, 112, 75, 0.4) !important;
 }
