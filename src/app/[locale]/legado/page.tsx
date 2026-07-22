@@ -189,7 +189,7 @@ export default function LegadoColombianoPage() {
 
             {/* CD Library Section - Moved to bottom */}
             {cds.length > 0 && (
-              <section className="mt-12 pt-12 border-t border-outline-variant/20">
+              <section className="mt-6 pt-6 border-t border-outline-variant/20">
                 <BibliotecaCDs cds={cds} title="Colección Metal Colombiano" hideLink={true} />
               </section>
             )}
