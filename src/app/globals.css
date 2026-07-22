@@ -167,3 +167,18 @@ body {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+
+/* Tablas responsivas para Quill Editor y contenido de artículos */
+.ql-editor table, .article-content table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  border-collapse: collapse;
+}
+
+.ql-editor table td, .article-content table td,
+.ql-editor table th, .article-content table th {
+  padding: 8px;
+  border: 1px solid var(--md-sys-color-outline-variant, #4a4949);
+}

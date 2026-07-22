@@ -18,6 +18,49 @@ export default function ColeccionPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 15;
 
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
+  const [loadingCopies, setLoadingCopies] = useState(false);
+  const [socialCopies, setSocialCopies] = useState<{facebook_reel: string, facebook_post: string, tiktok: string} | null>(null);
+  const [activeCopyArticle, setActiveCopyArticle] = useState<any>(null);
+
+  const handleGenerateCopies = async (article: any) => {
+    setActiveCopyArticle(article);
+    setSocialCopies(null);
+    setLoadingCopies(true);
+    setIsCopyModalOpen(true);
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      
+      const res = await fetch('/api/admin/generate-copys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          title: article.title, 
+          desc: article.desc || `Álbum ${article.title} por ${article.artist}`,
+          url: `https://elmetalesvida.com/articulo/${article.id}`
+        })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al generar los copys');
+      setSocialCopies({
+        facebook_reel: data.facebook_reel,
+        facebook_post: data.facebook_post,
+        tiktok: data.tiktok
+      });
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+      setIsCopyModalOpen(false);
+    } finally {
+      setLoadingCopies(false);
+    }
+  };
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -281,6 +324,9 @@ export default function ColeccionPage() {
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
+                      <button onClick={() => handleGenerateCopies(cd)} className="w-8 h-8 flex items-center justify-center bg-surface-dim hover:text-primary transition-colors" title="Generar Copys RRSS">
+                        <span className="material-symbols-outlined text-sm">campaign</span>
+                      </button>
                       <button onClick={() => handleToggleHidden(cd.id, cd.is_hidden)} className="w-8 h-8 flex items-center justify-center bg-surface-dim hover:bg-surface-variant text-on-surface transition-colors" title={cd.is_hidden ? "Publicar" : "Ocultar"}>
                         <span className="material-symbols-outlined text-sm">{cd.is_hidden ? 'visibility' : 'visibility_off'}</span>
                       </button>
@@ -528,6 +574,82 @@ export default function ColeccionPage() {
             </div>
             
             {message && <div className="absolute top-4 right-4 bg-background border border-primary p-4 z-[200] shadow-2xl"><p className="text-primary font-mono-technical">{message}</p></div>}
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Copys RRSS */}
+      {isCopyModalOpen && (
+        <div className="fixed inset-0 bg-black/80 z-[110] flex items-center justify-center backdrop-blur-sm p-4">
+          <div className="border border-outline-variant bg-surface-container-low p-8 relative w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+            <button onClick={() => setIsCopyModalOpen(false)} className="absolute top-4 right-4 text-on-surface-variant hover:text-white">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase mb-2">GENERADOR DE COPYS RRSS</h2>
+            <p className="font-mono-technical text-mono-technical text-on-surface-variant mb-6">PROMOCIÓN BRUTAL GENERADA CON INTELIGENCIA ARTIFICIAL (GEMINI)</p>
+            
+            {loadingCopies ? (
+              <div className="py-12 text-center text-primary animate-pulse font-mono-technical uppercase">
+                CALIBRANDO COGNICIÓN ARTIFICIAL Y CANALIZANDO BRUTALIDAD...
+              </div>
+            ) : (
+              socialCopies && (
+                <div className="space-y-6">
+                  {/* Facebook Reel */}
+                  <div className="space-y-2 border border-outline-variant/20 p-4 bg-surface bg-surface-container-lowest rounded-sm">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-label-sm text-primary uppercase font-bold tracking-widest">Reel en Facebook</span>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(socialCopies.facebook_reel);
+                          alert('¡Copy de Facebook Reel copiado al portapapeles!');
+                        }}
+                        className="text-xs bg-primary-container text-on-surface px-3 py-1 font-mono-technical uppercase hover:bg-inverse-primary"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <pre className="text-xs text-on-surface font-body-md whitespace-pre-wrap select-all bg-surface p-3 border border-outline-variant/10 max-h-40 overflow-y-auto">{socialCopies.facebook_reel}</pre>
+                  </div>
+
+                  {/* Facebook Post */}
+                  <div className="space-y-2 border border-outline-variant/20 p-4 bg-surface bg-surface-container-lowest rounded-sm">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-label-sm text-primary uppercase font-bold tracking-widest">Post Facebook</span>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(socialCopies.facebook_post);
+                          alert('¡Copy de Facebook Post copiado al portapapeles!');
+                        }}
+                        className="text-xs bg-primary-container text-on-surface px-3 py-1 font-mono-technical uppercase hover:bg-inverse-primary"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <pre className="text-xs text-on-surface font-body-md whitespace-pre-wrap select-all bg-surface p-3 border border-outline-variant/10 max-h-40 overflow-y-auto">{socialCopies.facebook_post}</pre>
+                  </div>
+
+                  {/* TikTok */}
+                  <div className="space-y-2 border border-outline-variant/20 p-4 bg-surface bg-surface-container-lowest rounded-sm">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-label-sm text-primary uppercase font-bold tracking-widest">TikTok</span>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(socialCopies.tiktok);
+                          alert('¡Copy de TikTok copiado al portapapeles!');
+                        }}
+                        className="text-xs bg-primary-container text-on-surface px-3 py-1 font-mono-technical uppercase hover:bg-inverse-primary"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <pre className="text-xs text-on-surface font-body-md whitespace-pre-wrap select-all bg-surface p-3 border border-outline-variant/10 max-h-40 overflow-y-auto">{socialCopies.tiktok}</pre>
+                  </div>
+                </div>
+              )
+            )}
           </div>
         </div>
       )}
