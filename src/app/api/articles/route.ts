@@ -20,6 +20,11 @@ function cleanAndParseJSON(text: string) {
   if (cleaned.startsWith('```')) {
     cleaned = cleaned.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/, '').trim();
   }
+  
+  // FIX: Replace literal newlines and tabs which cause "Bad control character in string literal" error
+  // when Gemini inserts HTML containing literal newlines directly into the JSON string value.
+  cleaned = cleaned.replace(/[\n\r\t]/g, ' ');
+
   try {
     return JSON.parse(cleaned);
   } catch (e) {
@@ -68,7 +73,9 @@ Return a JSON object exactly with these keys:
 "faqs_en" (array of {question, answer}),
 "faqs_pt" (array of {question, answer}).
 
-Do not modify any HTML tags, classes, or URLs in the description during translation.
+IMPORTANT RULES:
+1. Do not modify any HTML tags, classes, or URLs in the description during translation.
+2. The output MUST be a perfectly valid JSON object. DO NOT include unescaped newlines or control characters inside JSON strings. If you need a newline, use '\\n'.
 
 Title: ${title}
 Description: ${desc}
