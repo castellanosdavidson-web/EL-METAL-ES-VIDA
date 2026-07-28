@@ -22,6 +22,9 @@ export default function AjustesPage() {
   const [heroSubtitle, setHeroSubtitle] = useState('El archivo técnico definitivo para la legión. Desglosamos la agresión sonora, documentamos el equipo y forjamos acero.');
   const [heroSaved, setHeroSaved] = useState(false);
 
+  // Global Settings
+  const [defaultRadio, setDefaultRadio] = useState('wacken');
+
   // New admin state
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [newAdminPassword, setNewAdminPassword] = useState('');
@@ -90,6 +93,17 @@ export default function AjustesPage() {
     checkCover();
     checkAvatar();
     fetchAdmins();
+    
+    const loadSettings = async () => {
+      try {
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data.defaultRadio) {
+          setDefaultRadio(data.defaultRadio);
+        }
+      } catch (e) {}
+    };
+    loadSettings();
   }, []);
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,17 +204,32 @@ export default function AjustesPage() {
     setTimeout(() => setHeroSaved(false), 2500);
   };
 
-  const handleCommit = () => {
+  const handleCommit = async () => {
     setIsCommitting(true);
     setCommitStatus('SINCRONIZANDO...');
     localStorage.setItem('admin_name', adminName);
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`
+        },
+        body: JSON.stringify({ defaultRadio })
+      });
+    } catch(err) {
+      console.error(err);
+    }
+    
     setTimeout(() => {
       setCommitStatus('ÉXITO_CONFIRMACIÓN');
       setTimeout(() => {
         setIsCommitting(false);
         setCommitStatus('Confirmar Configuración');
       }, 2000);
-    }, 1500);
+    }, 1000);
   };
 
   const handleCreateAdmin = async (e: React.FormEvent) => {
@@ -322,8 +351,19 @@ export default function AjustesPage() {
                 <p className="text-[10px] text-on-surface-variant/60 uppercase">Identificador del sistema para protocolos externos.</p>
               </div>
               <div className="space-y-4">
-                <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Índice de Metadatos SEO</label>
-                <textarea className="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary-container p-4 font-mono-technical outline-none text-on-surface transition-all" rows={3} defaultValue="Interfaz técnica de lujo de alto rendimiento para gestión administrativa central."></textarea>
+                <label className="block font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Emisora Principal por Defecto</label>
+                <select 
+                  value={defaultRadio}
+                  onChange={(e) => setDefaultRadio(e.target.value)}
+                  className="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary-container p-4 font-mono-technical outline-none text-on-surface appearance-none transition-all cursor-pointer"
+                >
+                  <option value="wacken">Wacken Radio</option>
+                  <option value="rockantenne">Rock Antenne Heavy</option>
+                  <option value="latinmetal">Metal Caravan</option>
+                  <option value="brutaldeath">Brutal Death Radio</option>
+                  <option value="metalcore">Metalcore Radio</option>
+                </select>
+                <p className="text-[10px] text-on-surface-variant/60 uppercase">La emisora que sonará automáticamente para todos los visitantes nuevos.</p>
               </div>
             </div>
           </section>
