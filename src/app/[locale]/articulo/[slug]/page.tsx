@@ -1,6 +1,7 @@
 import { supabase } from '@/utils/supabase';
 import ArticleClient from './ArticleClient';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -80,6 +81,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const { article, others } = await getArticleData(slug);
+  
+  if (!article) {
+    notFound();
+  }
   
   // Generar esquema FAQ JSON-LD si existen FAQs
   let jsonLd = null;
