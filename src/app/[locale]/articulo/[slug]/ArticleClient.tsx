@@ -27,19 +27,26 @@ function processYouTubeEmbeds(html: string): string {
     }
   );
 
-  // Convertir URLs planas de YouTube a enlaces clicleables (evitando afectar a las que ya están en <a>)
-  // Utilizamos un método más seguro dividiendo el texto por las etiquetas <a>
-  const parts = processed.split(/(<a\b[^>]*>[\s\S]*?<\/a>)/gi);
-  for (let i = 0; i < parts.length; i++) {
-    if (!parts[i].toLowerCase().startsWith('<a')) {
-      // Esta parte no es un <a>, podemos reemplazar las URLs
-      parts[i] = parts[i].replace(
-        /(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]+)(?!\w)/gi,
-        '<a href="$1" class="yt-popup-link text-primary font-bold hover:underline" target="_blank" rel="noopener noreferrer">$1</a>'
-      );
-    }
-  }
-  processed = parts.join('');
+  // Convertir todas las URLs de YouTube (ya sean texto plano o enlaces <a>) en un bloque visual (miniatura)
+  const ytRegex = /<a\b[^>]*href=["']?https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)["']?[^>]*>[\s\S]*?<\/a>|https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)(?!\w)/gi;
+
+  processed = processed.replace(ytRegex, (match, id1, id2) => {
+    const videoId = id1 || id2;
+    if (!videoId) return match;
+    
+    return `
+      <div class="yt-thumbnail-btn my-8 max-w-3xl mx-auto cursor-pointer" data-ytid="${videoId}">
+        <div class="relative w-full aspect-video bg-black border-2 border-outline-variant/30 hover:border-primary transition-all group overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.6)]">
+          <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="Video de YouTube" class="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-90 transition-all duration-700" />
+          <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-transparent transition-colors">
+            <div class="w-16 h-16 bg-primary/90 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(204,17,0,0.8)] group-hover:scale-110 group-hover:bg-primary transition-all duration-300">
+              <span class="material-symbols-outlined text-white text-4xl ml-1">play_arrow</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
 
   return processed;
 }
@@ -143,6 +150,24 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
 
   const handleArticleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     let target = e.target as HTMLElement;
+    
+    // Primero, buscamos si se hizo clic en nuestra nueva miniatura visual
+    while (target && target !== e.currentTarget) {
+      if (target.classList && target.classList.contains('yt-thumbnail-btn')) {
+        const ytid = target.getAttribute('data-ytid');
+        if (ytid) {
+          e.preventDefault();
+          e.stopPropagation();
+          setYtVideoId(ytid);
+          setIsYtModalOpen(true);
+          return;
+        }
+      }
+      target = target.parentElement as HTMLElement;
+    }
+
+    // Como respaldo, si todavía hay enlaces de texto a YouTube
+    target = e.target as HTMLElement;
     while (target && target.tagName !== 'A' && target !== e.currentTarget) {
       target = target.parentElement as HTMLElement;
     }
@@ -152,6 +177,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
         const ytMatch = href.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
         if (ytMatch) {
           e.preventDefault();
+          e.stopPropagation();
           setYtVideoId(ytMatch[1]);
           setIsYtModalOpen(true);
         }
