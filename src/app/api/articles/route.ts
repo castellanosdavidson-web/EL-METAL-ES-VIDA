@@ -203,6 +203,7 @@ export async function POST(request: Request) {
     if (galleryImagesStr) {
       try { galleryImages = JSON.parse(galleryImagesStr); } catch (e) {}
     }
+    const galleryCaption = formData.get('galleryCaption') as string || '';
 
     const serviceSupabase = getServiceSupabase();
 
@@ -285,6 +286,7 @@ export async function POST(request: Request) {
       similarBands_en,
       similarBands_pt,
       galleryImages,
+      galleryCaption,
       createdAt: publishDate ? new Date(publishDate).toISOString() : new Date().toISOString()
     };
 
@@ -349,6 +351,7 @@ export async function PUT(request: Request) {
     if (formData.has('galleryImages')) {
       try { galleryImages = JSON.parse(galleryImagesStr); } catch (e) {}
     }
+    const galleryCaption = formData.get('galleryCaption') as string | null;
 
     const serviceSupabase = getServiceSupabase();
 
@@ -468,6 +471,7 @@ export async function PUT(request: Request) {
       similarBands_en: similarBands_en,
       similarBands_pt: similarBands_pt,
       galleryImages: galleryImages !== undefined ? galleryImages : posts[postIndex].galleryImages,
+      galleryCaption: galleryCaption !== null ? galleryCaption : posts[postIndex].galleryCaption,
       updatedAt: new Date().toISOString(),
       ...(publishDate && { createdAt: new Date(publishDate).toISOString() })
     };

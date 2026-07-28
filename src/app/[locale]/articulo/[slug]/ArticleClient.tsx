@@ -37,7 +37,7 @@ function processYouTubeEmbeds(html: string): string {
     return `
       <div class="yt-thumbnail-btn my-8 max-w-3xl mx-auto cursor-pointer" data-ytid="${videoId}">
         <div class="relative w-full aspect-video bg-black border-2 border-outline-variant/30 hover:border-primary transition-all group overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.6)] rounded-sm">
-          <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="Video de YouTube" class="!m-0 !border-none !shadow-none w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-90 transition-all duration-700" />
+          <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="Video de YouTube" class="!m-0 !border-none !shadow-none w-full h-full object-cover scale-[1.35] opacity-60 group-hover:scale-[1.40] group-hover:opacity-90 transition-all duration-700" />
           <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-transparent transition-colors">
             <div class="w-16 h-16 bg-primary/90 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(204,17,0,0.8)] group-hover:scale-110 group-hover:bg-primary transition-all duration-300">
               <span class="material-symbols-outlined text-white text-4xl ml-1">play_arrow</span>
