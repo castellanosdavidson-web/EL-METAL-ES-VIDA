@@ -38,6 +38,33 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
     }
   };
 
+  const onContainerScroll = () => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) return; // Solo en mobile
+    if (!scrollContainerRef.current) return;
+    
+    const container = scrollContainerRef.current;
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    
+    let closestCdId = null;
+    let minDistance = Infinity;
+
+    const cdElements = container.querySelectorAll('.cd-item-spine');
+    cdElements.forEach((el) => {
+      const elHtml = el as HTMLElement;
+      // offsetLeft es relativo al offsetParent (el scroll container si es relative)
+      const elCenter = elHtml.offsetLeft + elHtml.clientWidth / 2;
+      const distance = Math.abs(containerCenter - elCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestCdId = elHtml.getAttribute('data-id');
+      }
+    });
+
+    if (closestCdId) {
+      setActiveCdId(closestCdId);
+    }
+  };
+
   if (displayCds.length === 0) {
     return null;
   }
@@ -100,6 +127,7 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
           {/* Contenedor Flex de CDs */}
           <div 
             ref={scrollContainerRef}
+            onScroll={onContainerScroll}
             className="relative z-20 flex items-end min-h-[290px] md:min-h-[340px] pt-4 md:pt-10 gap-0 md:gap-px px-4 md:px-6 pb-2 md:pb-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar"
           >
             
@@ -120,9 +148,10 @@ export default function BibliotecaCDs({ cds = [], title, hideLink = false }: { c
               return (
                 <div 
                   key={cd.id}
-                  className={`relative group perspective-[1000px] z-30 shrink-0 snap-center transition-all duration-500 origin-bottom ${tilt} mx-[1px] ${isSelected ? 'z-[99999] scale-y-105 -translate-y-2' : 'hover:z-[9999] hover:-translate-y-2'} block cursor-pointer`}
-                  onMouseEnter={() => setActiveCdId(cd.id)}
-                  onClick={() => setActiveCdId(cd.id)}
+                  data-id={cd.id}
+                  className={`cd-item-spine relative group perspective-[1000px] z-30 shrink-0 snap-center transition-all duration-500 origin-bottom ${tilt} mx-[1px] ${isSelected ? 'z-[99999] scale-y-105 -translate-y-2' : 'md:hover:z-[9999] md:hover:-translate-y-2'} block md:cursor-pointer`}
+                  onMouseEnter={() => { if (typeof window !== 'undefined' && window.innerWidth >= 768) setActiveCdId(cd.id); }}
+                  onClick={() => { if (typeof window !== 'undefined' && window.innerWidth >= 768) setActiveCdId(cd.id); }}
                 >
                   <div
                     className={`
