@@ -30,6 +30,7 @@ export default function ArticulosPage() {
   const [loadingCopies, setLoadingCopies] = useState(false);
   const [socialCopies, setSocialCopies] = useState<{ facebook_reel: string, facebook_post: string, tiktok: string } | null>(null);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [galleryCaption, setGalleryCaption] = useState('');
 
   const quillModules = React.useMemo(() => ({
     toolbar: {
@@ -121,6 +122,7 @@ export default function ArticulosPage() {
     setSeoKeywords(article.seoKeywords || '');
     setFaqsRaw(article.faqsRaw || '');
     setGalleryImages(article.galleryImages || []);
+    setGalleryCaption(article.galleryCaption || '');
     setMessage('');
     setIsModalOpen(true);
   };
@@ -132,6 +134,7 @@ export default function ArticulosPage() {
     setSeoKeywords('');
     setFaqsRaw('');
     setGalleryImages([]);
+    setGalleryCaption('');
     setMessage('');
     setIsModalOpen(true);
   };
@@ -194,6 +197,7 @@ export default function ArticulosPage() {
     formData.set('desc', finalDesc);
     formData.set('youtubeUrl', youtubeUrl.trim());
     formData.set('galleryImages', JSON.stringify(galleryImages));
+    formData.set('galleryCaption', galleryCaption.trim());
     formData.append('type', 'article');
 
     if (editArticle) {
@@ -584,6 +588,10 @@ export default function ArticulosPage() {
                   >
                     <span className="material-symbols-outlined text-on-surface-variant">add_photo_alternate</span>
                   </button>
+                </div>
+                <div className="mt-4">
+                  <label className="font-label-sm text-label-sm uppercase text-on-surface-variant flex items-center gap-2 mb-2">Pie de foto o Créditos (Opcional)</label>
+                  <input type="text" value={galleryCaption} onChange={(e) => setGalleryCaption(e.target.value)} className="w-full bg-surface border border-outline-variant p-3 text-on-surface focus:border-primary outline-none font-mono-technical text-sm" placeholder="Ej: Fotos cortesía de Rock al Parque" />
                 </div>
               </div>
 

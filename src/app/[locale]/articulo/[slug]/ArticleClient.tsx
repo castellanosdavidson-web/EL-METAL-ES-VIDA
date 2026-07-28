@@ -28,8 +28,18 @@ function processYouTubeEmbeds(html: string): string {
   );
 
   // Convertir URLs planas de YouTube a enlaces clicleables (evitando afectar a las que ya están en <a>)
-  const ytRegex = /(^|\s|>)(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]+)(?=\s|<|$)/gi;
-  processed = processed.replace(ytRegex, '$1<a href="$2" class="yt-popup-link text-primary font-bold hover:underline" target="_blank" rel="noopener noreferrer">$2</a>');
+  // Utilizamos un método más seguro dividiendo el texto por las etiquetas <a>
+  const parts = processed.split(/(<a\b[^>]*>[\s\S]*?<\/a>)/gi);
+  for (let i = 0; i < parts.length; i++) {
+    if (!parts[i].toLowerCase().startsWith('<a')) {
+      // Esta parte no es un <a>, podemos reemplazar las URLs
+      parts[i] = parts[i].replace(
+        /(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]+)(?!\w)/gi,
+        '<a href="$1" class="yt-popup-link text-primary font-bold hover:underline" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
+    }
+  }
+  processed = parts.join('');
 
   return processed;
 }
@@ -631,7 +641,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                     <React.Fragment key={index}>
                       <div dangerouslySetInnerHTML={{ __html: part }} />
                       {index < array.length - 1 && initialArticle.galleryImages && initialArticle.galleryImages.length > 0 && (
-                        <ArticleGallery images={initialArticle.galleryImages} />
+                        <ArticleGallery images={initialArticle.galleryImages} caption={initialArticle.galleryCaption} />
                       )}
                     </React.Fragment>
                   ));
@@ -645,7 +655,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
                     return (
                       <>
                         <div dangerouslySetInnerHTML={{ __html: p1 }} />
-                        <ArticleGallery images={initialArticle.galleryImages} />
+                        <ArticleGallery images={initialArticle.galleryImages} caption={initialArticle.galleryCaption} />
                         <div dangerouslySetInnerHTML={{ __html: p2 }} />
                       </>
                     );

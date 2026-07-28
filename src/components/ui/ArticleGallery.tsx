@@ -4,9 +4,10 @@ import Image from 'next/image';
 
 interface ArticleGalleryProps {
   images: string[];
+  caption?: string;
 }
 
-export default function ArticleGallery({ images }: ArticleGalleryProps) {
+export default function ArticleGallery({ images, caption }: ArticleGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -100,6 +101,13 @@ export default function ArticleGallery({ images }: ArticleGalleryProps) {
           </>
         )}
       </div>
+      {caption && (
+        <div className="bg-surface-container-highest p-3 border-t border-outline-variant/40">
+          <p className="font-mono-technical text-[10px] md:text-xs text-on-surface-variant uppercase tracking-widest text-center">
+            {caption}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
