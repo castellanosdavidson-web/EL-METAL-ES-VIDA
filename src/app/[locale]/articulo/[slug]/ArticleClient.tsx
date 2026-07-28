@@ -27,6 +27,10 @@ function processYouTubeEmbeds(html: string): string {
     }
   );
 
+  // Convertir URLs planas de YouTube a enlaces clicleables (evitando afectar a las que ya están en <a>)
+  const ytRegex = /(^|\s|>)(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]+)(?=\s|<|$)/gi;
+  processed = processed.replace(ytRegex, '$1<a href="$2" class="yt-popup-link text-primary font-bold hover:underline" target="_blank" rel="noopener noreferrer">$2</a>');
+
   return processed;
 }
 
@@ -42,6 +46,8 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [shareUrl, setShareUrl] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isYtModalOpen, setIsYtModalOpen] = useState(false);
+  const [ytVideoId, setYtVideoId] = useState('');
 
   const handleDownloadMp3 = async () => {
     if (!initialArticle.audioUrl) return;
@@ -124,6 +130,24 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
       setRecommendations(shuffledOthers.slice(0, 3));
     }
   }, [initialOthers]);
+
+  const handleArticleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    let target = e.target as HTMLElement;
+    while (target && target.tagName !== 'A' && target !== e.currentTarget) {
+      target = target.parentElement as HTMLElement;
+    }
+    if (target && target.tagName === 'A') {
+      const href = target.getAttribute('href');
+      if (href) {
+        const ytMatch = href.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+        if (ytMatch) {
+          e.preventDefault();
+          setYtVideoId(ytMatch[1]);
+          setIsYtModalOpen(true);
+        }
+      }
+    }
+  };
 
   if (!initialArticle) {
     return (
@@ -600,7 +624,7 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
             </div>
 
             {/* Article content */}
-            <div className="article-content">
+            <div className="article-content" onClick={handleArticleClick}>
               {(() => {
                 if (processedContent.includes('[GALERIA]')) {
                   return processedContent.split('[GALERIA]').map((part, index, array) => (
@@ -980,6 +1004,29 @@ export default function ArticleClient({ initialArticle, initialOthers }: Article
           </section>
         </div>
       </main>
+
+      {/* YouTube Modal */}
+      {isYtModalOpen && (
+        <div className="fixed inset-0 z-[99999] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setIsYtModalOpen(false)}>
+          <div className="relative w-full max-w-5xl aspect-video bg-black shadow-[0_0_50px_rgba(196,112,75,0.4)] border border-primary/30" onClick={e => e.stopPropagation()}>
+            <button 
+              className="absolute -top-12 right-0 text-white hover:text-primary transition-colors flex items-center gap-1 font-mono-technical text-sm uppercase tracking-widest" 
+              onClick={() => setIsYtModalOpen(false)}
+            >
+              <span className="material-symbols-outlined text-2xl">close</span> Cerrar
+            </button>
+            <iframe 
+              width="100%" 
+              height="100%" 
+              src={`https://www.youtube.com/embed/${ytVideoId}?autoplay=1`} 
+              title="YouTube video player" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen>
+            </iframe>
+          </div>
+        </div>
+      )}
     </>
   );
 }

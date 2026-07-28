@@ -247,3 +247,9 @@ body {
   margin-top: 0.05em !important;
   text-shadow: 0 0 20px rgba(196, 112, 75, 0.4) !important;
 }
+
+/* Ensure Material Symbols are never overridden */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+}
+
