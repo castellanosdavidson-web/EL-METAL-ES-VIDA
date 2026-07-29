@@ -1,6 +1,16 @@
 import { NextResponse } from 'next/server';
-import { getServiceSupabase } from '@/utils/supabase';
 import { GoogleGenAI } from '@google/genai';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const S3 = new S3Client({
+  region: 'auto',
+  endpoint: process.env.CLOUDFLARE_R2_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY!,
+  },
+});
+
 
 export const dynamic = 'force-dynamic';
 
@@ -110,18 +120,13 @@ FAQs: ${faqsRaw}`;
 
 export async function GET() {
   try {
-    const serviceSupabase = getServiceSupabase();
-    
     // Download current posts
-    const { data: fileData, error: downloadError } = await serviceSupabase.storage
-      .from('articles')
-      .download('posts.json');
-
-    if (downloadError || !fileData) {
-      return NextResponse.json({ error: 'No se pudo descargar posts.json' }, { status: 500 });
+    const res = await fetch(`${process.env.CLOUDFLARE_R2_PUBLIC_URL}/posts.json`, { cache: 'no-store' });
+    if (!res.ok) {
+      return NextResponse.json({ error: 'No se pudo descargar posts.json desde R2' }, { status: 500 });
     }
 
-    const text = await fileData.text();
+    const text = await res.text();
     let posts = JSON.parse(text || '[]');
     let translatedCount = 0;
 
@@ -156,12 +161,12 @@ export async function GET() {
           translatedCount++;
           
           // Incremental upload so we don't lose progress if execution ends or times out
-          await serviceSupabase.storage
-            .from('articles')
-            .upload('posts.json', JSON.stringify(posts), {
-              upsert: true,
-              contentType: 'application/json'
-            });
+          await S3.send(new PutObjectCommand({
+            Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+            Key: 'posts.json',
+            Body: Buffer.from(JSON.stringify(posts)),
+            ContentType: 'application/json'
+          }));
         }
         
         // Wait 2.5 seconds to avoid Gemini 503 Spike / Rate limits

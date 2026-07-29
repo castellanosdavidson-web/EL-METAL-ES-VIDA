@@ -116,28 +116,100 @@ export async function GET(request: Request) {
         }
       }
 
+      // Migrar galleryImages
+      if (post.galleryImages && Array.isArray(post.galleryImages)) {
+        for (let i = 0; i < post.galleryImages.length; i++) {
+          if (post.galleryImages[i] && post.galleryImages[i].includes('supabase.co')) {
+            try {
+              const url = post.galleryImages[i];
+              const filename = url.split('/').pop()?.split('?')[0]; 
+              if (!filename) continue;
+
+              logs.push(`Migrando imagen de galería de ${post.title}: ${filename}`);
+              const res = await fetch(url);
+              if (res.ok) {
+                const arrayBuffer = await res.arrayBuffer();
+                const buffer = Buffer.from(arrayBuffer);
+                await S3.send(new PutObjectCommand({
+                  Bucket: BUCKET_NAME,
+                  Key: filename,
+                  Body: buffer,
+                  ContentType: res.headers.get('content-type') || 'image/jpeg',
+                }));
+                post.galleryImages[i] = `${R2_PUBLIC_URL}/${filename}`;
+                postUpdated = true;
+                migratedCount++;
+              }
+            } catch (e: any) {
+              logs.push(`Error procesando galería en ${post.title}: ${e.message}`);
+            }
+          }
+        }
+      }
+
       if (postUpdated) {
         dbUpdated = true;
       }
     }
 
-    // 3. Si hubo cambios, subir posts.json actualizado a Supabase Storage
-    if (dbUpdated) {
-      logs.push('Guardando archivo posts.json actualizado...');
-      const { error: updateError } = await supabase.storage
-        .from('articles')
-        .upload('posts.json', JSON.stringify(posts), {
-          upsert: true,
-          contentType: 'application/json'
-        });
+    // 3. Subir posts.json a R2 (Siempre, para asegurar que la base de datos principal viva en R2 a partir de ahora)
+    logs.push('Guardando archivo posts.json en Cloudflare R2...');
+    try {
+      await S3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: 'posts.json',
+        Body: Buffer.from(JSON.stringify(posts)),
+        ContentType: 'application/json',
+      }));
+      logs.push('posts.json subido exitosamente a R2.');
+      dbUpdated = true; // Forzamos true ya que lo migramos de todas formas
+    } catch (e: any) {
+      logs.push(`Error guardando posts.json en R2: ${e.message}`);
+    }
 
-      if (updateError) {
-        logs.push(`Error guardando posts.json: ${updateError.message}`);
-      } else {
-        logs.push('posts.json actualizado exitosamente.');
+    // 4. Migrar site-settings.json a R2
+    logs.push('Migrando site-settings.json a R2...');
+    const { data: settingsData, error: settingsError } = await supabase.storage.from('articles').download('site-settings.json');
+    if (!settingsError && settingsData) {
+      try {
+        const settingsText = await settingsData.text();
+        await S3.send(new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: 'site-settings.json',
+          Body: Buffer.from(settingsText),
+          ContentType: 'application/json',
+        }));
+        logs.push('site-settings.json subido exitosamente a R2.');
+        migratedCount++;
+      } catch (e: any) {
+        logs.push(`Error guardando site-settings.json en R2: ${e.message}`);
       }
     } else {
-       logs.push('No se encontraron archivos de Supabase para migrar.');
+      logs.push('No se encontró site-settings.json en Supabase para migrar.');
+    }
+
+    // 5. Migrar imágenes de administrador (logo.png, cover.png, avatar.png)
+    const adminImages = ['logo.png', 'cover.png', 'avatar.png'];
+    for (const img of adminImages) {
+      logs.push(`Migrando ${img} a R2...`);
+      const { data: imgData, error: imgError } = await supabase.storage.from('articles').download(img);
+      if (!imgError && imgData) {
+        try {
+          const imgBuffer = await imgData.arrayBuffer();
+          await S3.send(new PutObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: img,
+            Body: Buffer.from(imgBuffer),
+            ContentType: imgData.type || 'image/png',
+          }));
+          logs.push(`${img} subido exitosamente a R2.`);
+          migratedCount++;
+        } catch (e: any) {
+          logs.push(`Error guardando ${img} en R2: ${e.message}`);
+        }
+      } else {
+        logs.push(`No se encontró ${img} en Supabase.`);
+      }
     }
 
     return NextResponse.json({ 

@@ -12,12 +12,10 @@ interface PageProps {
 
 async function getArticleData(slug: string) {
   try {
-    const { data: fileData, error } = await supabase.storage
-      .from('articles')
-      .download('posts.json');
+    const res = await fetch(`${process.env.CLOUDFLARE_R2_PUBLIC_URL}/posts.json`, { cache: 'no-store' });
       
-    if (!error && fileData) {
-      const text = await fileData.text();
+    if (res.ok) {
+      const text = await res.text();
       const posts = JSON.parse(text || '[]');
       const found = posts.find((a: any) => a.slug === slug || a.id.toString() === slug);
       if (found) {

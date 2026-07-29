@@ -46,11 +46,16 @@ export default function AdminClientLayout({ children }: { children: React.ReactN
     // Cargar perfil dinámico
     const storedName = localStorage.getItem('admin_name');
     if (storedName) setAdminName(storedName);
-    
-    const { data } = supabase.storage.from('articles').getPublicUrl('avatar.png');
-    if (data && data.publicUrl) {
-      setAvatarUrl(data.publicUrl + '?t=' + Date.now());
-    }
+    const loadAvatar = async () => {
+      try {
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data.r2Url) {
+          setAvatarUrl(`${data.r2Url}/avatar.png?t=${Date.now()}`);
+        }
+      } catch (e) {}
+    };
+    loadAvatar();
 
     return () => subscription.unsubscribe();
   }, [pathname, router]);

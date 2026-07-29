@@ -2,21 +2,19 @@ import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  
+  const r2Url = process.env.CLOUDFLARE_R2_PUBLIC_URL;
   let articles: any[] = [];
   
-  if (supabaseUrl && supabaseKey) {
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    const { data: fileData, error } = await supabase.storage
-      .from('articles')
-      .download('posts.json');
-      
-    if (!error && fileData) {
-      const text = await fileData.text();
-      const posts = JSON.parse(text || '[]');
-      articles = posts.filter((a: any) => !a.is_hidden);
+  if (r2Url) {
+    try {
+      const res = await fetch(`${r2Url}/posts.json`, { cache: 'no-store' });
+      if (res.ok) {
+        const text = await res.text();
+        const posts = JSON.parse(text || '[]');
+        articles = posts.filter((a: any) => !a.is_hidden);
+      }
+    } catch (e) {
+      console.error('Error fetching sitemap posts', e);
     }
   }
 

@@ -1,5 +1,14 @@
 import { NextResponse } from 'next/server';
-import { getServiceSupabase } from '@/utils/supabase';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const S3 = new S3Client({
+  region: 'auto',
+  endpoint: process.env.CLOUDFLARE_R2_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY!,
+  },
+});
 
 const POSTS = [
   { id: 1, imageUrl: "/posts/post 1.png", title: "Acústica del Caos", desc: "Patrones de onda destructivos en afinaciones drop-A. Análisis espectral de la pesadez.", category: "Ciencia del Sonido", icon: "graphic_eq" },
@@ -24,17 +33,12 @@ const POSTS = [
 
 export async function GET() {
   try {
-    const serviceSupabase = getServiceSupabase();
-    
-    // Upload updated posts
-    const { error: updateError } = await serviceSupabase.storage
-      .from('articles')
-      .upload('posts.json', JSON.stringify(POSTS), {
-        upsert: true,
-        contentType: 'application/json'
-      });
-
-    if (updateError) throw updateError;
+    await S3.send(new PutObjectCommand({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+      Key: 'posts.json',
+      Body: Buffer.from(JSON.stringify(POSTS)),
+      ContentType: 'application/json'
+    }));
 
     return NextResponse.json({ success: true, count: POSTS.length });
   } catch (error: any) {

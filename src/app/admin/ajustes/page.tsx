@@ -56,28 +56,6 @@ export default function AjustesPage() {
   };
 
   useEffect(() => {
-    // Check if logo exists
-    const checkLogo = async () => {
-      const { data } = supabase.storage.from('articles').getPublicUrl('logo.png');
-      if (data && data.publicUrl) {
-        setLogoUrl(data.publicUrl + '?t=' + Date.now());
-      }
-    };
-    // Check if cover exists
-    const checkCover = async () => {
-      const { data } = supabase.storage.from('articles').getPublicUrl('cover.png');
-      if (data && data.publicUrl) {
-        setCoverUrl(data.publicUrl + '?t=' + Date.now());
-      }
-    };
-    // Check if avatar exists
-    const checkAvatar = async () => {
-      const { data } = supabase.storage.from('articles').getPublicUrl('avatar.png');
-      if (data && data.publicUrl) {
-        setAvatarUrl(data.publicUrl + '?t=' + Date.now());
-      }
-    };
-    
     const storedName = localStorage.getItem('admin_name');
     if (storedName) setAdminName(storedName);
 
@@ -89,9 +67,6 @@ export default function AjustesPage() {
     if (storedHeroTitle2) setHeroTitle2(storedHeroTitle2);
     if (storedHeroSubtitle) setHeroSubtitle(storedHeroSubtitle);
     
-    checkLogo();
-    checkCover();
-    checkAvatar();
     fetchAdmins();
     
     const loadSettings = async () => {
@@ -100,6 +75,11 @@ export default function AjustesPage() {
         const data = await res.json();
         if (data.defaultRadio) {
           setDefaultRadio(data.defaultRadio);
+        }
+        if (data.r2Url) {
+          setLogoUrl(`${data.r2Url}/logo.png?t=${Date.now()}`);
+          setCoverUrl(`${data.r2Url}/cover.png?t=${Date.now()}`);
+          setAvatarUrl(`${data.r2Url}/avatar.png?t=${Date.now()}`);
         }
       } catch (e) {}
     };

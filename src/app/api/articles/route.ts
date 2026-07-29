@@ -147,10 +147,10 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const { data, error } = await supabase.storage.from('articles').download('posts.json');
-    if (error) throw error;
+    const res = await fetch(`${process.env.CLOUDFLARE_R2_PUBLIC_URL}/posts.json`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to fetch posts.json from R2');
     
-    const text = await data.text();
+    const text = await res.text();
     const posts = JSON.parse(text || '[]');
     
     // Devolver los artículos (ordenados del más reciente al más antiguo)
@@ -239,14 +239,11 @@ export async function POST(request: Request) {
 
     let audioUrl = clientAudioUrl || '';
 
-    // Download existing posts
-    const { data: fileData, error: downloadError } = await serviceSupabase.storage
-      .from('articles')
-      .download('posts.json');
-
+    // Download existing posts from R2
+    const res = await fetch(`${process.env.CLOUDFLARE_R2_PUBLIC_URL}/posts.json`, { cache: 'no-store' });
     let posts = [];
-    if (!downloadError && fileData) {
-      const text = await fileData.text();
+    if (res.ok) {
+      const text = await res.text();
       posts = JSON.parse(text || '[]');
     }
 
@@ -292,15 +289,13 @@ export async function POST(request: Request) {
 
     posts.push(newPost);
 
-    // Upload updated posts
-    const { error: updateError } = await serviceSupabase.storage
-      .from('articles')
-      .upload('posts.json', JSON.stringify(posts), {
-        upsert: true,
-        contentType: 'application/json'
-      });
-
-    if (updateError) throw updateError;
+    // Upload updated posts to R2
+    await S3.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: 'posts.json',
+      Body: Buffer.from(JSON.stringify(posts)),
+      ContentType: 'application/json'
+    }));
 
     return NextResponse.json({ success: true, post: newPost });
   } catch (error: any) {
@@ -356,15 +351,9 @@ export async function PUT(request: Request) {
     const serviceSupabase = getServiceSupabase();
 
     // Obtener los artículos existentes
-    const { data: fileData, error: downloadError } = await serviceSupabase.storage
-      .from('articles')
-      .download('posts.json');
-
-    if (downloadError || !fileData) {
-      throw new Error('No se pudo descargar la base de datos de artículos.');
-    }
-
-    const text = await fileData.text();
+    const res = await fetch(`${process.env.CLOUDFLARE_R2_PUBLIC_URL}/posts.json`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('No se pudo descargar la base de datos desde R2');
+    const text = await res.text();
     let posts = JSON.parse(text || '[]');
 
     const postIndex = posts.findIndex((p: any) => p.id.toString() === id.toString());
@@ -476,15 +465,13 @@ export async function PUT(request: Request) {
       ...(publishDate && { createdAt: new Date(publishDate).toISOString() })
     };
 
-    // Subir nuevamente los posts
-    const { error: updateError } = await serviceSupabase.storage
-      .from('articles')
-      .upload('posts.json', JSON.stringify(posts), {
-        upsert: true,
-        contentType: 'application/json'
-      });
-
-    if (updateError) throw updateError;
+    // Subir nuevamente los posts a R2
+    await S3.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: 'posts.json',
+      Body: Buffer.from(JSON.stringify(posts)),
+      ContentType: 'application/json'
+    }));
 
     return NextResponse.json({ success: true, post: posts[postIndex] });
   } catch (error: any) {
@@ -512,15 +499,9 @@ export async function PATCH(request: Request) {
 
     const serviceSupabase = getServiceSupabase();
 
-    const { data: fileData, error: downloadError } = await serviceSupabase.storage
-      .from('articles')
-      .download('posts.json');
-
-    if (downloadError || !fileData) {
-      throw new Error('No se pudo descargar la base de datos de artículos.');
-    }
-
-    const text = await fileData.text();
+    const res = await fetch(`${process.env.CLOUDFLARE_R2_PUBLIC_URL}/posts.json`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('No se pudo descargar la base de datos desde R2');
+    const text = await res.text();
     let posts = JSON.parse(text || '[]');
 
     const postIndex = posts.findIndex((p: any) => p.id.toString() === id.toString());
@@ -530,14 +511,12 @@ export async function PATCH(request: Request) {
 
     posts[postIndex].is_hidden = is_hidden;
 
-    const { error: updateError } = await serviceSupabase.storage
-      .from('articles')
-      .upload('posts.json', JSON.stringify(posts), {
-        upsert: true,
-        contentType: 'application/json'
-      });
-
-    if (updateError) throw updateError;
+    await S3.send(new PutObjectCommand({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+      Key: 'posts.json',
+      Body: Buffer.from(JSON.stringify(posts)),
+      ContentType: 'application/json'
+    }));
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
@@ -567,27 +546,19 @@ export async function DELETE(request: Request) {
 
     const serviceSupabase = getServiceSupabase();
 
-    const { data: fileData, error: downloadError } = await serviceSupabase.storage
-      .from('articles')
-      .download('posts.json');
-
-    if (downloadError || !fileData) {
-      throw new Error('No se pudo descargar la base de datos de artículos.');
-    }
-
-    const text = await fileData.text();
+    const res = await fetch(`${process.env.CLOUDFLARE_R2_PUBLIC_URL}/posts.json`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('No se pudo descargar la base de datos desde R2');
+    const text = await res.text();
     let posts = JSON.parse(text || '[]');
 
     posts = posts.filter((p: any) => p.id.toString() !== id.toString());
 
-    const { error: updateError } = await serviceSupabase.storage
-      .from('articles')
-      .upload('posts.json', JSON.stringify(posts), {
-        upsert: true,
-        contentType: 'application/json'
-      });
-
-    if (updateError) throw updateError;
+    await S3.send(new PutObjectCommand({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+      Key: 'posts.json',
+      Body: Buffer.from(JSON.stringify(posts)),
+      ContentType: 'application/json'
+    }));
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
