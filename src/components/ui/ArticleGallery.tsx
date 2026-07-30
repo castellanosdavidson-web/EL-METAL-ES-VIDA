@@ -102,10 +102,10 @@ export default function ArticleGallery({ images, caption }: ArticleGalleryProps)
         )}
       </div>
       {caption && (
-        <div className="bg-surface-container-highest p-3 border-t border-outline-variant/40">
-          <p className="font-mono-technical text-[10px] md:text-xs text-on-surface-variant uppercase tracking-widest text-center">
+        <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 bg-black/80 backdrop-blur-sm px-3 py-1.5 border-l-2 border-primary rounded-sm shadow-lg max-w-[80%]">
+          <div className="font-mono-technical text-[9px] md:text-[10px] text-white/90 uppercase tracking-wide text-left !m-0">
             {caption}
-          </p>
+          </div>
         </div>
       )}
     </div>
